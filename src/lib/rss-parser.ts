@@ -30,7 +30,32 @@ interface GoogleNewsItem {
 export const categoryImages: Record<string, string[]> = {
   breaking: [
     'https://images.unsplash.com/photo-1585829365295-ab7cd400c167?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1200&q=80'
+    'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1200&q=80'
+  ],
+  elections: [
+    'https://images.unsplash.com/photo-1540910419892-4a36d2c3266c?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1494172961521-33799ddd43a5?auto=format&fit=crop&w=1200&q=80'
+  ],
+  europeanPolitics: [
+    'https://images.unsplash.com/photo-1560969184-10fe8719e047?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1568084680786-a84f91d1153c?auto=format&fit=crop&w=1200&q=80'
+  ],
+  diplomacy: [
+    'https://images.unsplash.com/photo-1577495508048-b635879837f1?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80'
+  ],
+  judiciary: [
+    'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1505664194779-8beaceb93744?auto=format&fit=crop&w=1200&q=80'
+  ],
+  weather: [
+    'https://images.unsplash.com/photo-1514632595-4944383f2737?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1534274988757-a28bf1a57c17?auto=format&fit=crop&w=1200&q=80'
+  ],
+  defense: [
+    'https://images.unsplash.com/photo-1508614589041-895b88991e3e?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?auto=format&fit=crop&w=1200&q=80'
   ],
   politics: [
     'https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format&fit=crop&w=1200&q=80',
@@ -38,6 +63,7 @@ export const categoryImages: Record<string, string[]> = {
   ],
   economy: [
     'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1578575437130-527eed3abbec?auto=format&fit=crop&w=1200&q=80',
     'https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?auto=format&fit=crop&w=1200&q=80'
   ],
   sports: [
@@ -54,14 +80,87 @@ export const categoryImages: Record<string, string[]> = {
   ],
   world: [
     'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&w=1200&q=80'
+    'https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1577495508048-b635879837f1?auto=format&fit=crop&w=1200&q=80'
   ],
   all: [
     'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1200&q=80'
   ]
 };
 
-export function getCategoryFallbackImage(category: Category | string, index = 0): string {
+export function getCategoryFallbackImage(
+  category: Category | string,
+  index = 0,
+  title = '',
+  desc = '',
+  region?: 'local' | 'world'
+): string {
+  const text = `${title} ${desc}`.toLowerCase();
+
+  if (text.length > 0) {
+    // 1. Elections & Voting (Universal for all regions/countries)
+    if (/\b(election|elections|polls|poll|vote|voting|ballot|ballots|voters|referendum)\b|මැතිවරණ|ඡන්ද|தேர்தல்/i.test(text)) {
+      const list = categoryImages.elections;
+      return list[Math.abs(index) % list.length];
+    }
+
+    // 2. European & UK Politics
+    if (/\b(german|germany|berlin|merz|scholz|bundestag|reichstag|afd|cdu|spd|european union|brussels|strasbourg|france|french|paris|macron|uk|britain|british|london|westminster|starmer|sunak)\b/i.test(text)) {
+      const list = categoryImages.europeanPolitics;
+      return list[Math.abs(index) % list.length];
+    }
+
+    // 3. Weather, Floods, Rainfall, Natural Hazards
+    if (/\b(flood|floods|flooding|rain|heavy rain|weather|cyclone|storm|landslide|landslides|monsoon|nbri|meteorology)\b|ගංවතුර|නායයෑම්|වැසි|வெள்ளம்|மழை/i.test(text)) {
+      const list = categoryImages.weather;
+      return list[Math.abs(index) % list.length];
+    }
+
+    // 4. Judiciary, Courts, Law Enforcement, Crimes
+    if (/\b(court|judge|magistrate|trial|verdict|remand|remanded|police|cid|arrest|arrested|bail|supreme court|attorney general|lawyer|justice)\b|අත්අඩංගුව|රිමාන්ඩ්|නඩු|අධිකරණ|கைது|விளக்கமறியல்|நீதிமன்றம்/i.test(text)) {
+      const list = categoryImages.judiciary;
+      return list[Math.abs(index) % list.length];
+    }
+
+    // 5. International Diplomacy, Summits, UN
+    if (/\b(summit|treaty|diplomat|diplomats|diplomacy|united nations|\bun\b|general assembly|g7|g20|nato|peace talks|ambassador)\b|එක්සත් ජාතීන්|ஐநா/i.test(text)) {
+      const list = categoryImages.diplomacy;
+      return list[Math.abs(index) % list.length];
+    }
+
+    // 6. Conflict, Defense, Strikes, Military
+    if (/\b(drone|strike|strikes|missile|missiles|military|troops|army|defense|defence|war|gaza|ukraine|russia|kremlin|putin|zelenskyy|hezbollah|houthi)\b/i.test(text)) {
+      const list = categoryImages.defense;
+      return list[Math.abs(index) % list.length];
+    }
+  }
+
+  // If local Sri Lankan story, strictly use local Sri Lankan governance imagery
+  if (region === 'local') {
+    if (category === 'politics' || category === 'local') {
+      const list = categoryImages.local;
+      return list[Math.abs(index) % list.length];
+    }
+  }
+
+  // If region is world, use diplomacy/world imagery unless strictly about US domestic government
+  if (region === 'world') {
+    if (category === 'politics' && !/\b(washington|white house|capitol|congress|senate|pentagon)\b/i.test(text)) {
+      const list = categoryImages.diplomacy;
+      return list[Math.abs(index) % list.length];
+    }
+    if (category === 'world') {
+      const list = categoryImages.world;
+      return list[Math.abs(index) % list.length];
+    }
+  }
+
+  // For general politics without explicit US context, default to international diplomacy
+  if (category === 'politics' && !/\b(washington|white house|capitol|congress|senate|pentagon)\b/i.test(text)) {
+    const list = categoryImages.diplomacy;
+    return list[Math.abs(index) % list.length];
+  }
+
   const list = categoryImages[category] || categoryImages.all;
   return list[Math.abs(index) % list.length];
 }
@@ -270,7 +369,8 @@ export async function fetchRSSFeed(feedUrl: string, publisherName: string, limit
       }
 
       const detectedCat = detectCategory(rawTitle, cleanDesc, publisherName, item.category);
-      const finalImage = authenticPhoto || getCategoryFallbackImage(detectedCat, index);
+      const detectedReg = detectRegion(rawTitle, cleanDesc, publisherName);
+      const finalImage = authenticPhoto || getCategoryFallbackImage(detectedCat, index, rawTitle, cleanDesc, detectedReg);
 
       const isGlobal = ['reuters', 'bbc', 'the guardian', 'guardian', 'al jazeera'].some(g => publisherName.toLowerCase().includes(g));
 
@@ -284,7 +384,6 @@ export async function fetchRSSFeed(feedUrl: string, publisherName: string, limit
             isGlobal ? 'Global wire verification and continuous monitoring.' : 'Continuous monitoring and verification in progress.'
           ];
 
-      const detectedReg = detectRegion(rawTitle, cleanDesc, publisherName);
       const stableId = generateArticleId(publisherName, rawTitle);
 
       return {
@@ -421,7 +520,7 @@ export async function fetchHiruNewsArticles(lang: 'en' | 'si' | 'ta' = 'en'): Pr
           sentiment: (detectedCat === 'breaking' ? 'developing' : 'neutral') as SentimentType,
           category: detectedCat,
           region: detectedReg,
-          imageUrl: authenticPhoto || getCategoryFallbackImage(detectedCat, articles.length),
+          imageUrl: authenticPhoto || getCategoryFallbackImage(detectedCat, articles.length, rawTitle, summary, detectedReg),
           publisherName: publisherName,
           sourceUrl: url,
           publishedAt: new Date(Date.now() - articles.length * 12 * 60 * 1000).toISOString(),
@@ -519,7 +618,7 @@ export async function fetchGoogleNewsFeed(sourceQuery: string, publisherName: st
         sentiment: (detectedCat === 'breaking' ? 'developing' : 'neutral') as SentimentType,
         category: detectedCat,
         region: detectedReg,
-        imageUrl: authenticPhoto || getCategoryFallbackImage(detectedCat, index),
+        imageUrl: authenticPhoto || getCategoryFallbackImage(detectedCat, index, rawTitle, cleanDesc, detectedReg),
         publisherName: publisherName,
         sourceUrl: item.link || 'https://news.google.com',
         publishedAt: item.pubDate ? new Date(item.pubDate).toISOString() : new Date().toISOString(),
@@ -679,7 +778,7 @@ export async function fetchReutersWorldNews(maxItems = 24): Promise<Partial<Arti
         sentiment: (detectedCat === 'breaking' ? 'developing' : 'neutral') as SentimentType,
         category: detectedCat,
         region: detectedReg,
-        imageUrl: authenticPhoto || getCategoryFallbackImage(detectedCat, index),
+        imageUrl: authenticPhoto || getCategoryFallbackImage(detectedCat, index, rawTitle, cleanDesc, detectedReg),
         publisherName: 'Reuters',
         sourceUrl: item.link || 'https://www.reuters.com',
         publishedAt: item.pubDate ? new Date(item.pubDate).toISOString() : new Date().toISOString(),

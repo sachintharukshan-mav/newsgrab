@@ -80,7 +80,7 @@ async function getAggregatedArticles(lang: Language = 'en'): Promise<Article[]> 
         sentiment: item.sentiment || 'neutral',
         category: item.category || 'politics',
         region: item.region || 'local',
-        imageUrl: item.imageUrl || getCategoryFallbackImage(item.category || 'politics', liveItems.length),
+        imageUrl: item.imageUrl || getCategoryFallbackImage(item.category || 'politics', liveItems.length, headline, summaryText, item.region),
         publisherName: pub,
         sourceUrl: item.sourceUrl || '#',
         publishedAt: item.publishedAt || new Date().toISOString(),
@@ -170,6 +170,52 @@ async function getAggregatedArticles(lang: Language = 'en'): Promise<Article[]> 
       }
       if (Array.isArray(guardianArticles)) {
         guardianArticles.forEach((item) => pushArticle(item, 'The Guardian'));
+      }
+    }
+
+    // Sync authentic photography from accredited peer articles covering the exact same event
+    const authenticPhotos = liveItems.filter(
+      (a) => a.imageUrl && !a.imageUrl.includes('unsplash.com')
+    );
+
+    if (authenticPhotos.length > 0) {
+      const genericWords = new Set([
+        'sri', 'lanka', 'colombo', 'news', 'breaking', 'report', 'government',
+        'country', 'state', 'states', 'minister', 'police', 'after', 'about',
+        'under', 'would', 'could', 'their', 'which', 'issued', 'warning',
+        'chairman', 'million', 'women', 'change', 'first', 'people', 'three',
+        'years', 'order', 'court', 'public', 'today', 'board', 'media', 'force',
+        'authority', 'central'
+      ]);
+
+      for (const item of liveItems) {
+        if (item.imageUrl && item.imageUrl.includes('unsplash.com')) {
+          const itemTitle = (item.title[lang] || item.title.en || '').toLowerCase();
+
+          const peer = authenticPhotos.find((auth) => {
+            if (auth.region !== item.region) return false;
+            if (auth.category !== item.category) return false;
+
+            const authTitle = (auth.title[lang] || auth.title.en || '').toLowerCase();
+
+            // 1. High-confidence distinctive named entity match (Merz, Zelenskyy, etc.)
+            const distinctiveNames = [
+              'merz', 'zelenskyy', 'netanyahu', 'putin', 'scholz', 'macron',
+              'starmer', 'modi', 'amarasuriya', 'dissanayake', 'wickremesinghe'
+            ];
+            const nameMatch = distinctiveNames.some((n) => itemTitle.includes(n) && authTitle.includes(n));
+            if (nameMatch) return true;
+
+            // 2. Strong keyword overlap (>= 3 specific words, each >= 5 chars, matching same category)
+            const itemWords = itemTitle.split(/[^a-z0-9]+/).filter((w) => w.length >= 5 && !genericWords.has(w));
+            const shared = itemWords.filter((w) => authTitle.includes(w));
+            return shared.length >= 3;
+          });
+
+          if (peer && peer.imageUrl) {
+            item.imageUrl = peer.imageUrl;
+          }
+        }
       }
     }
 
