@@ -79,7 +79,7 @@ async function getAggregatedArticles(lang: Language = 'en'): Promise<Article[]> 
         sentiment: item.sentiment || 'neutral',
         category: item.category || 'politics',
         region: item.region || 'local',
-        imageUrl: item.imageUrl || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1200&q=80',
+        imageUrl: item.imageUrl || '',
         publisherName: pub,
         sourceUrl: item.sourceUrl || '#',
         publishedAt: item.publishedAt || new Date().toISOString(),

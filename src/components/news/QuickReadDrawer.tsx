@@ -21,11 +21,23 @@ export const QuickReadDrawer: React.FC<QuickReadDrawerProps> = ({
   const [isLoadingBrief, setIsLoadingBrief] = useState<boolean>(false);
   const [synthesisProvider, setSynthesisProvider] = useState<'gemini' | 'algorithmic'>('gemini');
 
+  // Track authentic newsroom photography with React state synchronization
+  const [overridePhoto, setOverridePhoto] = useState<string | null>(null);
+  const [prevArticleId, setPrevArticleId] = useState(article?.id);
+
+  if (article?.id !== prevArticleId) {
+    setPrevArticleId(article?.id);
+    setOverridePhoto(null);
+  }
+
+  const isInitialAuthentic = Boolean(article?.imageUrl && !article.imageUrl.includes('unsplash.com'));
+  const authenticPhoto = overridePhoto === 'none' ? null : (overridePhoto || (isInitialAuthentic ? (article?.imageUrl || null) : null));
+
   // Derive active brief from article prop or fetched state
   const brief = article?.brief?.[currentLang] || fetchedBrief;
 
   useEffect(() => {
-    if (!article || article.brief?.[currentLang]) {
+    if (!article || (article.brief?.[currentLang] && isInitialAuthentic)) {
       return;
     }
 
@@ -51,10 +63,14 @@ export const QuickReadDrawer: React.FC<QuickReadDrawerProps> = ({
 
         if (res.ok) {
           const data = await res.json();
-          if (isMounted && data.brief) {
+          if (isMounted) {
             React.startTransition(() => {
-              setFetchedBrief(data.brief);
+              if (data.brief) setFetchedBrief(data.brief);
               if (data.provider) setSynthesisProvider(data.provider);
+              // Update with authentic publisher photo if extracted by backend
+              if (data.source?.image && !data.source.image.includes('unsplash.com')) {
+                setOverridePhoto(data.source.image);
+              }
             });
           }
         }
@@ -75,7 +91,7 @@ export const QuickReadDrawer: React.FC<QuickReadDrawerProps> = ({
       isMounted = false;
       controller.abort();
     };
-  }, [article, currentLang]);
+  }, [article, currentLang, isInitialAuthentic]);
 
   // Close on Escape key
   useEffect(() => {
@@ -221,17 +237,54 @@ export const QuickReadDrawer: React.FC<QuickReadDrawerProps> = ({
             </div>
           </div>
 
-          {/* Featured Photo */}
-          <div className="relative aspect-[16/10] w-full overflow-hidden rounded-md bg-zinc-900 border border-white/[0.08]">
-            <img
-              src={article.imageUrl}
-              alt={title}
-              onError={(e) => {
-                e.currentTarget.src = 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1200&q=80';
-              }}
-              className="w-full h-full object-cover"
-            />
-          </div>
+          {/* Featured Editorial Visual / Authentic Wire Photography */}
+          {authenticPhoto ? (
+            <div className="relative aspect-[16/10] w-full overflow-hidden rounded-md bg-zinc-900 border border-white/[0.08] shadow-lg">
+              <img
+                src={authenticPhoto}
+                alt={title}
+                onError={() => {
+                  // Gracefully fall back to editorial masthead on image load error
+                  setOverridePhoto('none');
+                }}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+              <div className="absolute bottom-2.5 left-3 right-3 flex items-center justify-between text-[11px] text-white/90 font-mono pointer-events-none">
+                <span className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-black/60 backdrop-blur-md border border-white/10 text-[10px]">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                  Verified Wire Photo
+                </span>
+                <span className="text-[10px] text-zinc-300 bg-black/60 backdrop-blur-md px-2 py-0.5 rounded border border-white/10">
+                  {article.publisherName}
+                </span>
+              </div>
+            </div>
+          ) : (
+            /* Institutional Editorial Wire Masthead (when no authentic photo exists) */
+            <div className="relative w-full rounded-lg bg-gradient-to-br from-[#161822] via-[#0f1016] to-[#12141c] border border-white/[0.08] p-5 sm:p-6 overflow-hidden shadow-lg">
+              <div className="absolute top-0 right-0 w-64 h-64 bg-rose-500/5 rounded-full blur-2xl pointer-events-none" />
+              <div className="relative z-10 flex items-center justify-between gap-3 border-b border-white/[0.06] pb-3 mb-3">
+                <div className="flex items-center gap-2">
+                  <span className="p-1 rounded bg-rose-500/10 text-rose-400 border border-rose-500/20">
+                    <ShieldCheck className="w-3.5 h-3.5" />
+                  </span>
+                  <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-white">
+                    Verified Newsroom Dispatch
+                  </span>
+                </div>
+                <span className="px-2 py-0.5 rounded bg-rose-500/10 text-rose-400 text-[10px] font-mono font-semibold uppercase border border-rose-500/20">
+                  {article.category}
+                </span>
+              </div>
+              <div className="relative z-10 space-y-1.5">
+                <Quote className="w-5 h-5 text-rose-400/30" />
+                <p className={`text-sm text-zinc-200 font-serif italic leading-relaxed ${isSinhala ? 'font-sinhala not-italic leading-relaxed' : ''} ${isTamil ? 'font-tamil not-italic leading-relaxed' : ''}`}>
+                  &ldquo;{article.summary[currentLang] || article.summary.en || title}&rdquo;
+                </p>
+              </div>
+            </div>
+          )}
 
           {/* Axios Smart Brevity Executive Dossier */}
           <div className="p-5 rounded-lg bg-gradient-to-b from-[#14161f] to-[#0f1016] border border-white/[0.08] shadow-lg space-y-4">

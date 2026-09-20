@@ -36,8 +36,15 @@ export async function extractArticleImage(url: string): Promise<string | null> {
     const metaMatch = html.match(/<meta[^>]+(?:property|name)=["'](?:og:image|twitter:image)["'][^>]+content=["']([^"']+)["']/i)
       || html.match(/<meta[^>]+content=["']([^"']+)["'][^>]+(?:property|name)=["'](?:og:image|twitter:image)["']/i);
 
-    if (metaMatch && metaMatch[1] && !/logo|favicon|icon|avatar|placeholder|default/i.test(metaMatch[1])) {
-      const imgUrl = metaMatch[1].startsWith('//') ? `https:${metaMatch[1]}` : metaMatch[1];
+    if (metaMatch && metaMatch[1] && !/logo|favicon|icon|avatar|placeholder|default|unsplash\.com/i.test(metaMatch[1])) {
+      let imgUrl = metaMatch[1].startsWith('//') ? `https:${metaMatch[1]}` : metaMatch[1];
+      imgUrl = imgUrl.replace(/&amp;/g, '&').trim();
+
+      // Upgrade Google UserContent thumbnails to high-definition 1200px broadsheet photography
+      if (imgUrl.includes('googleusercontent.com')) {
+        imgUrl = imgUrl.replace(/=s\d+.*|=w\d+.*$/, '=s0-w1200');
+      }
+
       setImageCache(url, imgUrl);
       return imgUrl;
     }
@@ -48,9 +55,13 @@ export async function extractArticleImage(url: string): Promise<string | null> {
       try {
         const parsed = JSON.parse(jm[1]);
         const candidate = parsed.image?.url || parsed.image || (Array.isArray(parsed.image) ? parsed.image[0] : null);
-        if (candidate && typeof candidate === 'string' && candidate.startsWith('http') && !/logo|favicon/i.test(candidate)) {
-          setImageCache(url, candidate);
-          return candidate;
+        if (candidate && typeof candidate === 'string' && candidate.startsWith('http') && !/logo|favicon|avatar|unsplash\.com/i.test(candidate)) {
+          let cleanCandidate = candidate.replace(/&amp;/g, '&').trim();
+          if (cleanCandidate.includes('googleusercontent.com')) {
+            cleanCandidate = cleanCandidate.replace(/=s\d+.*|=w\d+.*$/, '=s0-w1200');
+          }
+          setImageCache(url, cleanCandidate);
+          return cleanCandidate;
         }
       } catch {}
     }
@@ -60,8 +71,9 @@ export async function extractArticleImage(url: string): Promise<string | null> {
       || html.match(/https:\/\/[^"'<>\s]+\.(?:s3\.amazonaws\.com|s3\.[^"'\s<>]+\.amazonaws\.com)\/articles\/[^"'<>\s]+\.(?:jpg|jpeg|png|webp)/i)
       || html.match(/https?:\/\/[^"'<>\s]+\/wp-content\/uploads\/\d{4}\/\d{2}\/[^"'<>\s]+\.(?:jpg|jpeg|png|webp)/i);
     if (cdnMatch && cdnMatch[0]) {
-      setImageCache(url, cdnMatch[0]);
-      return cdnMatch[0];
+      const cleanCdn = cdnMatch[0].replace(/&amp;/g, '&').trim();
+      setImageCache(url, cleanCdn);
+      return cleanCdn;
     }
 
     return null;

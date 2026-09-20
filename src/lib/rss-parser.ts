@@ -27,42 +27,6 @@ interface GoogleNewsItem {
   pubDate?: string;
 }
 
-// Editorial news photography mapping fallback by topic (only used if source page has no image)
-const categoryImages: Record<Category, string[]> = {
-  breaking: [
-    'https://images.unsplash.com/photo-1585829365295-ab7cd400c167?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80'
-  ],
-  economy: [
-    'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?auto=format&fit=crop&w=1200&q=80'
-  ],
-  politics: [
-    'https://images.unsplash.com/photo-1557804506-669a67965ba0?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1200&q=80'
-  ],
-  sports: [
-    'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1531415074968-036ba1b575da?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1508098682722-e99c43a406b2?auto=format&fit=crop&w=1200&q=80'
-  ],
-  tech: [
-    'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&w=1200&q=80',
-    'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80'
-  ],
-  local: [
-    'https://images.unsplash.com/photo-1588668214407-6ea9a6d8c272?auto=format&fit=crop&w=1200&q=80'
-  ],
-  world: [
-    'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80'
-  ],
-  all: [
-    'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1200&q=80'
-  ]
-};
 
 const localRegex = /\b(sri lanka|sri lankan|lankan|ceylon|colombo|kandy|galle|jaffna|gampaha|kurunegala|matara|negombo|batticaloa|trincomalee|anuradhapura|nuwara eliya|ratnapura|badulla|kalutara|puttalam|polonnaruwa|hambantota|dambulla|vavuniya|mannar|kilinochchi|mullaitivu|ampara|ranil|anura kumara|akd|namal|rajapaksa|mahinda|gotabaya|sajith|premadasa|harsha|dissanayake|npp|sjb|slpp|unp|slfp|itak|tna|slmc|hizbullah|cbsl|central bank|ceb|cpc|sltb|rda|cid|tid|stf|court|magistrate|parliament|cabinet|minister|ministry|lkr|rupee|rupees|slc|lpl|airbus|customs|meteorology|disaster|tharanga|ceylon today|daily ft|island|derana|hiru|lanka|asalanka)\b|ලංකා|කොළඹ|මහනුවර|ගාල්ල|යාපනය|ගම්පහ|කුරුණෑගල|මාතර|අනුරාධපුර|රත්නපුර|කළුතර|හම්බන්තොට|පාර්ලිමේන්තුව|ජනාධිපති|අගමැති|අනුර|නාමල්|සජිත්|රනිල්|මහින්ද|මහ බැංකුව|දෙරණ|හිරු|පොලිස්|අධිකරණය|මහේස්ත්‍රාත්|ඉලங்கை|கொழும்பு|கண்டி|காலி|யாழ்ப்பாணம்|கம்பஹா|மட்டக்களப்பு|திருகோணமலை|வவுனியா|மன்னார்|கிளிநொச்சி|முல்லைத்தீவு|அம்பாறை|நாடாளுமன்றம்|ஜனாதிபதி|பிரதமர்|ரணில்|அநுர|நாமல்|சஜித்|மஹிந்த|பொலிஸ்|நீதிமன்றம்/i;
 
@@ -268,8 +232,7 @@ export async function fetchRSSFeed(feedUrl: string, publisherName: string, limit
       }
 
       const detectedCat = detectCategory(rawTitle, cleanDesc, publisherName, item.category);
-      const fallbackList = categoryImages[detectedCat] || categoryImages.all;
-      const finalImage = authenticPhoto || fallbackList[index % fallbackList.length];
+      const finalImage = authenticPhoto || '';
 
       const isGlobal = ['reuters', 'bbc', 'the guardian', 'guardian', 'al jazeera'].some(g => publisherName.toLowerCase().includes(g));
 
@@ -399,7 +362,6 @@ export async function fetchHiruNewsArticles(lang: 'en' | 'si' | 'ta' = 'en'): Pr
 
         const detectedCat = detectCategory(rawTitle, summary, 'Hiru News', hiruCat);
         const detectedReg = detectRegion(rawTitle, summary, publisherName);
-        const fallbackList = categoryImages[detectedCat] || categoryImages.all;
         const stableId = generateArticleId(publisherName, rawTitle);
 
         articles.push({
@@ -421,7 +383,7 @@ export async function fetchHiruNewsArticles(lang: 'en' | 'si' | 'ta' = 'en'): Pr
           sentiment: (detectedCat === 'breaking' ? 'developing' : 'neutral') as SentimentType,
           category: detectedCat,
           region: detectedReg,
-          imageUrl: authenticPhoto || fallbackList[articles.length % fallbackList.length],
+          imageUrl: authenticPhoto || '',
           publisherName: publisherName,
           sourceUrl: url,
           publishedAt: new Date(Date.now() - articles.length * 12 * 60 * 1000).toISOString(),
@@ -476,9 +438,7 @@ export async function fetchGoogleNewsFeed(sourceQuery: string, publisherName: st
              !title.toLowerCase().includes('top stories | breaking news');
     }).slice(0, maxItems);
 
-    const fallbackList = categoryImages.politics;
-
-    return validItems.map((item, index: number) => {
+    const articlePromises = validItems.map(async (item, index: number) => {
       const rawTitle = decodeHtmlEntities(
         (item.title || '')
           .replace(/\s*-\s*(Daily Mirror|Newsfirst|News 1st|Daily FT|Sri Lanka|Virakesari|வீரகேசரி).*$/i, '')
@@ -494,8 +454,12 @@ export async function fetchGoogleNewsFeed(sourceQuery: string, publisherName: st
 
       const detectedCat = detectCategory(rawTitle, cleanDesc, publisherName);
       const detectedReg = detectRegion(rawTitle, cleanDesc, publisherName);
-      const catImages = categoryImages[detectedCat] || fallbackList;
       const stableId = generateArticleId(publisherName, rawTitle);
+
+      let authenticPhoto: string | null = null;
+      if (item.link) {
+        authenticPhoto = await extractArticleImage(item.link);
+      }
 
       const fallbackBullets = [
         rawTitle,
@@ -517,7 +481,7 @@ export async function fetchGoogleNewsFeed(sourceQuery: string, publisherName: st
         sentiment: (detectedCat === 'breaking' ? 'developing' : 'neutral') as SentimentType,
         category: detectedCat,
         region: detectedReg,
-        imageUrl: catImages[index % catImages.length],
+        imageUrl: authenticPhoto || '',
         publisherName: publisherName,
         sourceUrl: item.link || 'https://news.google.com',
         publishedAt: item.pubDate ? new Date(item.pubDate).toISOString() : new Date().toISOString(),
@@ -526,6 +490,8 @@ export async function fetchGoogleNewsFeed(sourceQuery: string, publisherName: st
         clusterCount: index % 2 === 0 ? 3 : 1
       };
     });
+
+    return await Promise.all(articlePromises);
   } catch (e) {
     console.warn(`Error fetching Google News feed for ${publisherName}:`, e);
     return [];
@@ -634,9 +600,7 @@ export async function fetchReutersWorldNews(maxItems = 24): Promise<Partial<Arti
              !title.toLowerCase().includes('top stories | breaking news');
     }).slice(0, maxItems);
 
-    const fallbackList = categoryImages.world || categoryImages.all;
-
-    return validItems.map((item, index: number) => {
+    const articlePromises = validItems.map(async (item, index: number) => {
       const rawTitle = decodeHtmlEntities(
         (item.title || '')
           .replace(/\s*-\s*Reuters.*$/i, '')
@@ -652,8 +616,12 @@ export async function fetchReutersWorldNews(maxItems = 24): Promise<Partial<Arti
 
       const detectedCat = detectCategory(rawTitle, cleanDesc, 'Reuters');
       const detectedReg = detectRegion(rawTitle, cleanDesc, 'Reuters');
-      const catImages = categoryImages[detectedCat] || fallbackList;
       const stableId = generateArticleId('Reuters', rawTitle);
+
+      let authenticPhoto: string | null = null;
+      if (item.link) {
+        authenticPhoto = await extractArticleImage(item.link);
+      }
 
       const fallbackBullets = [
         rawTitle,
@@ -673,7 +641,7 @@ export async function fetchReutersWorldNews(maxItems = 24): Promise<Partial<Arti
         sentiment: (detectedCat === 'breaking' ? 'developing' : 'neutral') as SentimentType,
         category: detectedCat,
         region: detectedReg,
-        imageUrl: catImages[index % catImages.length],
+        imageUrl: authenticPhoto || '',
         publisherName: 'Reuters',
         sourceUrl: item.link || 'https://www.reuters.com',
         publishedAt: item.pubDate ? new Date(item.pubDate).toISOString() : new Date().toISOString(),
@@ -682,6 +650,8 @@ export async function fetchReutersWorldNews(maxItems = 24): Promise<Partial<Arti
         clusterCount: index % 2 === 0 ? 3 : 1
       };
     });
+
+    return await Promise.all(articlePromises);
   } catch (e) {
     console.warn('Error fetching Reuters World News:', e);
     return [];

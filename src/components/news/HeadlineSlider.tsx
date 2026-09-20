@@ -250,29 +250,53 @@ export const HeadlineSlider: React.FC<HeadlineSliderProps> = ({
 
                   {/* Right Column: Hero Visual */}
                   <div className="lg:col-span-5 order-1 lg:order-2">
-                    <div
-                      onClick={() => onOpenQuickRead(article)}
-                      className="relative aspect-[16/10] lg:aspect-[4/3] w-full overflow-hidden rounded-lg bg-zinc-900 border border-white/[0.08] cursor-pointer group/img shadow-lg"
-                    >
-                      <img
-                        src={article.imageUrl}
-                        alt={title}
-                        onError={(e) => {
-                          e.currentTarget.src =
-                            'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1200&q=80';
-                        }}
-                        className="w-full h-full object-cover grayscale-[10%] group-hover/img:grayscale-0 group-hover/img:scale-105 transition-all duration-700 ease-out"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
-                      <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-[10px] font-mono text-white/90 pointer-events-none">
-                        <span className="px-2 py-0.5 rounded bg-black/70 backdrop-blur-sm border border-white/10 uppercase">
-                          {article.category}
-                        </span>
-                        <span className="px-2 py-0.5 rounded bg-black/70 backdrop-blur-sm border border-white/10">
-                          {article.publisherName}
-                        </span>
+                    {article.imageUrl && !article.imageUrl.includes('unsplash.com') ? (
+                      <div
+                        onClick={() => onOpenQuickRead(article)}
+                        className="relative aspect-[16/10] lg:aspect-[4/3] w-full overflow-hidden rounded-lg bg-zinc-900 border border-white/[0.08] cursor-pointer group/img shadow-lg"
+                      >
+                        <img
+                          src={article.imageUrl}
+                          alt={title}
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                          }}
+                          className="w-full h-full object-cover grayscale-[10%] group-hover/img:grayscale-0 group-hover/img:scale-105 transition-all duration-700 ease-out"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+                        <div className="absolute bottom-3 left-3 right-3 flex items-center justify-between text-[10px] font-mono text-white/90 pointer-events-none">
+                          <span className="px-2 py-0.5 rounded bg-black/70 backdrop-blur-sm border border-white/10 uppercase">
+                            {article.category}
+                          </span>
+                          <span className="px-2 py-0.5 rounded bg-black/70 backdrop-blur-sm border border-white/10">
+                            {article.publisherName}
+                          </span>
+                        </div>
                       </div>
-                    </div>
+                    ) : (
+                      <div
+                        onClick={() => onOpenQuickRead(article)}
+                        className="relative aspect-[16/10] lg:aspect-[4/3] w-full overflow-hidden rounded-lg bg-gradient-to-br from-[#161822] via-[#0f1016] to-[#12141c] border border-white/[0.08] p-6 sm:p-8 flex flex-col justify-between cursor-pointer shadow-lg group hover:border-white/20 transition-colors"
+                      >
+                        <div className="flex items-center justify-between text-[11px] font-mono text-zinc-400">
+                          <span className="uppercase text-rose-400 font-bold tracking-wider">{article.category}</span>
+                          <span className="px-2.5 py-0.5 rounded bg-white/[0.06] text-zinc-300">{article.publisherName}</span>
+                        </div>
+                        <div className="my-auto space-y-2">
+                          <span className="text-rose-500 font-mono text-xs uppercase tracking-widest block font-semibold">Featured Wire Story</span>
+                          <p className={`text-zinc-200 font-serif italic text-base sm:text-lg line-clamp-3 ${isSinhala ? 'font-sinhala not-italic leading-relaxed' : ''} ${isTamil ? 'font-tamil not-italic leading-relaxed' : ''}`}>
+                            &ldquo;{summary}&rdquo;
+                          </p>
+                        </div>
+                        <div className="flex items-center justify-between text-[10px] font-mono text-zinc-500 pt-3 border-t border-white/[0.06]">
+                          <span className="flex items-center gap-1.5">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                            Verified Wire Dispatch
+                          </span>
+                          <span>{article.publisherName}</span>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

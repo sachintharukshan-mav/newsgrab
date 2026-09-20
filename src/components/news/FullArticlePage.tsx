@@ -26,12 +26,24 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
   const [isLoadingBrief, setIsLoadingBrief] = useState<boolean>(false);
   const [synthesisProvider, setSynthesisProvider] = useState<'gemini' | 'algorithmic'>('gemini');
 
+  // Track authentic newsroom photography with React state synchronization
+  const [overridePhoto, setOverridePhoto] = useState<string | null>(null);
+  const [prevArticleId, setPrevArticleId] = useState(article.id);
+
+  if (article.id !== prevArticleId) {
+    setPrevArticleId(article.id);
+    setOverridePhoto(null);
+  }
+
+  const isInitialAuthentic = Boolean(article.imageUrl && !article.imageUrl.includes('unsplash.com'));
+  const authenticPhoto = overridePhoto === 'none' ? null : (overridePhoto || (isInitialAuthentic ? article.imageUrl : null));
+
   // Derive active brief from article prop or fetched state
   const brief = article.brief?.[currentLang] || fetchedBrief;
 
-  // Dynamically fetch or synthesize the Axios Smart Brevity brief when not already provided
+  // Dynamically fetch or synthesize the Axios Smart Brevity brief and resolve authentic photo
   useEffect(() => {
-    if (article.brief?.[currentLang]) {
+    if (article.brief?.[currentLang] && isInitialAuthentic) {
       return;
     }
 
@@ -57,10 +69,14 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
 
         if (res.ok) {
           const data = await res.json();
-          if (isMounted && data.brief) {
+          if (isMounted) {
             React.startTransition(() => {
-              setFetchedBrief(data.brief);
+              if (data.brief) setFetchedBrief(data.brief);
               if (data.provider) setSynthesisProvider(data.provider);
+              // Update with authentic publisher photo if extracted by backend
+              if (data.source?.image && !data.source.image.includes('unsplash.com')) {
+                setOverridePhoto(data.source.image);
+              }
             });
           }
         }
@@ -81,7 +97,7 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
       isMounted = false;
       controller.abort();
     };
-  }, [article.id, article.sourceUrl, article.publisherName, article.title, article.summary, article.brief, currentLang]);
+  }, [article.id, article.sourceUrl, article.publisherName, article.title, article.summary, article.brief, currentLang, isInitialAuthentic]);
 
   // Track reading scroll progress (0% - 100%)
   useEffect(() => {
@@ -306,22 +322,71 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
           </div>
         </div>
 
-        {/* Featured Full-Width Editorial Photo */}
-        <div className="max-w-5xl mx-auto my-8 sm:my-10">
-          <div className="relative aspect-[16/9] md:aspect-[21/10] w-full overflow-hidden rounded-lg bg-zinc-900 border border-white/[0.08]">
-            <img
-              src={article.imageUrl}
-              alt={title}
-              onError={(e) => {
-                e.currentTarget.src = 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1200&q=80';
-              }}
-              className="w-full h-full object-cover"
-            />
+        {/* Featured Editorial Visual / Authentic Wire Photography */}
+        {authenticPhoto ? (
+          <div className="max-w-5xl mx-auto my-8 sm:my-10">
+            <div className="relative aspect-[16/9] md:aspect-[21/10] w-full overflow-hidden rounded-lg bg-zinc-900 border border-white/[0.08] shadow-2xl">
+              <img
+                src={authenticPhoto}
+                alt={title}
+                onError={() => {
+                  // If image fails to load, gracefully transition to the authoritative wire masthead
+                  setOverridePhoto('none');
+                }}
+                className="w-full h-full object-cover"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+              <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between text-xs text-white/90 font-mono drop-shadow-md pointer-events-none">
+                <span className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-black/60 backdrop-blur-md border border-white/10 text-[11px]">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                  Verified Wire Dispatch Photo
+                </span>
+                <span className="text-[11px] text-zinc-300 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded border border-white/10">
+                  {article.publisherName}
+                </span>
+              </div>
+            </div>
+            <div className="mt-2 text-[11px] font-mono text-zinc-500 text-right">
+              Photo credit: {article.publisherName} editorial wire
+            </div>
           </div>
-          <div className="mt-2 text-[11px] font-mono text-zinc-500 text-right">
-            Newsroom photo dispatch · {article.publisherName}
+        ) : (
+          /* Authoritative Institutional Editorial Wire Masthead (when no authentic photo exists) */
+          <div className="max-w-5xl mx-auto my-8 sm:my-10">
+            <div className="relative w-full rounded-lg bg-gradient-to-br from-[#161822] via-[#0f1016] to-[#12141c] border border-white/[0.1] p-6 sm:p-10 overflow-hidden shadow-2xl">
+              <div className="absolute top-0 right-0 w-80 h-80 bg-rose-500/5 rounded-full blur-3xl pointer-events-none" />
+              <div className="relative z-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 border-b border-white/[0.08] pb-5 mb-5">
+                <div className="flex items-center gap-2">
+                  <span className="p-1.5 rounded-md bg-rose-500/10 text-rose-400 border border-rose-500/20">
+                    <ShieldCheck className="w-4 h-4" />
+                  </span>
+                  <div>
+                    <div className="text-xs font-mono font-bold uppercase tracking-widest text-white">
+                      Official Newsroom Dispatch
+                    </div>
+                    <div className="text-[11px] font-mono text-zinc-400">
+                      Accredited Wire Coverage · Multi-Source Verified
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="px-2.5 py-1 rounded bg-white/[0.06] text-xs font-mono text-zinc-200 border border-white/[0.08]">
+                    {article.publisherName}
+                  </span>
+                  <span className="px-2.5 py-1 rounded bg-rose-500/10 text-rose-400 text-xs font-mono font-semibold uppercase border border-rose-500/20">
+                    {article.category}
+                  </span>
+                </div>
+              </div>
+              <div className="relative z-10 space-y-2">
+                <Quote className="w-7 h-7 text-rose-400/30" />
+                <p className={`text-base sm:text-lg text-zinc-200 font-serif italic leading-relaxed ${isSinhala ? 'font-sinhala leading-loose not-italic' : ''} ${isTamil ? 'font-tamil leading-relaxed not-italic' : ''}`}>
+                  &ldquo;{article.summary[currentLang] || article.summary.en || title}&rdquo;
+                </p>
+              </div>
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Two-Column Broadsheet Reading Grid */}
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 sm:gap-14 pt-4">

@@ -1,4 +1,5 @@
 import { extract } from '@extractus/article-extractor';
+import { extractArticleImage } from './image-extractor';
 
 const MAX_CACHE_ENTRIES = 200;
 
@@ -44,10 +45,16 @@ export async function fetchFullArticle(url: string, fallbackText: string = ''): 
 
   // Fast-path fallback for syndicated Google News / Cloudflare protected URLs to avoid hanging
   if (url.includes('news.google.com') || url.includes('dailymirror.lk') || url.includes('newsfirst.lk')) {
+    let img: string | undefined;
+    try {
+      const extractedImg = await extractArticleImage(url);
+      if (extractedImg) img = extractedImg;
+    } catch {}
+
     const rawParagraphs = fallbackText
       ? fallbackText.split(/[\.\n]\s*/).filter(s => s.trim().length > 10).map(s => `<p class="mb-4 leading-relaxed">${s.trim()}${s.endsWith('.') ? '' : '.'}</p>`).join('')
       : '<p class="mb-4 leading-relaxed">Full dispatch report is being syndicated directly from the newsroom wire.</p>';
-    const fallback = { content: rawParagraphs };
+    const fallback = { content: rawParagraphs, image: img };
     setCache(url, fallback);
     return fallback;
   }
@@ -192,10 +199,16 @@ export async function fetchFullArticle(url: string, fallbackText: string = ''): 
   }
 
   // Graceful fallback to provided summary if direct extraction fails
+  let fallbackImg: string | undefined;
+  try {
+    const extractedImg = await extractArticleImage(url);
+    if (extractedImg) fallbackImg = extractedImg;
+  } catch {}
+
   const paragraphs = fallbackText
     ? fallbackText.split(/[\.\n]\s*/).filter(s => s.trim().length > 10).map(s => `<p class="mb-4 leading-relaxed">${s.trim()}${s.endsWith('.') ? '' : '.'}</p>`).join('')
     : '<p class="mb-4 leading-relaxed">Full dispatch report is being processed from the newsroom wire.</p>';
-  const fallback = { content: paragraphs };
+  const fallback = { content: paragraphs, image: fallbackImg };
   setCache(url, fallback);
   return fallback;
 }
