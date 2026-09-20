@@ -347,7 +347,11 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
               <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between text-xs text-white/90 font-mono drop-shadow-md pointer-events-none">
                 <span className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-black/60 backdrop-blur-md border border-white/10 text-[11px]">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                  {isAuthenticWirePhoto ? 'Verified Wire Dispatch Photo' : `${article.category.toUpperCase()} Editorial Wire`}
+                  {article.imageCredit && article.imageCredit !== article.publisherName
+                    ? `Photo: ${article.imageCredit}`
+                    : isAuthenticWirePhoto
+                    ? 'Verified Wire Dispatch Photo'
+                    : `${article.category.toUpperCase()} Editorial Wire`}
                 </span>
                 <span className="text-[11px] text-zinc-300 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded border border-white/10">
                   {article.publisherName}
@@ -355,7 +359,9 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
               </div>
             </div>
             <div className="mt-2 text-[11px] font-mono text-zinc-500 text-right">
-              {isAuthenticWirePhoto
+              {article.imageCredit && article.imageCredit !== article.publisherName
+                ? `Photo credit: ${article.imageCredit} via wire syndication`
+                : isAuthenticWirePhoto
                 ? `Photo credit: ${article.publisherName} editorial wire`
                 : 'Editorial topic photography via NewsDesk Wire Desk'}
             </div>

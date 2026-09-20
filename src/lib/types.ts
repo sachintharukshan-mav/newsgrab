@@ -54,6 +54,7 @@ export interface Article {
   category: Category;
   region?: Region;
   imageUrl: string;
+  imageCredit?: string;
   publisherName: string;
   publisherLogo?: string;
   sourceUrl: string;

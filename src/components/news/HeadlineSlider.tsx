@@ -274,7 +274,11 @@ export const HeadlineSlider: React.FC<HeadlineSliderProps> = ({
                             {article.category}
                           </span>
                           <span className="px-2 py-0.5 rounded bg-black/70 backdrop-blur-sm border border-white/10">
-                            {!article.imageUrl.includes('unsplash.com') ? `Wire · ${article.publisherName}` : article.publisherName}
+                            {article.imageCredit && article.imageCredit !== article.publisherName
+                              ? `Photo: ${article.imageCredit}`
+                              : !article.imageUrl.includes('unsplash.com')
+                              ? `Wire · ${article.publisherName}`
+                              : article.publisherName}
                           </span>
                         </div>
                       </div>

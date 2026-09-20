@@ -241,32 +241,43 @@ export const QuickReadDrawer: React.FC<QuickReadDrawerProps> = ({
 
           {/* Featured Editorial Visual / Authentic Wire Photography */}
           {photoToDisplay ? (
-            <div className="relative aspect-[16/10] w-full overflow-hidden rounded-md bg-zinc-900 border border-white/[0.08] shadow-lg">
-              <img
-                src={photoToDisplay}
-                alt={title}
-                loading="eager"
-                decoding="async"
-                onError={(e) => {
-                  const target = e.currentTarget;
-                  if (!target.src.includes('unsplash.com')) {
-                    target.src = 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1200&q=80';
-                  } else {
-                    setOverridePhoto('none');
-                  }
-                }}
-                className="w-full h-full object-cover"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
-              <div className="absolute bottom-2.5 left-3 right-3 flex items-center justify-between text-[11px] text-white/90 font-mono pointer-events-none">
-                <span className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-black/60 backdrop-blur-md border border-white/10 text-[10px]">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                  {isAuthenticWirePhoto ? 'Verified Wire Photo' : `${article?.category?.toUpperCase()} Editorial Wire`}
-                </span>
-                <span className="text-[10px] text-zinc-300 bg-black/60 backdrop-blur-md px-2 py-0.5 rounded border border-white/10">
-                  {article.publisherName}
-                </span>
+            <div>
+              <div className="relative aspect-[16/10] w-full overflow-hidden rounded-md bg-zinc-900 border border-white/[0.08] shadow-lg">
+                <img
+                  src={photoToDisplay}
+                  alt={title}
+                  loading="eager"
+                  decoding="async"
+                  onError={(e) => {
+                    const target = e.currentTarget;
+                    if (!target.src.includes('unsplash.com')) {
+                      target.src = 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1200&q=80';
+                    } else {
+                      setOverridePhoto('none');
+                    }
+                  }}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+                <div className="absolute bottom-2.5 left-3 right-3 flex items-center justify-between text-[11px] text-white/90 font-mono pointer-events-none">
+                  <span className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-black/60 backdrop-blur-md border border-white/10 text-[10px]">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                    {article?.imageCredit && article.imageCredit !== article.publisherName
+                      ? `Photo: ${article.imageCredit}`
+                      : isAuthenticWirePhoto
+                      ? 'Verified Wire Photo'
+                      : `${article?.category?.toUpperCase()} Editorial Wire`}
+                  </span>
+                  <span className="text-[10px] text-zinc-300 bg-black/60 backdrop-blur-md px-2 py-0.5 rounded border border-white/10">
+                    {article?.publisherName}
+                  </span>
+                </div>
               </div>
+              {article?.imageCredit && article.imageCredit !== article.publisherName && (
+                <div className="mt-1 text-[10px] font-mono text-zinc-500 text-right">
+                  Photo credit: {article.imageCredit} via wire syndication
+                </div>
+              )}
             </div>
           ) : (
             /* Institutional Editorial Wire Masthead (when no authentic photo exists) */

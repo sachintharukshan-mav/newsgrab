@@ -81,6 +81,7 @@ async function getAggregatedArticles(lang: Language = 'en'): Promise<Article[]> 
         category: item.category || 'politics',
         region: item.region || 'local',
         imageUrl: item.imageUrl || getCategoryFallbackImage(item.category || 'politics', liveItems.length, headline, summaryText, item.region),
+        imageCredit: item.imageCredit || (item.imageUrl && !item.imageUrl.includes('unsplash.com') ? pub : undefined),
         publisherName: pub,
         sourceUrl: item.sourceUrl || '#',
         publishedAt: item.publishedAt || new Date().toISOString(),
@@ -214,6 +215,7 @@ async function getAggregatedArticles(lang: Language = 'en'): Promise<Article[]> 
 
           if (peer && peer.imageUrl) {
             item.imageUrl = peer.imageUrl;
+            item.imageCredit = peer.publisherName;
           }
         }
       }

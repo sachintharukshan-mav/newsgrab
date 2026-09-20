@@ -130,7 +130,11 @@ export const NewsCard: React.FC<NewsCardProps> = ({
             <div className="absolute bottom-2.5 left-3 right-3 flex items-center justify-between text-[10px] font-mono text-white/90 pointer-events-none">
               <span className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-black/70 backdrop-blur-sm border border-white/10">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                {isAuthenticPhoto ? `Wire Photo · ${article.publisherName}` : `${article.category.toUpperCase()} Wire`}
+                {article.imageCredit && article.imageCredit !== article.publisherName
+                  ? `Photo: ${article.imageCredit}`
+                  : isAuthenticPhoto
+                  ? `Wire Photo · ${article.publisherName}`
+                  : `${article.category.toUpperCase()} Wire`}
               </span>
               <span className="px-2 py-0.5 rounded bg-black/70 backdrop-blur-sm border border-white/10 uppercase">
                 {article.category}
@@ -168,7 +172,11 @@ export const NewsCard: React.FC<NewsCardProps> = ({
           <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
           <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between text-[9px] font-mono text-white/90 pointer-events-none">
             <span className="px-1.5 py-0.5 rounded bg-black/70 backdrop-blur-sm border border-white/10 truncate max-w-[70%]">
-              {isAuthenticPhoto ? article.publisherName : `${article.category} topic`}
+              {article.imageCredit && article.imageCredit !== article.publisherName
+                ? `Photo: ${article.imageCredit}`
+                : isAuthenticPhoto
+                ? article.publisherName
+                : `${article.category} topic`}
             </span>
             <span className="uppercase text-rose-400 font-bold px-1.5 py-0.5 rounded bg-black/70 border border-white/10">
               {article.category}
