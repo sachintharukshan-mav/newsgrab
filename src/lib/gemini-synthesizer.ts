@@ -120,11 +120,34 @@ export async function synthesizeExecutiveBrief(params: SynthesizeParams): Promis
     return inFlight;
   }
 
+const MAX_REQUESTS_PER_MINUTE = 8; // Safely below Gemini's 15 RPM free tier limit
+const requestTimestamps: number[] = [];
+
+function checkAndRecordRateLimit(): boolean {
+  const now = Date.now();
+  while (requestTimestamps.length > 0 && requestTimestamps[0] < now - 60000) {
+    requestTimestamps.shift();
+  }
+  if (requestTimestamps.length >= MAX_REQUESTS_PER_MINUTE) {
+    return false; // Rate limited
+  }
+  requestTimestamps.push(now);
+  return true; // Allowed
+}
+
   const executionTask = (async () => {
     const apiKey = process.env.GEMINI_API_KEY;
 
     // 2. If no Gemini API key configured, use intelligent algorithmic fallback
     if (!apiKey || apiKey.trim() === '' || apiKey.startsWith('AIzaSy_YOUR')) {
+      const fallback = generateAlgorithmicFallback(params);
+      setCache(cacheKey, fallback);
+      return { brief: fallback, cached: false, provider: 'algorithmic' as const };
+    }
+
+    // 2b. Free Tier Rate Limiter: Cap at 8 RPM to stay safely under 15 RPM free tier
+    if (!checkAndRecordRateLimit()) {
+      console.info(`[RateLimitGuard] Capped at ${MAX_REQUESTS_PER_MINUTE} RPM to preserve Gemini Free Tier. Serving instant algorithmic brief.`);
       const fallback = generateAlgorithmicFallback(params);
       setCache(cacheKey, fallback);
       return { brief: fallback, cached: false, provider: 'algorithmic' as const };

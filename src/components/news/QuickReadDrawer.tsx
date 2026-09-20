@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { Article, ExecutiveBrief, Language } from '@/lib/types';
 import { X, Share2, Check, ArrowLeft, Clock, ExternalLink, Sparkles, Zap, Quote, ShieldCheck, Loader2 } from 'lucide-react';
 import { AdBanner } from '@/components/ads/AdBanner';
+import { buildOptimisticBrief } from '@/lib/brief-utils';
 
 interface QuickReadDrawerProps {
   article: Article | null;
@@ -33,8 +34,9 @@ export const QuickReadDrawer: React.FC<QuickReadDrawerProps> = ({
   const photoToDisplay = overridePhoto === 'none' ? null : (overridePhoto || article?.imageUrl || null);
   const isAuthenticWirePhoto = Boolean(photoToDisplay && !photoToDisplay.includes('unsplash.com'));
 
-  // Derive active brief from article prop or fetched state
-  const brief = article?.brief?.[currentLang] || fetchedBrief;
+  // Instantly compute structured Smart Brevity brief from article metadata (0ms perceived latency)
+  const optimisticBrief = useMemo(() => article ? buildOptimisticBrief(article, currentLang) : null, [article, currentLang]);
+  const brief = article?.brief?.[currentLang] || fetchedBrief || optimisticBrief;
 
   useEffect(() => {
     if (!article || (article.brief?.[currentLang] && photoToDisplay)) {
@@ -301,22 +303,28 @@ export const QuickReadDrawer: React.FC<QuickReadDrawerProps> = ({
                   {drawerLabels.smartBrevityTitle[currentLang]}
                 </span>
               </div>
-              <span className="text-[9px] font-mono text-zinc-400 flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                {synthesisProvider === 'gemini' ? drawerLabels.synthesizedByGemini[currentLang] : drawerLabels.synthesizedByDesk[currentLang]}
-              </span>
+              <div className="flex items-center gap-1 text-[9px] font-mono">
+                {isLoadingBrief && !fetchedBrief && !article?.brief?.[currentLang] ? (
+                  <span className="flex items-center gap-1 text-rose-400">
+                    <Loader2 className="w-2.5 h-2.5 text-rose-400 animate-spin" />
+                    <span>{drawerLabels.synthesizing[currentLang]}</span>
+                  </span>
+                ) : (
+                  <span className="flex items-center gap-1 text-zinc-400">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    <span>
+                      {synthesisProvider === 'gemini' 
+                        ? drawerLabels.synthesizedByGemini[currentLang] 
+                        : drawerLabels.synthesizedByDesk[currentLang]}
+                    </span>
+                  </span>
+                )}
+              </div>
             </div>
 
-            {isLoadingBrief ? (
-              <div className="py-8 flex flex-col items-center justify-center text-center space-y-2">
-                <Loader2 className="w-5 h-5 text-rose-500 animate-spin" />
-                <p className={`text-[11px] font-mono text-zinc-400 ${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
-                  {drawerLabels.synthesizing[currentLang]}
-                </p>
-              </div>
-            ) : (
-              <>
-                {/* 1. What Happened */}
+            {/* Instant Smart Brevity Executive Dossier Content (0ms perceived latency) */}
+            <div className="space-y-4">
+              {/* 1. What Happened */}
                 <div className="space-y-1.5">
                   <div className="flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-rose-400 font-semibold">
                     <Zap className="w-3 h-3 text-rose-400" />
@@ -382,9 +390,8 @@ export const QuickReadDrawer: React.FC<QuickReadDrawerProps> = ({
                     </p>
                   </div>
                 </div>
-              </>
-            )}
-          </div>
+              </div>
+            </div>
 
           {/* Outbound Canonical Publisher Action Card (Direct Traffic Driver) */}
           <div className="p-5 sm:p-6 rounded-lg bg-gradient-to-br from-[#181a22] to-[#121319] border border-white/[0.1] shadow-xl space-y-4">

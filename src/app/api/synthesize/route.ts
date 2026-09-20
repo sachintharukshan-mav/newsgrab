@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { fetchFullArticle } from '@/lib/full-article-extractor';
-import { synthesizeExecutiveBrief } from '@/lib/gemini-synthesizer';
+import { synthesizeExecutiveBrief, getCachedBrief } from '@/lib/gemini-synthesizer';
 import { Language } from '@/lib/types';
 
 function isSafeUrl(rawUrl: string): boolean {
@@ -57,6 +57,25 @@ export async function GET(request: NextRequest) {
 
   if (!isSafeUrl(url)) {
     return NextResponse.json({ error: 'Invalid or restricted article URL' }, { status: 400 });
+  }
+
+  const cachedOnly = searchParams.get('cachedOnly') === 'true';
+  if (cachedOnly) {
+    const cached = getCachedBrief(url, lang);
+    if (cached) {
+      return NextResponse.json({
+        success: true,
+        brief: cached,
+        cached: true,
+        provider: 'gemini'
+      }, {
+        headers: {
+          'Cache-Control': 'public, max-age=86400, s-maxage=86400, stale-while-revalidate=43200'
+        }
+      });
+    }
+    // Return early without spending Gemini API quota or scraping
+    return NextResponse.json({ success: false, cached: false, brief: null }, { status: 200 });
   }
 
   try {

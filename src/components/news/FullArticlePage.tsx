@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { Article, ExecutiveBrief, Language } from '@/lib/types';
 import { ArrowLeft, Clock, Share2, Check, ExternalLink, MessageCircle, Sparkles, Zap, Quote, ShieldCheck, Loader2 } from 'lucide-react';
 import { AdBanner } from '@/components/ads/AdBanner';
 import { DiscussionSection } from './DiscussionSection';
+import { buildOptimisticBrief } from '@/lib/brief-utils';
 
 interface FullArticlePageProps {
   article: Article;
@@ -38,10 +39,11 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
   const photoToDisplay = overridePhoto === 'none' ? null : (overridePhoto || article.imageUrl || null);
   const isAuthenticWirePhoto = Boolean(photoToDisplay && !photoToDisplay.includes('unsplash.com'));
 
-  // Derive active brief from article prop or fetched state
-  const brief = article.brief?.[currentLang] || fetchedBrief;
+  // Instantly compute structured Smart Brevity brief from article metadata (0ms perceived latency)
+  const optimisticBrief = useMemo(() => buildOptimisticBrief(article, currentLang), [article, currentLang]);
+  const brief = article.brief?.[currentLang] || fetchedBrief || optimisticBrief;
 
-  // Dynamically fetch or synthesize the Axios Smart Brevity brief and resolve authentic photo
+  // Dynamically fetch or synthesize the deep Axios Smart Brevity brief in background
   useEffect(() => {
     if (article.brief?.[currentLang] && photoToDisplay) {
       return;
@@ -412,27 +414,28 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
                     {fullArticleLabels.smartBrevityTitle[currentLang]}
                   </h3>
                 </div>
-                <div className="flex items-center gap-1.5 text-[10px] font-mono text-zinc-400">
-                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                  <span>
-                    {synthesisProvider === 'gemini' 
-                      ? fullArticleLabels.synthesizedByGemini[currentLang] 
-                      : fullArticleLabels.synthesizedByDesk[currentLang]}
-                  </span>
+                <div className="flex items-center gap-1.5 text-[10px] font-mono">
+                  {isLoadingBrief && !fetchedBrief && !article.brief?.[currentLang] ? (
+                    <span className="flex items-center gap-1.5 text-rose-400">
+                      <Loader2 className="w-3 h-3 text-rose-400 animate-spin" />
+                      <span>{fullArticleLabels.synthesizingBrief[currentLang]}</span>
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-1.5 text-zinc-400">
+                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                      <span>
+                        {synthesisProvider === 'gemini' 
+                          ? fullArticleLabels.synthesizedByGemini[currentLang] 
+                          : fullArticleLabels.synthesizedByDesk[currentLang]}
+                      </span>
+                    </span>
+                  )}
                 </div>
               </div>
 
-              {isLoadingBrief ? (
-                /* Loading Skeleton / Live Synthesis Indicator */
-                <div className="py-12 flex flex-col items-center justify-center text-center space-y-3">
-                  <Loader2 className="w-6 h-6 text-rose-500 animate-spin" />
-                  <p className={`text-xs font-mono text-zinc-400 ${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
-                    {fullArticleLabels.synthesizingBrief[currentLang]}
-                  </p>
-                </div>
-              ) : (
-                <>
-                  {/* 1. The Scoop & Narrative Lead */}
+              {/* Instant Smart Brevity Dossier Content (0ms perceived latency) */}
+              <div className="space-y-6">
+                {/* 1. The Scoop & Narrative Lead */}
                   <div className="space-y-3">
                     <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-rose-400 font-semibold">
                       <Zap className="w-3.5 h-3.5 text-rose-400" />
@@ -519,8 +522,7 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
                       </p>
                     </div>
                   </div>
-                </>
-              )}
+              </div>
             </div>
 
             {/* In-Article Monetization Slot #1 (Leaderboard) */}

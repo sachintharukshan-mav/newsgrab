@@ -35,11 +35,27 @@ export const NewsCard: React.FC<NewsCardProps> = ({
   const isAuthenticPhoto = Boolean(article.imageUrl && !article.imageUrl.includes('unsplash.com'));
   const displayImage = article.imageUrl || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1200&q=80';
 
+  const handleMouseEnter = () => {
+    if (typeof window !== 'undefined' && article.sourceUrl && !article.sourceUrl.startsWith('#')) {
+      const cacheKey = `ng_cached_${article.id}_${currentLang}`;
+      if (!sessionStorage.getItem(cacheKey)) {
+        sessionStorage.setItem(cacheKey, '1');
+        const params = new URLSearchParams({
+          url: article.sourceUrl,
+          lang: currentLang,
+          cachedOnly: 'true'
+        });
+        fetch(`/api/synthesize?${params.toString()}`).catch(() => {});
+      }
+    }
+  };
+
   // Lead Front-Page Story (Broadsheet Hero)
   if (variant === 'lead') {
     return (
       <article
         onClick={() => onOpenQuickRead(article)}
+        onMouseEnter={handleMouseEnter}
         className="group cursor-pointer grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 pb-8 mb-8 border-b border-white/[0.08]"
       >
         {/* Left Headline & Analysis (7 cols) */}
@@ -130,6 +146,7 @@ export const NewsCard: React.FC<NewsCardProps> = ({
   return (
     <article
       onClick={() => onOpenQuickRead(article)}
+      onMouseEnter={handleMouseEnter}
       className="group cursor-pointer flex flex-col justify-between editorial-card p-4 rounded-lg bg-[#111216] border border-white/[0.06] hover:border-white/[0.16] hover:bg-[#13141a] transition-all duration-300"
     >
       <div className="space-y-3">

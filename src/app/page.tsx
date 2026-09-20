@@ -148,6 +148,33 @@ export default function HomePage() {
     fetchNews(currentLang, false);
   };
 
+  // Idle Pre-Warming: Pre-synthesize the top 3 lead/breaking stories during browser idle time
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const timer = setTimeout(() => {
+      const topStories = articles.slice(0, 3);
+      topStories.forEach((a) => {
+        if (a.sourceUrl && !a.sourceUrl.startsWith('#')) {
+          const prefetchKey = `ng_prewarmed_${a.id}_${currentLang}`;
+          if (!sessionStorage.getItem(prefetchKey)) {
+            sessionStorage.setItem(prefetchKey, '1');
+            const headline = a.title[currentLang] || a.title.en || '';
+            const params = new URLSearchParams({
+              url: a.sourceUrl,
+              headline,
+              publisher: a.publisherName,
+              lang: currentLang,
+              fallback: a.summary[currentLang] || a.summary.en || ''
+            });
+            fetch(`/api/synthesize?${params.toString()}`).catch(() => {});
+          }
+        }
+      });
+    }, 2500); // 2.5s deferred so it never blocks initial render
+
+    return () => clearTimeout(timer);
+  }, [articles, currentLang]);
+
   // Filter articles strictly by the selected Category / Domain
   const categoryArticles = useMemo(() => {
     return articles.filter((article) => {
