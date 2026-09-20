@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Article, Language } from '@/lib/types';
-import { ArrowLeft, Clock, Share2, Check, ExternalLink, MessageCircle } from 'lucide-react';
+import { Article, ExecutiveBrief, Language } from '@/lib/types';
+import { ArrowLeft, Clock, Share2, Check, ExternalLink, MessageCircle, Sparkles, Zap, Quote, ShieldCheck, Loader2 } from 'lucide-react';
 import { AdBanner } from '@/components/ads/AdBanner';
 import { DiscussionSection } from './DiscussionSection';
 
@@ -22,6 +22,66 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
   const [copied, setCopied] = useState(false);
   const [readingProgress, setReadingProgress] = useState<number>(0);
   const [fontSize, setFontSize] = useState<'normal' | 'large' | 'xl'>('normal');
+  const [fetchedBrief, setFetchedBrief] = useState<ExecutiveBrief | null>(null);
+  const [isLoadingBrief, setIsLoadingBrief] = useState<boolean>(false);
+  const [synthesisProvider, setSynthesisProvider] = useState<'gemini' | 'algorithmic'>('gemini');
+
+  // Derive active brief from article prop or fetched state
+  const brief = article.brief?.[currentLang] || fetchedBrief;
+
+  // Dynamically fetch or synthesize the Axios Smart Brevity brief when not already provided
+  useEffect(() => {
+    if (article.brief?.[currentLang]) {
+      return;
+    }
+
+    let isMounted = true;
+    const controller = new AbortController();
+
+    const fetchBrief = async () => {
+      try {
+        setIsLoadingBrief(true);
+        const headline = article.title[currentLang] || article.title.en || '';
+        const fallbackSummary = article.summary[currentLang] || article.summary.en || '';
+        const params = new URLSearchParams({
+          url: article.sourceUrl,
+          headline,
+          publisher: article.publisherName,
+          lang: currentLang,
+          fallback: fallbackSummary
+        });
+
+        const res = await fetch(`/api/synthesize?${params.toString()}`, {
+          signal: controller.signal
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          if (isMounted && data.brief) {
+            React.startTransition(() => {
+              setFetchedBrief(data.brief);
+              if (data.provider) setSynthesisProvider(data.provider);
+            });
+          }
+        }
+      } catch (err) {
+        if ((err as Error).name !== 'AbortError') {
+          console.warn('Synthesis brief fetch notice:', err);
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoadingBrief(false);
+        }
+      }
+    };
+
+    fetchBrief();
+
+    return () => {
+      isMounted = false;
+      controller.abort();
+    };
+  }, [article.id, article.sourceUrl, article.publisherName, article.title, article.summary, article.brief, currentLang]);
 
   // Track reading scroll progress (0% - 100%)
   useEffect(() => {
@@ -63,7 +123,16 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
       en: 'Indexed under Section 12 of Sri Lanka IP Act & Fair Dealing Guidelines',
       si: 'ශ්‍රී ලංකා බුද්ධිමය දේපළ පනතේ 12 වන වගන්තිය යටතේ සාරාංශගත කර ඇත',
       ta: 'இலங்கை அறிவுசார் சொத்துச் சட்டம் பிரிவு 12 இன் கீழ் தொகுக்கப்பட்டது'
-    }
+    },
+    smartBrevityTitle: { en: 'Executive Intelligence Dispatch', si: 'විධායක බුද්ධි තොරතුරු වාර්තාව', ta: 'நிர்வாக புலனாய்வு சுருக்கம்' },
+    whatHappened: { en: 'The Scoop & Verified Narrative', si: 'මූලික සිදුවීම සහ පසුබිම', ta: 'முக்கிய நிகழ்வு மற்றும் பின்னணி' },
+    keyFacts: { en: 'Key Facts & Findings', si: 'මූලික කරුණු සහ සාක්ෂි', ta: 'முக்கிய உண்மைகள் மற்றும் சான்றுகள்' },
+    onRecord: { en: 'Statements on Record', si: 'වාර්තාගත ප්‍රකාශන', ta: 'பதிவான அறிக்கைகள்' },
+    whyItMatters: { en: 'Why It Matters', si: 'මෙය වැදගත් වන්නේ ඇයි?', ta: 'இது ஏன் முக்கியமானது?' },
+    whatsNext: { en: 'What to Watch For', si: 'ඉදිරි අපේක්ෂාවන්', ta: 'அடுத்து கவனிக்க வேண்டியவை' },
+    synthesizedByGemini: { en: 'Synthesized by Gemini 2.0 Flash · 100% Original Editorial Expression', si: 'Gemini 2.0 Flash මගින් සම්පාදිත ස්වාධීන සංස්කාරක විශ්ලේෂණය', ta: 'Gemini 2.0 Flash மூலம் தொகுக்கப்பட்ட சுயாதீன பகுப்பாய்வு' },
+    synthesizedByDesk: { en: 'NewsGrab Wire Intelligence Synthesis', si: 'NewsGrab ප්‍රවෘත්ති කාමර සංස්කරණය', ta: 'NewsGrab செய்திப்பிரிவு தொகுப்பு' },
+    synthesizingBrief: { en: 'Synthesizing executive intelligence brief...', si: 'සත්‍යාපිත විධායක පුවත් වාර්තාව සකස් වෙමින් පවතී...', ta: 'சரிபார்க்கப்பட்ட செய்தி சுருக்கம் தயாராகிறது...' }
   };
 
   const title = article.title[currentLang] || article.title.en || article.title.si || article.title.ta || '';
@@ -258,24 +327,127 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 sm:gap-14 pt-4">
           {/* Main Article Reading Column (8 Cols) */}
           <div className="lg:col-span-8 space-y-8">
-            {/* Essential Takeaways Box (AI Key Points) */}
-            <div className="p-6 sm:p-7 rounded-lg bg-[#14151b] border-l-4 border-rose-500 space-y-3">
-              <div className="flex items-center justify-between">
-                <h3 className={`text-xs font-mono font-bold uppercase tracking-widest text-zinc-200 ${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
-                  {fullArticleLabels.takeaways[currentLang]}
-                </h3>
-                <span className="text-[10px] font-mono text-zinc-500">{fullArticleLabels.synthesis[currentLang]}</span>
+            {/* Axios Smart Brevity Executive Dossier */}
+            <div className="p-6 sm:p-8 rounded-xl bg-gradient-to-b from-[#14161f] to-[#0f1016] border border-white/[0.1] shadow-2xl space-y-6">
+              {/* Dossier Institutional Header */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-white/[0.08]">
+                <div className="flex items-center gap-2">
+                  <span className="p-1.5 rounded-md bg-rose-500/10 text-rose-400 border border-rose-500/20">
+                    <Sparkles className="w-4 h-4" />
+                  </span>
+                  <h3 className={`text-sm font-mono font-bold uppercase tracking-wider text-white ${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
+                    {fullArticleLabels.smartBrevityTitle[currentLang]}
+                  </h3>
+                </div>
+                <div className="flex items-center gap-1.5 text-[10px] font-mono text-zinc-400">
+                  <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                  <span>
+                    {synthesisProvider === 'gemini' 
+                      ? fullArticleLabels.synthesizedByGemini[currentLang] 
+                      : fullArticleLabels.synthesizedByDesk[currentLang]}
+                  </span>
+                </div>
               </div>
-              <ul className="space-y-3">
-                {bullets.map((bullet, idx) => (
-                  <li key={idx} className="flex items-start gap-3 text-sm sm:text-base text-zinc-200">
-                    <span className="text-rose-500 font-mono font-bold select-none text-base">—</span>
-                    <span className={`leading-relaxed ${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
-                      {bullet}
-                    </span>
-                  </li>
-                ))}
-              </ul>
+
+              {isLoadingBrief ? (
+                /* Loading Skeleton / Live Synthesis Indicator */
+                <div className="py-12 flex flex-col items-center justify-center text-center space-y-3">
+                  <Loader2 className="w-6 h-6 text-rose-500 animate-spin" />
+                  <p className={`text-xs font-mono text-zinc-400 ${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
+                    {fullArticleLabels.synthesizingBrief[currentLang]}
+                  </p>
+                </div>
+              ) : (
+                <>
+                  {/* 1. The Scoop & Narrative Lead */}
+                  <div className="space-y-3">
+                    <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-rose-400 font-semibold">
+                      <Zap className="w-3.5 h-3.5 text-rose-400" />
+                      <span className={`${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
+                        {fullArticleLabels.whatHappened[currentLang]}
+                      </span>
+                    </div>
+                    <p
+                      className={`text-base sm:text-lg text-zinc-100 font-serif leading-relaxed prose-${fontSize} ${
+                        isSinhala ? 'font-sinhala leading-loose' : ''
+                      } ${isTamil ? 'font-tamil leading-relaxed' : ''}`}
+                    >
+                      {brief ? brief.whatHappened : (article.summary[currentLang] || article.summary.en || '')}
+                    </p>
+                  </div>
+
+                  {/* 2. Key Facts & Findings */}
+                  <div className="p-5 sm:p-6 rounded-lg bg-[#181a24] border-l-4 border-rose-500 space-y-3">
+                    <h4 className={`text-xs font-mono font-bold uppercase tracking-widest text-zinc-200 ${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
+                      {fullArticleLabels.keyFacts[currentLang]}
+                    </h4>
+                    <ul className="space-y-3">
+                      {(brief?.keyDetails && brief.keyDetails.length > 0 ? brief.keyDetails : bullets).map((fact, idx) => (
+                        <li key={idx} className="flex items-start gap-3 text-sm sm:text-base text-zinc-200">
+                          <span className="text-rose-500 font-mono font-bold select-none text-base">—</span>
+                          <span className={`leading-relaxed ${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
+                            {fact}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+
+                  {/* 3. Statements on Record (Direct Quotes) */}
+                  {brief?.quotes && brief.quotes.length > 0 && (
+                    <div className="p-5 sm:p-6 rounded-lg bg-white/[0.02] border border-white/[0.08] space-y-3">
+                      <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-amber-400 font-semibold">
+                        <Quote className="w-3.5 h-3.5 text-amber-400" />
+                        <span className={`${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
+                          {fullArticleLabels.onRecord[currentLang]}
+                        </span>
+                      </div>
+                      <div className="space-y-3">
+                        {brief.quotes.map((quoteText, idx) => (
+                          <blockquote
+                            key={idx}
+                            className={`pl-4 border-l-2 border-amber-500/60 text-sm sm:text-base italic text-zinc-300 font-serif leading-relaxed ${
+                              isSinhala ? 'font-sinhala' : ''
+                            } ${isTamil ? 'font-tamil' : ''}`}
+                          >
+                            &ldquo;{quoteText}&rdquo;
+                          </blockquote>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 4. Why It Matters (Strategic / Macro Context) */}
+                  <div className="p-5 sm:p-6 rounded-lg bg-gradient-to-r from-blue-950/40 via-indigo-950/20 to-transparent border border-blue-500/20 space-y-2">
+                    <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-blue-400 font-semibold">
+                      <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />
+                      <span className={`${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
+                        {fullArticleLabels.whyItMatters[currentLang]}
+                      </span>
+                    </div>
+                    <p
+                      className={`text-sm sm:text-base text-zinc-200 leading-relaxed ${
+                        isSinhala ? 'font-sinhala leading-loose' : ''
+                      } ${isTamil ? 'font-tamil leading-relaxed' : ''}`}
+                    >
+                      {brief ? brief.whyItMatters : 'This development carries direct implications for civic, economic, and institutional stability in Sri Lanka.'}
+                    </p>
+                  </div>
+
+                  {/* 5. What to Watch For (Forward Milestone) */}
+                  <div className="p-4 sm:p-5 rounded-lg bg-white/[0.02] border border-white/[0.06] flex items-start gap-3">
+                    <Clock className="w-4 h-4 text-zinc-400 shrink-0 mt-1" />
+                    <div className="space-y-1">
+                      <div className={`text-[10px] font-mono uppercase tracking-widest text-zinc-400 font-semibold ${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
+                        {fullArticleLabels.whatsNext[currentLang]}
+                      </div>
+                      <p className={`text-xs sm:text-sm text-zinc-300 leading-relaxed ${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
+                        {brief ? brief.whatsNext : 'Further official proceedings, regulatory filings, or judicial updates are monitored on the wire.'}
+                      </p>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
 
             {/* In-Article Monetization Slot #1 (Leaderboard) */}
@@ -285,21 +457,6 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
                 slotId="fullpage-article-ad-1"
                 sponsorName="Commercial Bank Remittance"
               />
-            </div>
-
-            {/* Verified Wire Dispatch Summary */}
-            <div className="p-6 sm:p-7 rounded-lg bg-white/[0.02] border border-white/[0.08] space-y-3">
-              <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-zinc-400">
-                <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
-                <span className="font-semibold text-zinc-300">{fullArticleLabels.wireDispatch[currentLang]}</span>
-              </div>
-              <p
-                className={`text-base sm:text-lg text-zinc-200 leading-relaxed font-serif prose-${fontSize} ${
-                  isSinhala ? 'font-sinhala leading-loose' : ''
-                } ${isTamil ? 'font-tamil leading-relaxed' : ''}`}
-              >
-                {article.summary[currentLang] || article.summary.en || article.summary.si || article.summary.ta || ''}
-              </p>
             </div>
 
             {/* Outbound Canonical Publisher Action Card (Direct Traffic Driver) */}

@@ -8,22 +8,22 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/api/article', '/api/cron/', '/_next/'],
+        disallow: ['/api/article', '/api/synthesize', '/api/cron/', '/_next/'],
       },
       {
         userAgent: 'Googlebot',
         allow: '/',
-        disallow: ['/api/article', '/api/cron/'],
+        disallow: ['/api/article', '/api/synthesize', '/api/cron/'],
       },
       {
         userAgent: 'Googlebot-News',
         allow: '/',
-        disallow: ['/api/article', '/api/cron/'],
+        disallow: ['/api/article', '/api/synthesize', '/api/cron/'],
       },
       {
         userAgent: 'Bingbot',
         allow: '/',
-        disallow: ['/api/article', '/api/cron/'],
+        disallow: ['/api/article', '/api/synthesize', '/api/cron/'],
       },
       {
         userAgent: 'Mediapartners-Google',

@@ -1,0 +1,35 @@
+name: 24/7 Automated News Ingestion
+
+on:
+  schedule:
+    # Run every 25 minutes (within GitHub Actions 2,000 free monthly minutes)
+    - cron: '*/25 * * * *'
+  workflow_dispatch: # Allows manual trigger from GitHub Actions dashboard
+
+jobs:
+  scrape-and-ingest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Trigger Newsroom Ingestion
+        run: |
+          SITE_URL="${{ secrets.SITE_URL || 'https://newsgrab.lk' }}"
+          CRON_SECRET="${{ secrets.CRON_SECRET || '' }}"
+          
+          echo "Triggering automated news syndicate at $SITE_URL/api/cron/scrape..."
+          
+          if [ -n "$CRON_SECRET" ]; then
+            RESPONSE=$(curl -s -w "\nHTTP_STATUS:%{http_code}" -H "Authorization: Bearer $CRON_SECRET" "$SITE_URL/api/cron/scrape")
+          else
+            RESPONSE=$(curl -s -w "\nHTTP_STATUS:%{http_code}" "$SITE_URL/api/cron/scrape")
+          fi
+          
+          echo "$RESPONSE"
+          
+          HTTP_STATUS=$(echo "$RESPONSE" | grep "HTTP_STATUS" | cut -d':' -f2)
+          if [ "$HTTP_STATUS" -ge 200 ] && [ "$HTTP_STATUS" -lt 400 ]; then
+            echo "News ingestion succeeded with HTTP status $HTTP_STATUS"
+          else
+            echo "Notice: Ingestion returned HTTP status $HTTP_STATUS (site may still be deploying or waiting for domain DNS)"
+          fi

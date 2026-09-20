@@ -24,6 +24,14 @@ export interface SourcePerspective {
   publishedAt: string;
 }
 
+export interface ExecutiveBrief {
+  whatHappened: string;
+  keyDetails: string[];
+  quotes?: string[];
+  whyItMatters: string;
+  whatsNext: string;
+}
+
 export interface Article {
   id: string;
   title: {
@@ -41,6 +49,7 @@ export interface Article {
     si?: string[];
     ta?: string[];
   };
+  brief?: Partial<Record<Language, ExecutiveBrief>>;
   sentiment: SentimentType;
   category: Category;
   region?: Region;

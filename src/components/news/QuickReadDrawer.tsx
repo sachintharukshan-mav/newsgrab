@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { Article, Language } from '@/lib/types';
-import { X, Share2, Check, ArrowLeft, Clock, ExternalLink } from 'lucide-react';
+import { Article, ExecutiveBrief, Language } from '@/lib/types';
+import { X, Share2, Check, ArrowLeft, Clock, ExternalLink, Sparkles, Zap, Quote, ShieldCheck, Loader2 } from 'lucide-react';
 import { AdBanner } from '@/components/ads/AdBanner';
 
 interface QuickReadDrawerProps {
@@ -17,6 +17,65 @@ export const QuickReadDrawer: React.FC<QuickReadDrawerProps> = ({
   onClose
 }) => {
   const [copied, setCopied] = useState(false);
+  const [fetchedBrief, setFetchedBrief] = useState<ExecutiveBrief | null>(null);
+  const [isLoadingBrief, setIsLoadingBrief] = useState<boolean>(false);
+  const [synthesisProvider, setSynthesisProvider] = useState<'gemini' | 'algorithmic'>('gemini');
+
+  // Derive active brief from article prop or fetched state
+  const brief = article?.brief?.[currentLang] || fetchedBrief;
+
+  useEffect(() => {
+    if (!article || article.brief?.[currentLang]) {
+      return;
+    }
+
+    let isMounted = true;
+    const controller = new AbortController();
+
+    const fetchBrief = async () => {
+      try {
+        setIsLoadingBrief(true);
+        const headline = article.title[currentLang] || article.title.en || '';
+        const fallbackSummary = article.summary[currentLang] || article.summary.en || '';
+        const params = new URLSearchParams({
+          url: article.sourceUrl,
+          headline,
+          publisher: article.publisherName,
+          lang: currentLang,
+          fallback: fallbackSummary
+        });
+
+        const res = await fetch(`/api/synthesize?${params.toString()}`, {
+          signal: controller.signal
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          if (isMounted && data.brief) {
+            React.startTransition(() => {
+              setFetchedBrief(data.brief);
+              if (data.provider) setSynthesisProvider(data.provider);
+            });
+          }
+        }
+      } catch (err) {
+        if ((err as Error).name !== 'AbortError') {
+          console.warn('QuickReadDrawer synthesis notice:', err);
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoadingBrief(false);
+        }
+      }
+    };
+
+    fetchBrief();
+
+    return () => {
+      isMounted = false;
+      controller.abort();
+    };
+  }, [article, currentLang]);
 
   // Close on Escape key
   useEffect(() => {
@@ -33,7 +92,7 @@ export const QuickReadDrawer: React.FC<QuickReadDrawerProps> = ({
     backToFront: { en: 'Back to Front Page', si: 'මුල් පිටුවට', ta: 'முகப்பிற்குத் திரும்பு' },
     originalWire: { en: 'Original Wire', si: 'මූලික පුවත', ta: 'அசல் செய்தி' },
     takeaways: { en: 'Essential Takeaways', si: 'ප්‍රධාන කරුණු සංක්ෂිප්තය', ta: 'முக்கிய சாராம்சம்' },
-    reportedBy: { en: 'Reported by ', si: 'වාර්තාකරණය: ', ta: 'செய்தියாளர்: ' },
+    reportedBy: { en: 'Reported by ', si: 'වාර්තාකරණය: ', ta: 'செய்தியாளர்: ' },
     minRead: { en: 'min read', si: 'මිනිත්තු කියවීමක්', ta: 'நிமிட வாசிப்பு' },
     wireLead: { en: 'Verified Wire Lead', si: 'සත්‍යාපිත මූලික වාර්තාව', ta: 'சரிபார்க்கப்பட்ட செய்தி முன்னுரை' },
     readOnPublisher: { en: 'Read Full Report on', si: 'හි සම්පූර්ණ පුවත කියවන්න', ta: 'இல் முழுமையான செய்தியை வாசிக்க' },
@@ -46,7 +105,16 @@ export const QuickReadDrawer: React.FC<QuickReadDrawerProps> = ({
       en: 'Curated under Fair Dealing & Public Syndication Standards',
       si: 'සාධාරණ භාවිත මාර්ගෝපදේශ යටතේ සාරාංශගත කර ඇත',
       ta: 'நியாயமான பயன்பாட்டு விதிகளின் கீழ் தொகுக்கப்பட்டது'
-    }
+    },
+    smartBrevityTitle: { en: 'Executive Intelligence Brief', si: 'විධායක බුද්ධි තොරතුරු වාර්තාව', ta: 'நிர்வாக புலனாய்வு சுருக்கம்' },
+    whatHappened: { en: 'The Scoop', si: 'මූලික සිදුවීම', ta: 'முக்கிய நிகழ்வு' },
+    keyFacts: { en: 'Key Facts', si: 'මූලික කරුණු', ta: 'முக்கிய உண்மைகள்' },
+    onRecord: { en: 'On Record', si: 'වාර්තාගත ප්‍රකාශ', ta: 'பதிவான அறிக்கைகள்' },
+    whyItMatters: { en: 'Why It Matters', si: 'මෙය වැදගත් වන්නේ ඇයි?', ta: 'இது ஏன் முக்கியமானது?' },
+    whatsNext: { en: 'What to Watch For', si: 'ඉදිරි අපේක්ෂාවන්', ta: 'அடுத்து கவனிக்க வேண்டியவை' },
+    synthesizedByGemini: { en: 'Gemini 2.0 Flash Synthesis', si: 'Gemini Flash මගින් සම්පාදිතයි', ta: 'Gemini Flash மூலம் தொகுக்கப்பட்டது' },
+    synthesizedByDesk: { en: 'Newsroom Desk Synthesis', si: 'ප්‍රවෘත්ති කාමර සංස්කරණය', ta: 'செய்திப்பிரிவு தொகுப்பு' },
+    synthesizing: { en: 'Synthesizing verified executive brief...', si: 'සත්‍යාපිත වාර්තාව සකස් වෙමින් පවතී...', ta: 'சுருக்கம் தயாராகிறது...' }
   };
 
   const title = article.title[currentLang] || article.title.en || article.title.si || article.title.ta || '';
@@ -165,32 +233,98 @@ export const QuickReadDrawer: React.FC<QuickReadDrawerProps> = ({
             />
           </div>
 
-          {/* Verified Wire Dispatch Summary */}
-          <div className="p-5 rounded-md bg-white/[0.02] border border-white/[0.08] space-y-2">
-            <div className="flex items-center gap-2 text-[11px] font-mono uppercase tracking-wider text-zinc-400">
-              <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
-              <span className="font-semibold text-zinc-300">{drawerLabels.wireLead[currentLang]}</span>
+          {/* Axios Smart Brevity Executive Dossier */}
+          <div className="p-5 rounded-lg bg-gradient-to-b from-[#14161f] to-[#0f1016] border border-white/[0.08] shadow-lg space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-white/[0.06]">
+              <div className="flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
+                <span className={`text-xs font-mono font-bold uppercase tracking-wider text-white ${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
+                  {drawerLabels.smartBrevityTitle[currentLang]}
+                </span>
+              </div>
+              <span className="text-[9px] font-mono text-zinc-400 flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                {synthesisProvider === 'gemini' ? drawerLabels.synthesizedByGemini[currentLang] : drawerLabels.synthesizedByDesk[currentLang]}
+              </span>
             </div>
-            <p className={`text-sm sm:text-base text-zinc-200 leading-relaxed font-serif ${isSinhala ? 'font-sinhala leading-loose' : ''} ${isTamil ? 'font-tamil leading-relaxed' : ''}`}>
-              {article.summary[currentLang] || article.summary.en || article.summary.si || article.summary.ta || ''}
-            </p>
-          </div>
 
-          {/* Essential Takeaways (AI Synthesis) */}
-          <div className="p-5 rounded-md bg-[#14151b] border-l-2 border-rose-500 space-y-2.5">
-            <h3 className={`text-xs font-mono font-bold uppercase tracking-wider text-zinc-300 ${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
-              {drawerLabels.takeaways[currentLang]}
-            </h3>
-            <ul className="space-y-2">
-              {bullets.map((bullet, idx) => (
-                <li key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm text-zinc-200">
-                  <span className="text-rose-400 font-mono select-none">—</span>
-                  <span className={`leading-relaxed ${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
-                    {bullet}
-                  </span>
-                </li>
-              ))}
-            </ul>
+            {isLoadingBrief ? (
+              <div className="py-8 flex flex-col items-center justify-center text-center space-y-2">
+                <Loader2 className="w-5 h-5 text-rose-500 animate-spin" />
+                <p className={`text-[11px] font-mono text-zinc-400 ${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
+                  {drawerLabels.synthesizing[currentLang]}
+                </p>
+              </div>
+            ) : (
+              <>
+                {/* 1. What Happened */}
+                <div className="space-y-1.5">
+                  <div className="flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-rose-400 font-semibold">
+                    <Zap className="w-3 h-3 text-rose-400" />
+                    <span>{drawerLabels.whatHappened[currentLang]}</span>
+                  </div>
+                  <p className={`text-sm sm:text-base text-zinc-100 font-serif leading-relaxed ${isSinhala ? 'font-sinhala leading-loose' : ''} ${isTamil ? 'font-tamil leading-relaxed' : ''}`}>
+                    {brief ? brief.whatHappened : (article.summary[currentLang] || article.summary.en || '')}
+                  </p>
+                </div>
+
+                {/* 2. Key Facts */}
+                <div className="p-4 rounded-md bg-[#181a24] border-l-2 border-rose-500 space-y-2">
+                  <h4 className={`text-[11px] font-mono font-bold uppercase tracking-wider text-zinc-300 ${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
+                    {drawerLabels.keyFacts[currentLang]}
+                  </h4>
+                  <ul className="space-y-2">
+                    {(brief?.keyDetails && brief.keyDetails.length > 0 ? brief.keyDetails : bullets).map((bullet, idx) => (
+                      <li key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm text-zinc-200">
+                        <span className="text-rose-400 font-mono select-none">—</span>
+                        <span className={`leading-relaxed ${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
+                          {bullet}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* 3. Quotes on Record */}
+                {brief?.quotes && brief.quotes.length > 0 && (
+                  <div className="p-4 rounded-md bg-white/[0.02] border border-white/[0.06] space-y-2">
+                    <div className="flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-amber-400 font-semibold">
+                      <Quote className="w-3 h-3 text-amber-400" />
+                      <span>{drawerLabels.onRecord[currentLang]}</span>
+                    </div>
+                    {brief.quotes.map((q, idx) => (
+                      <blockquote key={idx} className="pl-3 border-l-2 border-amber-500/60 text-xs sm:text-sm italic text-zinc-300 font-serif">
+                        &ldquo;{q}&rdquo;
+                      </blockquote>
+                    ))}
+                  </div>
+                )}
+
+                {/* 4. Why It Matters */}
+                <div className="p-3.5 rounded-md bg-blue-950/30 border border-blue-500/20 space-y-1">
+                  <div className="flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-blue-400 font-semibold">
+                    <ShieldCheck className="w-3 h-3 text-blue-400" />
+                    <span>{drawerLabels.whyItMatters[currentLang]}</span>
+                  </div>
+                  <p className={`text-xs sm:text-sm text-zinc-200 leading-relaxed ${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
+                    {brief ? brief.whyItMatters : 'This development carries direct implications for Sri Lanka.'}
+                  </p>
+                </div>
+
+                {/* 5. What to Watch For */}
+                <div className="p-3 rounded-md bg-white/[0.02] border border-white/[0.06] flex items-start gap-2.5">
+                  <Clock className="w-3.5 h-3.5 text-zinc-400 shrink-0 mt-0.5" />
+                  <div className="space-y-0.5">
+                    <div className="text-[9px] font-mono uppercase tracking-widest text-zinc-400 font-semibold">
+                      {drawerLabels.whatsNext[currentLang]}
+                    </div>
+                    <p className={`text-xs text-zinc-300 ${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
+                      {brief ? brief.whatsNext : 'Monitoring further official statements.'}
+                    </p>
+                  </div>
+                </div>
+              </>
+            )}
           </div>
 
           {/* Outbound Canonical Publisher Action Card (Direct Traffic Driver) */}

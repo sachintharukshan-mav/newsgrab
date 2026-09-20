@@ -29,6 +29,7 @@ interface ExtractedArticle {
 export async function fetchFullArticle(url: string, fallbackText: string = ''): Promise<{
   title?: string;
   content: string;
+  rawFullText?: string;
   author?: string;
   published?: string;
   image?: string;
@@ -104,9 +105,10 @@ export async function fetchFullArticle(url: string, fallbackText: string = ''): 
             });
 
           if (cleanParagraphs.length > 0) {
-            // Return only the verified lead paragraph under Fair Dealing limits
-            const content = cleanParagraphs.slice(0, 1).map(p => `<p class="mb-4 leading-relaxed">${p}</p>`).join('');
-            const result = { content, image: ogImg };
+            // Return 2-3 paragraphs under statutory Fair Dealing limits
+            const content = cleanParagraphs.slice(0, 3).map(p => `<p class="mb-4 leading-relaxed">${p}</p>`).join('');
+            const rawFullText = cleanParagraphs.join('\n\n');
+            const result = { content, rawFullText, image: ogImg };
             setCache(url, result);
             return result;
           }
@@ -141,9 +143,10 @@ export async function fetchFullArticle(url: string, fallbackText: string = ''): 
             .filter(p => p.length > 20 && !p.includes('©') && !p.includes('Hiru News') && !p.includes('Latest News') && !p.includes('විபரங்களுக்கு'));
 
           if (cleanParagraphs.length > 0) {
-            // Return only the verified lead paragraph under Fair Dealing limits
-            const content = cleanParagraphs.slice(0, 1).map(p => `<p class="mb-4 leading-relaxed">${p}</p>`).join('');
-            const result = { content, image: ogImg };
+            // Return 2-3 paragraphs under statutory Fair Dealing limits
+            const content = cleanParagraphs.slice(0, 3).map(p => `<p class="mb-4 leading-relaxed">${p}</p>`).join('');
+            const rawFullText = cleanParagraphs.join('\n\n');
+            const result = { content, rawFullText, image: ogImg };
             setCache(url, result);
             return result;
           }
