@@ -27,6 +27,44 @@ interface GoogleNewsItem {
   pubDate?: string;
 }
 
+export const categoryImages: Record<string, string[]> = {
+  breaking: [
+    'https://images.unsplash.com/photo-1585829365295-ab7cd400c167?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1200&q=80'
+  ],
+  politics: [
+    'https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?auto=format&fit=crop&w=1200&q=80'
+  ],
+  economy: [
+    'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1590283603385-17ffb3a7f29f?auto=format&fit=crop&w=1200&q=80'
+  ],
+  sports: [
+    'https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1531415074968-036ba1b575da?auto=format&fit=crop&w=1200&q=80'
+  ],
+  tech: [
+    'https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&w=1200&q=80'
+  ],
+  local: [
+    'https://images.unsplash.com/photo-1588668214407-6ea9a6d8c272?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1586861635167-e5223aadc9fe?auto=format&fit=crop&w=1200&q=80'
+  ],
+  world: [
+    'https://images.unsplash.com/photo-1451187580459-43490279c0fa?auto=format&fit=crop&w=1200&q=80',
+    'https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?auto=format&fit=crop&w=1200&q=80'
+  ],
+  all: [
+    'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1200&q=80'
+  ]
+};
+
+export function getCategoryFallbackImage(category: Category | string, index = 0): string {
+  const list = categoryImages[category] || categoryImages.all;
+  return list[Math.abs(index) % list.length];
+}
 
 const localRegex = /\b(sri lanka|sri lankan|lankan|ceylon|colombo|kandy|galle|jaffna|gampaha|kurunegala|matara|negombo|batticaloa|trincomalee|anuradhapura|nuwara eliya|ratnapura|badulla|kalutara|puttalam|polonnaruwa|hambantota|dambulla|vavuniya|mannar|kilinochchi|mullaitivu|ampara|ranil|anura kumara|akd|namal|rajapaksa|mahinda|gotabaya|sajith|premadasa|harsha|dissanayake|npp|sjb|slpp|unp|slfp|itak|tna|slmc|hizbullah|cbsl|central bank|ceb|cpc|sltb|rda|cid|tid|stf|court|magistrate|parliament|cabinet|minister|ministry|lkr|rupee|rupees|slc|lpl|airbus|customs|meteorology|disaster|tharanga|ceylon today|daily ft|island|derana|hiru|lanka|asalanka)\b|ලංකා|කොළඹ|මහනුවර|ගාල්ල|යාපනය|ගම්පහ|කුරුණෑගල|මාතර|අනුරාධපුර|රත්නපුර|කළුතර|හම්බන්තොට|පාර්ලිමේන්තුව|ජනාධිපති|අගමැති|අනුර|නාමල්|සජිත්|රනිල්|මහින්ද|මහ බැංකුව|දෙරණ|හිරු|පොලිස්|අධිකරණය|මහේස්ත්‍රාත්|ඉලங்கை|கொழும்பு|கண்டி|காலி|யாழ்ப்பாணம்|கம்பஹா|மட்டக்களப்பு|திருகோணமலை|வவுனியா|மன்னார்|கிளிநொச்சி|முல்லைத்தீவு|அம்பாறை|நாடாளுமன்றம்|ஜனாதிபதி|பிரதமர்|ரணில்|அநுர|நாமல்|சஜித்|மஹிந்த|பொலிஸ்|நீதிமன்றம்/i;
 
@@ -232,7 +270,7 @@ export async function fetchRSSFeed(feedUrl: string, publisherName: string, limit
       }
 
       const detectedCat = detectCategory(rawTitle, cleanDesc, publisherName, item.category);
-      const finalImage = authenticPhoto || '';
+      const finalImage = authenticPhoto || getCategoryFallbackImage(detectedCat, index);
 
       const isGlobal = ['reuters', 'bbc', 'the guardian', 'guardian', 'al jazeera'].some(g => publisherName.toLowerCase().includes(g));
 
@@ -383,7 +421,7 @@ export async function fetchHiruNewsArticles(lang: 'en' | 'si' | 'ta' = 'en'): Pr
           sentiment: (detectedCat === 'breaking' ? 'developing' : 'neutral') as SentimentType,
           category: detectedCat,
           region: detectedReg,
-          imageUrl: authenticPhoto || '',
+          imageUrl: authenticPhoto || getCategoryFallbackImage(detectedCat, articles.length),
           publisherName: publisherName,
           sourceUrl: url,
           publishedAt: new Date(Date.now() - articles.length * 12 * 60 * 1000).toISOString(),
@@ -481,7 +519,7 @@ export async function fetchGoogleNewsFeed(sourceQuery: string, publisherName: st
         sentiment: (detectedCat === 'breaking' ? 'developing' : 'neutral') as SentimentType,
         category: detectedCat,
         region: detectedReg,
-        imageUrl: authenticPhoto || '',
+        imageUrl: authenticPhoto || getCategoryFallbackImage(detectedCat, index),
         publisherName: publisherName,
         sourceUrl: item.link || 'https://news.google.com',
         publishedAt: item.pubDate ? new Date(item.pubDate).toISOString() : new Date().toISOString(),
@@ -641,7 +679,7 @@ export async function fetchReutersWorldNews(maxItems = 24): Promise<Partial<Arti
         sentiment: (detectedCat === 'breaking' ? 'developing' : 'neutral') as SentimentType,
         category: detectedCat,
         region: detectedReg,
-        imageUrl: authenticPhoto || '',
+        imageUrl: authenticPhoto || getCategoryFallbackImage(detectedCat, index),
         publisherName: 'Reuters',
         sourceUrl: item.link || 'https://www.reuters.com',
         publishedAt: item.pubDate ? new Date(item.pubDate).toISOString() : new Date().toISOString(),

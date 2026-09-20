@@ -30,14 +30,14 @@ export const QuickReadDrawer: React.FC<QuickReadDrawerProps> = ({
     setOverridePhoto(null);
   }
 
-  const isInitialAuthentic = Boolean(article?.imageUrl && !article.imageUrl.includes('unsplash.com'));
-  const authenticPhoto = overridePhoto === 'none' ? null : (overridePhoto || (isInitialAuthentic ? (article?.imageUrl || null) : null));
+  const photoToDisplay = overridePhoto === 'none' ? null : (overridePhoto || article?.imageUrl || null);
+  const isAuthenticWirePhoto = Boolean(photoToDisplay && !photoToDisplay.includes('unsplash.com'));
 
   // Derive active brief from article prop or fetched state
   const brief = article?.brief?.[currentLang] || fetchedBrief;
 
   useEffect(() => {
-    if (!article || (article.brief?.[currentLang] && isInitialAuthentic)) {
+    if (!article || (article.brief?.[currentLang] && photoToDisplay)) {
       return;
     }
 
@@ -91,7 +91,7 @@ export const QuickReadDrawer: React.FC<QuickReadDrawerProps> = ({
       isMounted = false;
       controller.abort();
     };
-  }, [article, currentLang, isInitialAuthentic]);
+  }, [article, currentLang, photoToDisplay]);
 
   // Close on Escape key
   useEffect(() => {
@@ -238,14 +238,20 @@ export const QuickReadDrawer: React.FC<QuickReadDrawerProps> = ({
           </div>
 
           {/* Featured Editorial Visual / Authentic Wire Photography */}
-          {authenticPhoto ? (
+          {photoToDisplay ? (
             <div className="relative aspect-[16/10] w-full overflow-hidden rounded-md bg-zinc-900 border border-white/[0.08] shadow-lg">
               <img
-                src={authenticPhoto}
+                src={photoToDisplay}
                 alt={title}
-                onError={() => {
-                  // Gracefully fall back to editorial masthead on image load error
-                  setOverridePhoto('none');
+                loading="eager"
+                decoding="async"
+                onError={(e) => {
+                  const target = e.currentTarget;
+                  if (!target.src.includes('unsplash.com')) {
+                    target.src = 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1200&q=80';
+                  } else {
+                    setOverridePhoto('none');
+                  }
                 }}
                 className="w-full h-full object-cover"
               />
@@ -253,7 +259,7 @@ export const QuickReadDrawer: React.FC<QuickReadDrawerProps> = ({
               <div className="absolute bottom-2.5 left-3 right-3 flex items-center justify-between text-[11px] text-white/90 font-mono pointer-events-none">
                 <span className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-black/60 backdrop-blur-md border border-white/10 text-[10px]">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                  Verified Wire Photo
+                  {isAuthenticWirePhoto ? 'Verified Wire Photo' : `${article?.category?.toUpperCase()} Editorial Wire`}
                 </span>
                 <span className="text-[10px] text-zinc-300 bg-black/60 backdrop-blur-md px-2 py-0.5 rounded border border-white/10">
                   {article.publisherName}

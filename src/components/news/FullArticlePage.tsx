@@ -35,15 +35,15 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
     setOverridePhoto(null);
   }
 
-  const isInitialAuthentic = Boolean(article.imageUrl && !article.imageUrl.includes('unsplash.com'));
-  const authenticPhoto = overridePhoto === 'none' ? null : (overridePhoto || (isInitialAuthentic ? article.imageUrl : null));
+  const photoToDisplay = overridePhoto === 'none' ? null : (overridePhoto || article.imageUrl || null);
+  const isAuthenticWirePhoto = Boolean(photoToDisplay && !photoToDisplay.includes('unsplash.com'));
 
   // Derive active brief from article prop or fetched state
   const brief = article.brief?.[currentLang] || fetchedBrief;
 
   // Dynamically fetch or synthesize the Axios Smart Brevity brief and resolve authentic photo
   useEffect(() => {
-    if (article.brief?.[currentLang] && isInitialAuthentic) {
+    if (article.brief?.[currentLang] && photoToDisplay) {
       return;
     }
 
@@ -97,7 +97,7 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
       isMounted = false;
       controller.abort();
     };
-  }, [article.id, article.sourceUrl, article.publisherName, article.title, article.summary, article.brief, currentLang, isInitialAuthentic]);
+  }, [article.id, article.sourceUrl, article.publisherName, article.title, article.summary, article.brief, currentLang, photoToDisplay]);
 
   // Track reading scroll progress (0% - 100%)
   useEffect(() => {
@@ -323,15 +323,21 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
         </div>
 
         {/* Featured Editorial Visual / Authentic Wire Photography */}
-        {authenticPhoto ? (
+        {photoToDisplay ? (
           <div className="max-w-5xl mx-auto my-8 sm:my-10">
             <div className="relative aspect-[16/9] md:aspect-[21/10] w-full overflow-hidden rounded-lg bg-zinc-900 border border-white/[0.08] shadow-2xl">
               <img
-                src={authenticPhoto}
+                src={photoToDisplay}
                 alt={title}
-                onError={() => {
-                  // If image fails to load, gracefully transition to the authoritative wire masthead
-                  setOverridePhoto('none');
+                loading="eager"
+                decoding="async"
+                onError={(e) => {
+                  const target = e.currentTarget;
+                  if (!target.src.includes('unsplash.com')) {
+                    target.src = 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1200&q=80';
+                  } else {
+                    setOverridePhoto('none');
+                  }
                 }}
                 className="w-full h-full object-cover"
               />
@@ -339,7 +345,7 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
               <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between text-xs text-white/90 font-mono drop-shadow-md pointer-events-none">
                 <span className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-black/60 backdrop-blur-md border border-white/10 text-[11px]">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                  Verified Wire Dispatch Photo
+                  {isAuthenticWirePhoto ? 'Verified Wire Dispatch Photo' : `${article.category.toUpperCase()} Editorial Wire`}
                 </span>
                 <span className="text-[11px] text-zinc-300 bg-black/60 backdrop-blur-md px-2.5 py-1 rounded border border-white/10">
                   {article.publisherName}
@@ -347,7 +353,9 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
               </div>
             </div>
             <div className="mt-2 text-[11px] font-mono text-zinc-500 text-right">
-              Photo credit: {article.publisherName} editorial wire
+              {isAuthenticWirePhoto
+                ? `Photo credit: ${article.publisherName} editorial wire`
+                : 'Editorial topic photography via NewsDesk Wire Desk'}
             </div>
           </div>
         ) : (

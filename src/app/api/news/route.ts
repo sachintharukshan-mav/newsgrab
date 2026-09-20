@@ -9,7 +9,8 @@ import {
   fetchReutersWorldNews,
   fetchBBCWorldNews,
   fetchGuardianWorldNews,
-  generateArticleId
+  generateArticleId,
+  getCategoryFallbackImage
 } from '@/lib/rss-parser';
 import { Article, Category, Language, DateRange } from '@/lib/types';
 
@@ -79,7 +80,7 @@ async function getAggregatedArticles(lang: Language = 'en'): Promise<Article[]> 
         sentiment: item.sentiment || 'neutral',
         category: item.category || 'politics',
         region: item.region || 'local',
-        imageUrl: item.imageUrl || '',
+        imageUrl: item.imageUrl || getCategoryFallbackImage(item.category || 'politics', liveItems.length),
         publisherName: pub,
         sourceUrl: item.sourceUrl || '#',
         publishedAt: item.publishedAt || new Date().toISOString(),

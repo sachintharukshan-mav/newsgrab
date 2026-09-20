@@ -250,7 +250,7 @@ export const HeadlineSlider: React.FC<HeadlineSliderProps> = ({
 
                   {/* Right Column: Hero Visual */}
                   <div className="lg:col-span-5 order-1 lg:order-2">
-                    {article.imageUrl && !article.imageUrl.includes('unsplash.com') ? (
+                    {article.imageUrl ? (
                       <div
                         onClick={() => onOpenQuickRead(article)}
                         className="relative aspect-[16/10] lg:aspect-[4/3] w-full overflow-hidden rounded-lg bg-zinc-900 border border-white/[0.08] cursor-pointer group/img shadow-lg"
@@ -258,8 +258,13 @@ export const HeadlineSlider: React.FC<HeadlineSliderProps> = ({
                         <img
                           src={article.imageUrl}
                           alt={title}
+                          loading="eager"
+                          decoding="async"
                           onError={(e) => {
-                            e.currentTarget.style.display = 'none';
+                            const target = e.currentTarget;
+                            if (!target.src.includes('unsplash.com')) {
+                              target.src = 'https://images.unsplash.com/photo-1585829365295-ab7cd400c167?auto=format&fit=crop&w=1200&q=80';
+                            }
                           }}
                           className="w-full h-full object-cover grayscale-[10%] group-hover/img:grayscale-0 group-hover/img:scale-105 transition-all duration-700 ease-out"
                         />
@@ -269,7 +274,7 @@ export const HeadlineSlider: React.FC<HeadlineSliderProps> = ({
                             {article.category}
                           </span>
                           <span className="px-2 py-0.5 rounded bg-black/70 backdrop-blur-sm border border-white/10">
-                            {article.publisherName}
+                            {!article.imageUrl.includes('unsplash.com') ? `Wire · ${article.publisherName}` : article.publisherName}
                           </span>
                         </div>
                       </div>

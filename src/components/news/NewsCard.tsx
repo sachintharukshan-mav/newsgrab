@@ -32,7 +32,8 @@ export const NewsCard: React.FC<NewsCardProps> = ({
   const isSinhala = currentLang === 'si';
   const isTamil = currentLang === 'ta';
   const relativeTime = formatRelativeTime(article.publishedAt, currentLang);
-  const hasAuthenticPhoto = Boolean(article.imageUrl && !article.imageUrl.includes('unsplash.com'));
+  const isAuthenticPhoto = Boolean(article.imageUrl && !article.imageUrl.includes('unsplash.com'));
+  const displayImage = article.imageUrl || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1200&q=80';
 
   // Lead Front-Page Story (Broadsheet Hero)
   if (variant === 'lead') {
@@ -95,35 +96,31 @@ export const NewsCard: React.FC<NewsCardProps> = ({
 
         {/* Right Feature Visual (5 cols) */}
         <div className="lg:col-span-5 order-1 lg:order-2">
-          {hasAuthenticPhoto ? (
-            <div className="relative aspect-[16/9] w-full overflow-hidden rounded-md bg-zinc-900 border border-white/[0.08]">
-              <img
-                src={article.imageUrl}
-                alt={title}
-                onError={(e) => {
-                  e.currentTarget.style.display = 'none';
-                }}
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
+          <div className="relative aspect-[16/9] w-full overflow-hidden rounded-md bg-zinc-900 border border-white/[0.08]">
+            <img
+              src={displayImage}
+              alt={title}
+              loading="lazy"
+              decoding="async"
+              onError={(e) => {
+                const target = e.currentTarget;
+                if (!target.src.includes('unsplash.com')) {
+                  target.src = 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1200&q=80';
+                }
+              }}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent pointer-events-none" />
+            <div className="absolute bottom-2.5 left-3 right-3 flex items-center justify-between text-[10px] font-mono text-white/90 pointer-events-none">
+              <span className="flex items-center gap-1.5 px-2 py-0.5 rounded bg-black/70 backdrop-blur-sm border border-white/10">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                {isAuthenticPhoto ? `Wire Photo · ${article.publisherName}` : `${article.category.toUpperCase()} Wire`}
+              </span>
+              <span className="px-2 py-0.5 rounded bg-black/70 backdrop-blur-sm border border-white/10 uppercase">
+                {article.category}
+              </span>
             </div>
-          ) : (
-            <div className="relative aspect-[16/9] w-full overflow-hidden rounded-md bg-gradient-to-br from-[#161822] via-[#0f1016] to-[#12141c] border border-white/[0.08] p-6 flex flex-col justify-between">
-              <div className="flex items-center justify-between text-[11px] font-mono text-zinc-400">
-                <span className="uppercase text-rose-400 font-bold tracking-wider">{article.category}</span>
-                <span className="px-2 py-0.5 rounded bg-white/[0.06] text-zinc-300">{article.publisherName}</span>
-              </div>
-              <div className="space-y-1.5 my-auto">
-                <span className="text-rose-500/80 font-mono text-[11px] uppercase tracking-widest block font-semibold">Official Wire Dispatch</span>
-                <p className={`text-zinc-300 font-serif italic text-sm line-clamp-3 ${isSinhala ? 'font-sinhala not-italic leading-relaxed' : ''} ${isTamil ? 'font-tamil not-italic leading-relaxed' : ''}`}>
-                  &ldquo;{summary}&rdquo;
-                </p>
-              </div>
-              <div className="text-[10px] font-mono text-zinc-500 text-right">
-                Verified Newsroom Reporting
-              </div>
-            </div>
-          )}
+          </div>
         </div>
       </article>
     );
@@ -136,30 +133,31 @@ export const NewsCard: React.FC<NewsCardProps> = ({
       className="group cursor-pointer flex flex-col justify-between editorial-card p-4 rounded-lg bg-[#111216] border border-white/[0.06] hover:border-white/[0.16] hover:bg-[#13141a] transition-all duration-300"
     >
       <div className="space-y-3">
-        {/* Photography or Editorial Wire Dispatch Badge */}
-        {hasAuthenticPhoto ? (
-          <div className="relative aspect-[16/9] w-full overflow-hidden rounded-md bg-zinc-900 border border-white/[0.04]">
-            <img
-              src={article.imageUrl}
-              alt={title}
-              onError={(e) => {
-                e.currentTarget.style.display = 'none';
-              }}
-              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
-            />
+        {/* Editorial Photography */}
+        <div className="relative aspect-[16/9] w-full overflow-hidden rounded-md bg-zinc-900 border border-white/[0.04]">
+          <img
+            src={displayImage}
+            alt={title}
+            loading="lazy"
+            decoding="async"
+            onError={(e) => {
+              const target = e.currentTarget;
+              if (!target.src.includes('unsplash.com')) {
+                target.src = 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1200&q=80';
+              }
+            }}
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
+          <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between text-[9px] font-mono text-white/90 pointer-events-none">
+            <span className="px-1.5 py-0.5 rounded bg-black/70 backdrop-blur-sm border border-white/10 truncate max-w-[70%]">
+              {isAuthenticPhoto ? article.publisherName : `${article.category} topic`}
+            </span>
+            <span className="uppercase text-rose-400 font-bold px-1.5 py-0.5 rounded bg-black/70 border border-white/10">
+              {article.category}
+            </span>
           </div>
-        ) : (
-          <div className="relative aspect-[21/9] w-full overflow-hidden rounded-md bg-gradient-to-br from-[#181a24] to-[#101116] border border-white/[0.06] p-3 flex flex-col justify-between">
-            <div className="flex items-center justify-between text-[10px] font-mono">
-              <span className="uppercase text-rose-400 font-bold">{article.category}</span>
-              <span className="text-zinc-400">{article.publisherName}</span>
-            </div>
-            <div className="text-[10px] font-mono text-zinc-400 flex items-center gap-1.5">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-              Verified Wire Dispatch
-            </div>
-          </div>
-        )}
+        </div>
 
         {/* Metadata */}
         <div className="flex items-center justify-between text-[11px] font-mono text-zinc-400">
