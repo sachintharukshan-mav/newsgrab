@@ -2,14 +2,17 @@
 
 import React from 'react';
 import { Article, Language } from '@/lib/types';
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowUpRight, Bookmark } from 'lucide-react';
 import { formatRelativeTime } from '@/lib/time-utils';
+import { CoverageDistributionBar } from './CoverageDistributionBar';
 
 interface NewsCardProps {
   article: Article;
   currentLang: Language;
   onOpenQuickRead: (article: Article) => void;
   variant?: 'lead' | 'standard' | 'minimal';
+  isSaved?: boolean;
+  onToggleSave?: (article: Article) => void;
 }
 
 const cardLabels = {
@@ -18,14 +21,18 @@ const cardLabels = {
   brief: { en: 'Brief', si: 'සාරාංශය', ta: 'சுருக்கம்' },
   independent: { en: 'Independent Reporting', si: 'ස්වාධීන වාර්තාකරණය', ta: 'சுயாதீன அறிக்கை' },
   coveredBy: { en: 'Covered by', si: 'ආවරණය කළ මාධ්‍ය:', ta: 'செய்தியளித்தவை:' },
-  compare: { en: 'Compare perspectives', si: 'මත සංසන්දනය', ta: 'பார்வைகளை ஒப்பிடு' }
+  compare: { en: 'Compare perspectives', si: 'මත සංසන්දනය', ta: 'பார்வைகளை ஒப்பிடு' },
+  save: { en: 'Save for later', si: 'පසුව කියවන්න', ta: 'பின்னர் வாசிக்க' },
+  saved: { en: 'Saved', si: 'සුරැකිණි', ta: 'சேமிக்கப்பட்டது' }
 };
 
 export const NewsCard: React.FC<NewsCardProps> = ({
   article,
   currentLang,
   onOpenQuickRead,
-  variant = 'standard'
+  variant = 'standard',
+  isSaved = false,
+  onToggleSave
 }) => {
   const title = article.title[currentLang] || article.title.en || article.title.si || article.title.ta || '';
   const summary = article.summary[currentLang] || article.summary.en || article.summary.si || article.summary.ta || '';
@@ -61,17 +68,38 @@ export const NewsCard: React.FC<NewsCardProps> = ({
         {/* Left Headline & Analysis (7 cols) */}
         <div className="lg:col-span-7 flex flex-col justify-between order-2 lg:order-1 space-y-4">
           <div className="space-y-3">
-            <div className="flex items-center gap-2 text-[11px] uppercase tracking-wider font-mono">
-              <span className="px-1.5 py-0.5 rounded bg-white/[0.08] text-[10px] font-mono text-zinc-300">
-                {article.region === 'world' ? '🌐 World' : '🇱🇰 Sri Lanka'}
-              </span>
-              <span className="text-rose-500 font-bold">
-                {article.isBreaking ? cardLabels.urgent[currentLang] : article.category}
-              </span>
-              <span className="text-zinc-600">/</span>
-              <span className="text-zinc-400 font-medium">{article.publisherName}</span>
-              <span className="text-zinc-600">•</span>
-              <span className="text-zinc-400 font-sans" suppressHydrationWarning>{relativeTime}</span>
+            <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2 text-[11px] uppercase tracking-wider font-mono">
+                <span className="px-1.5 py-0.5 rounded bg-white/[0.08] text-[10px] font-mono text-zinc-300">
+                  {article.region === 'world' ? '🌐 World' : '🇱🇰 Sri Lanka'}
+                </span>
+                <span className="text-rose-500 font-bold">
+                  {article.isBreaking ? cardLabels.urgent[currentLang] : article.category}
+                </span>
+                <span className="text-zinc-600">/</span>
+                <span className="text-zinc-400 font-medium">{article.publisherName}</span>
+                <span className="text-zinc-600">•</span>
+                <span className="text-zinc-400 font-sans" suppressHydrationWarning>{relativeTime}</span>
+              </div>
+
+              {/* Bookmark Button */}
+              {onToggleSave && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onToggleSave(article);
+                  }}
+                  className={`p-1.5 rounded-full transition-colors cursor-pointer flex-shrink-0 ${
+                    isSaved
+                      ? 'bg-rose-500/20 text-rose-400 border border-rose-500/40'
+                      : 'bg-white/[0.06] text-zinc-400 hover:text-white hover:bg-white/10'
+                  }`}
+                  title={isSaved ? cardLabels.saved[currentLang] : cardLabels.save[currentLang]}
+                  aria-label="Bookmark article"
+                >
+                  <Bookmark className={`w-3.5 h-3.5 ${isSaved ? 'fill-current' : ''}`} />
+                </button>
+              )}
             </div>
 
             <h2
@@ -89,6 +117,9 @@ export const NewsCard: React.FC<NewsCardProps> = ({
             >
               {summary}
             </p>
+
+            {/* Ground News-Style Coverage Distribution Bar */}
+            <CoverageDistributionBar article={article} currentLang={currentLang} variant="compact" />
           </div>
 
           {/* Perspective & Byline Footer */}
@@ -151,7 +182,7 @@ export const NewsCard: React.FC<NewsCardProps> = ({
     <article
       onClick={() => onOpenQuickRead(article)}
       onMouseEnter={handleMouseEnter}
-      className="group cursor-pointer flex flex-col justify-between editorial-card p-4 rounded-lg bg-[#111216] border border-white/[0.06] hover:border-white/[0.16] hover:bg-[#13141a] transition-all duration-300"
+      className="group cursor-pointer flex flex-col justify-between editorial-card p-4 rounded-lg bg-[#111216] border border-white/[0.06] hover:border-white/[0.16] hover:bg-[#13141a] transition-all duration-300 relative"
     >
       <div className="space-y-3">
         {/* Editorial Photography */}
@@ -170,6 +201,26 @@ export const NewsCard: React.FC<NewsCardProps> = ({
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent pointer-events-none" />
+
+          {/* Bookmark Button (Floated on Thumbnail) */}
+          {onToggleSave && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggleSave(article);
+              }}
+              className={`absolute top-2 right-2 p-1.5 rounded-full backdrop-blur-md transition-colors cursor-pointer z-10 ${
+                isSaved
+                  ? 'bg-black/80 text-rose-400 border border-rose-500/40'
+                  : 'bg-black/60 text-zinc-300 hover:text-white hover:bg-black/90 border border-white/10'
+              }`}
+              title={isSaved ? cardLabels.saved[currentLang] : cardLabels.save[currentLang]}
+              aria-label="Bookmark article"
+            >
+              <Bookmark className={`w-3 h-3 ${isSaved ? 'fill-current' : ''}`} />
+            </button>
+          )}
+
           <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between text-[9px] font-mono text-white/90 pointer-events-none">
             <span className="px-1.5 py-0.5 rounded bg-black/70 backdrop-blur-sm border border-white/10 truncate max-w-[70%]">
               {article.imageCredit && article.imageCredit !== article.publisherName
@@ -212,6 +263,11 @@ export const NewsCard: React.FC<NewsCardProps> = ({
         >
           {summary}
         </p>
+
+        {/* Show Ground News spectrum on clustered stories */}
+        {article.clusterCount && article.clusterCount > 1 && (
+          <CoverageDistributionBar article={article} currentLang={currentLang} variant="compact" />
+        )}
       </div>
 
       {/* Card Footer */}

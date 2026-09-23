@@ -10,6 +10,7 @@ import { CategoryNav } from '@/components/news/CategoryNav';
 import { BentoGrid } from '@/components/news/BentoGrid';
 import { PublisherBar } from '@/components/news/PublisherBar';
 import { FullArticlePage } from '@/components/news/FullArticlePage';
+import { SavedArticlesDrawer } from '@/components/news/SavedArticlesDrawer';
 import { AudioFlashBar } from '@/components/audio/AudioFlashBar';
 import { AdBanner } from '@/components/ads/AdBanner';
 import { StickyMobileAd } from '@/components/ads/StickyMobileAd';
@@ -33,6 +34,8 @@ export default function HomePage() {
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
   const [marketPulse, setMarketPulse] = useState<MarketPulse>(mockMarketPulse);
+  const [savedArticleIds, setSavedArticleIds] = useState<string[]>([]);
+  const [isSavedDrawerOpen, setIsSavedDrawerOpen] = useState<boolean>(false);
 
   // Function to fetch articles for the active language
   const fetchNews = async (lang: Language, isSilent = false) => {
@@ -142,7 +145,53 @@ export default function HomePage() {
   // Load live CBSL, Gold, and Weather rates on initial mount
   useEffect(() => {
     fetchMarketRates();
+    // Restore saved articles from localStorage
+    try {
+      const saved = localStorage.getItem('newsgrab_saved_articles');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          setSavedArticleIds(parsed);
+        }
+      }
+    } catch (e) {
+      console.warn('Failed to restore saved articles:', e);
+    }
   }, []);
+
+  const handleToggleSaveArticle = (article: Article) => {
+    setSavedArticleIds((prev) => {
+      const exists = prev.includes(article.id);
+      const updated = exists ? prev.filter((id) => id !== article.id) : [...prev, article.id];
+      try {
+        localStorage.setItem('newsgrab_saved_articles', JSON.stringify(updated));
+      } catch (e) {
+        console.warn('Failed to save to localStorage:', e);
+      }
+      return updated;
+    });
+  };
+
+  const handleRemoveSavedArticle = (articleId: string) => {
+    setSavedArticleIds((prev) => {
+      const updated = prev.filter((id) => id !== articleId);
+      try {
+        localStorage.setItem('newsgrab_saved_articles', JSON.stringify(updated));
+      } catch (e) {
+        console.warn('Failed to update localStorage:', e);
+      }
+      return updated;
+    });
+  };
+
+  const handleClearAllSaved = () => {
+    setSavedArticleIds([]);
+    try {
+      localStorage.removeItem('newsgrab_saved_articles');
+    } catch (e) {
+      console.warn('Failed to clear saved articles:', e);
+    }
+  };
 
   // When switching language, persist and load fresh dispatches
   const handleLanguageChange = (newLang: Language) => {
@@ -261,6 +310,12 @@ export default function HomePage() {
     setSearchQuery('');
     handleDateRangeChange('all');
   };
+
+  const savedArticles = useMemo(() => {
+    return savedArticleIds
+      .map((id) => articles.find((a) => a.id === id) || mockArticles.find((a) => a.id === id))
+      .filter((a): a is Article => Boolean(a));
+  }, [articles, savedArticleIds]);
 
   const handleLogoClick = () => {
     setSelectedArticle(null);
@@ -399,6 +454,8 @@ export default function HomePage() {
         isRefreshing={isRefreshing}
         onManualRefresh={handleManualRefresh}
         onLogoClick={handleLogoClick}
+        savedCount={savedArticleIds.length}
+        onOpenSavedDrawer={() => setIsSavedDrawerOpen(true)}
       />
 
       {/* 3. Main Content: Full Article Page (Across Entire View) OR Front Page Broadsheet */}
@@ -409,6 +466,8 @@ export default function HomePage() {
           onBack={handleBackToFrontPage}
           onSelectRelatedArticle={handleOpenArticle}
           allArticles={articles}
+          isSaved={savedArticleIds.includes(selectedArticle.id)}
+          onToggleSave={handleToggleSaveArticle}
         />
       ) : (
         <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
@@ -484,6 +543,8 @@ export default function HomePage() {
             onOpenQuickRead={handleOpenArticle}
             viewMode={viewMode}
             onResetFilters={handleResetFilters}
+            savedArticleIds={savedArticleIds}
+            onToggleSave={handleToggleSaveArticle}
           />
 
           {/* Bottom Multiplex / Sponsored Stories Grid (High Engagement & RPM) */}
@@ -500,6 +561,17 @@ export default function HomePage() {
 
       {/* 4. Mobile Sticky Ad Unit */}
       <StickyMobileAd />
+
+      {/* 5. Saved Dispatches & Reading Queue Slide-Over Drawer */}
+      <SavedArticlesDrawer
+        isOpen={isSavedDrawerOpen}
+        onClose={() => setIsSavedDrawerOpen(false)}
+        savedArticles={savedArticles}
+        onRemoveArticle={handleRemoveSavedArticle}
+        onClearAll={handleClearAllSaved}
+        onSelectArticle={handleOpenArticle}
+        currentLang={currentLang}
+      />
 
       {/* 5. Authoritative Newspaper Broadsheet Footer (Google News & Search Console Compliant) */}
       <footer className="w-full border-t border-white/[0.08] bg-[#07080a] py-14 text-xs text-zinc-400">

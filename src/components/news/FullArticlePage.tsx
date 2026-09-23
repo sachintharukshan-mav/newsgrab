@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Article, ExecutiveBrief, Language } from '@/lib/types';
-import { ArrowLeft, Clock, Share2, Check, ExternalLink, MessageCircle, Sparkles, Zap, Quote, ShieldCheck, Loader2, Volume2, VolumeX } from 'lucide-react';
+import { ArrowLeft, Clock, Share2, Check, ExternalLink, MessageCircle, Sparkles, Zap, Quote, ShieldCheck, Loader2, Volume2, VolumeX, Bookmark } from 'lucide-react';
 import { AdBanner } from '@/components/ads/AdBanner';
 import { DiscussionSection } from './DiscussionSection';
 import { buildOptimisticBrief } from '@/lib/brief-utils';
+import { CoverageDistributionBar } from './CoverageDistributionBar';
 
 interface FullArticlePageProps {
   article: Article;
@@ -11,6 +12,8 @@ interface FullArticlePageProps {
   onBack: () => void;
   onSelectRelatedArticle: (article: Article) => void;
   allArticles: Article[];
+  isSaved?: boolean;
+  onToggleSave?: (article: Article) => void;
 }
 
 export const FullArticlePage: React.FC<FullArticlePageProps> = ({
@@ -18,7 +21,9 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
   currentLang,
   onBack,
   onSelectRelatedArticle,
-  allArticles
+  allArticles,
+  isSaved = false,
+  onToggleSave
 }) => {
   const [copied, setCopied] = useState(false);
   const [readingProgress, setReadingProgress] = useState<number>(0);
@@ -359,6 +364,22 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
               {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Share2 className="w-3.5 h-3.5" />}
               <span>{copied ? fullArticleLabels.linkCopied[currentLang] : fullArticleLabels.share[currentLang]}</span>
             </button>
+
+            {/* Bookmark Action Button */}
+            {onToggleSave && (
+              <button
+                onClick={() => onToggleSave(article)}
+                title={isSaved ? "Remove from Saved" : "Save for later"}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded transition-all cursor-pointer ${
+                  isSaved
+                    ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40'
+                    : 'bg-white/[0.05] hover:bg-white/10 text-zinc-300 hover:text-white border border-white/[0.08]'
+                }`}
+              >
+                <Bookmark className={`w-3.5 h-3.5 ${isSaved ? 'fill-current' : ''}`} />
+                <span className="hidden sm:inline">{isSaved ? 'Saved' : 'Save'}</span>
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -606,6 +627,9 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
                   </div>
               </div>
             </div>
+
+            {/* Ground News-Style Media Bias & Newsroom Coverage Spectrum */}
+            <CoverageDistributionBar article={article} currentLang={currentLang} variant="full" />
 
             {/* In-Article Monetization Slot #1 (Leaderboard) */}
             <div className="py-2">

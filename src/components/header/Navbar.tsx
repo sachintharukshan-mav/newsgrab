@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Language, DateRange } from '@/lib/types';
-import { Search, RefreshCw, X, Clock } from 'lucide-react';
+import { Search, RefreshCw, X, Clock, Bookmark } from 'lucide-react';
 
 interface NavbarProps {
   currentLang: Language;
@@ -16,6 +16,8 @@ interface NavbarProps {
   isRefreshing?: boolean;
   onManualRefresh?: () => void;
   onLogoClick?: () => void;
+  savedCount?: number;
+  onOpenSavedDrawer?: () => void;
 }
 
 const navbarTranslations = {
@@ -63,7 +65,9 @@ const navbarTranslations = {
   timeRange24h: { en: 'Past 24h', si: 'පැය 24', ta: '24 மணி' },
   timeRange7d: { en: 'Past 7d', si: 'දින 7', ta: '7 நாட்கள்' },
   timeRange30d: { en: 'Past 30d', si: 'දින 30', ta: '30 நாட்கள்' },
-  timeRange1y: { en: 'Past Year', si: 'වසරක්', ta: '1 வருடம்' }
+  timeRange1y: { en: 'Past Year', si: 'වසරක්', ta: '1 வருடம்' },
+  saved: { en: 'Saved', si: 'සුරැකි', ta: 'சேமிக்கப்பட்டவை' },
+  savedQueue: { en: 'Reading Queue', si: 'කියවීම් ලැයිස්තුව', ta: 'வாசிப்பு வரிசை' }
 };
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -76,7 +80,9 @@ export const Navbar: React.FC<NavbarProps> = ({
   lastUpdated = new Date(),
   isRefreshing = false,
   onManualRefresh,
-  onLogoClick
+  onLogoClick,
+  savedCount = 0,
+  onOpenSavedDrawer
 }) => {
   const [timeAgoStr, setTimeAgoStr] = useState<string>('Just now');
 
@@ -148,6 +154,28 @@ export const Navbar: React.FC<NavbarProps> = ({
               >
                 <RefreshCw className={`w-2.5 h-2.5 ${isRefreshing ? 'animate-spin text-rose-400' : ''}`} />
                 <span>{isRefreshing ? navbarTranslations.refreshing[currentLang] : navbarTranslations.refresh[currentLang]}</span>
+              </button>
+            )}
+
+            {/* Saved Reading List Button */}
+            {onOpenSavedDrawer && (
+              <button
+                onClick={onOpenSavedDrawer}
+                className={`flex items-center gap-1 px-2 py-0.5 rounded border transition-colors cursor-pointer text-[10px] font-mono ${
+                  savedCount > 0
+                    ? 'bg-rose-500/10 hover:bg-rose-500/20 border-rose-500/30 text-rose-300 font-semibold'
+                    : 'bg-white/[0.04] hover:bg-white/[0.08] border-white/10 text-zinc-300'
+                }`}
+                title={navbarTranslations.savedQueue[currentLang]}
+                aria-label="Open saved reading list"
+              >
+                <Bookmark className={`w-2.5 h-2.5 ${savedCount > 0 ? 'fill-current text-rose-400' : 'text-zinc-400'}`} />
+                <span>{navbarTranslations.saved[currentLang]}</span>
+                {savedCount > 0 && (
+                  <span className="px-1 py-0.2 rounded-full bg-rose-500 text-white text-[9px] font-bold font-mono">
+                    {savedCount}
+                  </span>
+                )}
               </button>
             )}
           </div>
@@ -257,6 +285,23 @@ export const Navbar: React.FC<NavbarProps> = ({
               </select>
               <Clock className="w-3 h-3 text-zinc-500 absolute right-2 top-1/2 -translate-y-1/2 pointer-events-none" />
             </div>
+          )}
+
+          {/* Saved Reading Queue Icon Button */}
+          {onOpenSavedDrawer && (
+            <button
+              onClick={onOpenSavedDrawer}
+              className="relative p-2 rounded-md bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-zinc-300 hover:text-white transition-colors cursor-pointer flex-shrink-0"
+              title={navbarTranslations.savedQueue[currentLang]}
+              aria-label="Open saved articles drawer"
+            >
+              <Bookmark className={`w-3.5 h-3.5 ${savedCount > 0 ? 'fill-current text-rose-400' : 'text-zinc-400'}`} />
+              {savedCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-rose-500 text-white text-[9px] font-bold font-mono flex items-center justify-center shadow-md">
+                  {savedCount}
+                </span>
+              )}
+            </button>
           )}
         </div>
       </div>

@@ -2,13 +2,16 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Article, Language } from '@/lib/types';
-import { ChevronLeft, ChevronRight, Pause, Play, ArrowUpRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Pause, Play, ArrowUpRight, Bookmark } from 'lucide-react';
 import { formatRelativeTime } from '@/lib/time-utils';
+import { CoverageDistributionBar } from './CoverageDistributionBar';
 
 interface HeadlineSliderProps {
   articles: Article[];
   currentLang: Language;
   onOpenQuickRead: (article: Article) => void;
+  savedArticleIds?: string[];
+  onToggleSave?: (article: Article) => void;
 }
 
 const sliderLabels = {
@@ -29,6 +32,8 @@ export const HeadlineSlider: React.FC<HeadlineSliderProps> = ({
   articles,
   currentLang,
   onOpenQuickRead,
+  savedArticleIds = [],
+  onToggleSave
 }) => {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [isPaused, setIsPaused] = useState<boolean>(false);
@@ -189,21 +194,41 @@ export const HeadlineSlider: React.FC<HeadlineSliderProps> = ({
                   {/* Left Column: Headline Text, Metadata & CTA */}
                   <div className="lg:col-span-7 flex flex-col justify-between space-y-4 order-2 lg:order-1">
                     <div className="space-y-3">
-                      {/* Meta Pills */}
-                      <div className="flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-wider font-mono">
-                        <span className="px-2 py-0.5 rounded-full bg-rose-500/15 border border-rose-500/30 text-rose-400 font-bold flex items-center gap-1.5">
-                          <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
-                          {article.isBreaking ? sliderLabels.urgent[currentLang] : sliderLabels.topHeadline[currentLang]}
-                        </span>
-                        <span className="px-1.5 py-0.5 rounded bg-white/[0.08] text-[10px] text-zinc-300">
-                          {article.region === 'world' ? '🌐 World' : '🇱🇰 Sri Lanka'}
-                        </span>
-                        <span className="text-zinc-600">/</span>
-                        <span className="text-zinc-300 font-medium">{article.publisherName}</span>
-                        <span className="text-zinc-600">•</span>
-                        <span className="text-zinc-400 font-sans" suppressHydrationWarning>
-                          {formatRelativeTime(article.publishedAt, currentLang)}
-                        </span>
+                      {/* Meta Pills & Bookmark */}
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-wider font-mono">
+                          <span className="px-2 py-0.5 rounded-full bg-rose-500/15 border border-rose-500/30 text-rose-400 font-bold flex items-center gap-1.5">
+                            <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
+                            {article.isBreaking ? sliderLabels.urgent[currentLang] : sliderLabels.topHeadline[currentLang]}
+                          </span>
+                          <span className="px-1.5 py-0.5 rounded bg-white/[0.08] text-[10px] text-zinc-300">
+                            {article.region === 'world' ? '🌐 World' : '🇱🇰 Sri Lanka'}
+                          </span>
+                          <span className="text-zinc-600">/</span>
+                          <span className="text-zinc-300 font-medium">{article.publisherName}</span>
+                          <span className="text-zinc-600">•</span>
+                          <span className="text-zinc-400 font-sans" suppressHydrationWarning>
+                            {formatRelativeTime(article.publishedAt, currentLang)}
+                          </span>
+                        </div>
+
+                        {onToggleSave && (
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              onToggleSave(article);
+                            }}
+                            className={`p-1.5 rounded-full transition-colors cursor-pointer flex-shrink-0 ${
+                              savedArticleIds.includes(article.id)
+                                ? 'bg-rose-500/20 text-rose-400 border border-rose-500/40'
+                                : 'bg-white/[0.06] text-zinc-400 hover:text-white hover:bg-white/10'
+                            }`}
+                            title={savedArticleIds.includes(article.id) ? 'Remove bookmark' : 'Bookmark for later'}
+                            aria-label="Bookmark article"
+                          >
+                            <Bookmark className={`w-3.5 h-3.5 ${savedArticleIds.includes(article.id) ? 'fill-current' : ''}`} />
+                          </button>
+                        )}
                       </div>
 
                       {/* Headline Title */}
@@ -224,6 +249,9 @@ export const HeadlineSlider: React.FC<HeadlineSliderProps> = ({
                       >
                         {summary}
                       </p>
+
+                      {/* Ground News-Style Coverage Distribution Bar */}
+                      <CoverageDistributionBar article={article} currentLang={currentLang} variant="compact" />
                     </div>
 
                     {/* Footer Row: Cluster count & CTA button */}

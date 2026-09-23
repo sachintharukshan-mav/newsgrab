@@ -5,7 +5,7 @@ import { Article, Language } from '@/lib/types';
 import { NewsCard } from './NewsCard';
 import { HeadlineSlider } from './HeadlineSlider';
 import { AdBanner } from '@/components/ads/AdBanner';
-import { ArrowUpRight } from 'lucide-react';
+import { Bookmark, ArrowUpRight } from 'lucide-react';
 import { formatRelativeTime } from '@/lib/time-utils';
 import { PredictionTracker } from '@/components/widgets/PredictionTracker';
 
@@ -15,6 +15,8 @@ interface BentoGridProps {
   onOpenQuickRead: (article: Article) => void;
   viewMode: 'bento' | 'compact';
   onResetFilters?: () => void;
+  savedArticleIds?: string[];
+  onToggleSave?: (article: Article) => void;
 }
 
 export const BentoGrid: React.FC<BentoGridProps> = ({
@@ -22,7 +24,9 @@ export const BentoGrid: React.FC<BentoGridProps> = ({
   currentLang,
   onOpenQuickRead,
   viewMode,
-  onResetFilters
+  onResetFilters,
+  savedArticleIds = [],
+  onToggleSave
 }) => {
   const [visibleCount, setVisibleCount] = React.useState<number>(10);
 
@@ -76,7 +80,21 @@ export const BentoGrid: React.FC<BentoGridProps> = ({
                     {title}
                   </h4>
                 </div>
-                <ArrowUpRight className="w-3.5 h-3.5 text-zinc-400 group-hover:text-white transition-colors flex-shrink-0" />
+                <div className="flex items-center gap-2 flex-shrink-0">
+                  {onToggleSave && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onToggleSave(article);
+                      }}
+                      className="p-1 text-zinc-500 hover:text-rose-400 transition-colors cursor-pointer"
+                      title={savedArticleIds.includes(article.id) ? 'Remove bookmark' : 'Bookmark for later'}
+                    >
+                      <Bookmark className={`w-3.5 h-3.5 ${savedArticleIds.includes(article.id) ? 'text-rose-400 fill-current' : ''}`} />
+                    </button>
+                  )}
+                  <ArrowUpRight className="w-3.5 h-3.5 text-zinc-400 group-hover:text-white transition-colors" />
+                </div>
               </div>
             );
           })}
@@ -129,6 +147,8 @@ export const BentoGrid: React.FC<BentoGridProps> = ({
                 currentLang={currentLang}
                 onOpenQuickRead={onOpenQuickRead}
                 variant="standard"
+                isSaved={savedArticleIds.includes(article.id)}
+                onToggleSave={onToggleSave}
               />
             ))}
           </div>
