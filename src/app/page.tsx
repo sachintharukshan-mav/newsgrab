@@ -10,6 +10,7 @@ import { CategoryNav } from '@/components/news/CategoryNav';
 import { BentoGrid } from '@/components/news/BentoGrid';
 import { PublisherBar } from '@/components/news/PublisherBar';
 import { FullArticlePage } from '@/components/news/FullArticlePage';
+import { AudioFlashBar } from '@/components/audio/AudioFlashBar';
 import { AdBanner } from '@/components/ads/AdBanner';
 import { StickyMobileAd } from '@/components/ads/StickyMobileAd';
 import {
@@ -438,6 +439,13 @@ export default function HomePage() {
               </button>
             </div>
           )}
+
+          {/* 60-Second Audio Flash Player Deck */}
+          <AudioFlashBar
+            articles={filteredArticles}
+            currentLang={currentLang}
+            onOpenArticle={handleOpenArticle}
+          />
 
           {/* Newsroom Publisher Filter Strip (Dynamic to Active Category) */}
           <PublisherBar

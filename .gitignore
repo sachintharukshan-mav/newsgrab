@@ -39,3 +39,7 @@ scratch/
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local tool state
+.freebuff/
+

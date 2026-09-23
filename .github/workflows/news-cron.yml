@@ -1,9 +1,9 @@
 name: 24/7 Automated News Ingestion
 
 on:
-  schedule:
-    # Run every 25 minutes (within GitHub Actions 2,000 free monthly minutes)
-    - cron: '*/25 * * * *'
+  # Pause scheduled trigger until site is deployed and domain DNS is active
+  # schedule:
+  #   - cron: '*/25 * * * *'
   workflow_dispatch: # Allows manual trigger from GitHub Actions dashboard
 
 jobs:

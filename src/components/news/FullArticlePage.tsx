@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Article, ExecutiveBrief, Language } from '@/lib/types';
-import { ArrowLeft, Clock, Share2, Check, ExternalLink, MessageCircle, Sparkles, Zap, Quote, ShieldCheck, Loader2 } from 'lucide-react';
+import { ArrowLeft, Clock, Share2, Check, ExternalLink, MessageCircle, Sparkles, Zap, Quote, ShieldCheck, Loader2, Volume2, VolumeX } from 'lucide-react';
 import { AdBanner } from '@/components/ads/AdBanner';
 import { DiscussionSection } from './DiscussionSection';
 import { buildOptimisticBrief } from '@/lib/brief-utils';
@@ -26,6 +26,7 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
   const [fetchedBrief, setFetchedBrief] = useState<ExecutiveBrief | null>(null);
   const [isLoadingBrief, setIsLoadingBrief] = useState<boolean>(false);
   const [synthesisProvider, setSynthesisProvider] = useState<'gemini' | 'algorithmic'>('gemini');
+  const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
 
   // Track authentic newsroom photography with React state synchronization
   const [overridePhoto, setOverridePhoto] = useState<string | null>(null);
@@ -119,11 +120,22 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [article.id]);
 
+  // Cancel speech synthesis when unmounting or switching article
+  useEffect(() => {
+    return () => {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+    };
+  }, [article.id]);
+
   const fullArticleLabels = {
     backToFront: { en: 'Back to Front Page', si: 'මුල් පිටුවට', ta: 'முகப்பிற்குத் திரும்பு' },
     originalWire: { en: 'Original Wire', si: 'මූලික පුවත', ta: 'அசல் செய்தி' },
     share: { en: 'Share', si: 'බෙදාගන්න', ta: 'பகிர்' },
     linkCopied: { en: 'Link Copied', si: 'පිටපත් කරන ලදී', ta: 'நகலெடுக்கப்பட்டது' },
+    listen: { en: 'Listen', si: 'ශ්‍රවණය', ta: 'கேட்க' },
+    stopAudio: { en: 'Stop Audio', si: 'හඬ නවත්වන්න', ta: 'ஆடியோவை நிறுத்து' },
     takeaways: { en: 'Essential Takeaways', si: 'ප්‍රධාන කරුණු සංක්ෂිප්තය', ta: 'முக்கிய சாராம்சம்' },
     synthesis: { en: 'Cross-Wire Synthesis', si: 'තොරතුරු සත්‍යාපනය', ta: 'செய்தி தொகுப்பு' },
     minRead: { en: 'min read', si: 'මිනිත්තු කියවීමක්', ta: 'நிமிட வாசிப்பு' },
@@ -144,7 +156,7 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
     },
     smartBrevityTitle: { en: 'Executive Intelligence Dispatch', si: 'විධායක බුද්ධි තොරතුරු වාර්තාව', ta: 'நிர்வாக புலனாய்வு சுருக்கம்' },
     whatHappened: { en: 'The Scoop & Verified Narrative', si: 'මූලික සිදුවීම සහ පසුබිම', ta: 'முக்கிய நிகழ்வு மற்றும் பின்னணி' },
-    keyFacts: { en: 'Key Facts & Findings', si: 'මූලික කරුණු සහ සාක්ෂි', ta: 'முக்கிய உண்மைகள் மற்றும் சான்றுகள்' },
+    keyFacts: { en: 'Key Facts & Findings', si: 'මූලික කරුණු සහ සාක්ෂි', ta: 'முக்கிய உண்மைகள் සහ சான்றுகள்' },
     onRecord: { en: 'Statements on Record', si: 'වාර්තාගත ප්‍රකාශන', ta: 'பதிவான அறிக்கைகள்' },
     whyItMatters: { en: 'Why It Matters', si: 'මෙය වැදගත් වන්නේ ඇයි?', ta: 'இது ஏன் முக்கியமானது?' },
     whatsNext: { en: 'What to Watch For', si: 'ඉදිරි අපේක්ෂාවන්', ta: 'அடுத்து கவனிக்க வேண்டியவை' },
@@ -175,6 +187,50 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
     const shareUrl = encodeURIComponent(window.location.href);
     const shareText = encodeURIComponent(`${title} — NewsGrab: `);
     window.open(`https://api.whatsapp.com/send?text=${shareText}${shareUrl}`, '_blank', 'noopener,noreferrer');
+  };
+
+  const handleAudioListenToggle = () => {
+    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+
+    if (isSpeaking) {
+      window.speechSynthesis.cancel();
+      setIsSpeaking(false);
+      return;
+    }
+
+    const titleText = article.title[currentLang] || article.title.en || '';
+    const briefText = brief
+      ? `${brief.whatHappened} ${brief.whyItMatters ? `Why it matters: ${brief.whyItMatters}` : ''}`
+      : (article.summary[currentLang] || article.summary.en || '');
+    const spokenContent = `${titleText}. ${briefText}`;
+
+    const utterance = new SpeechSynthesisUtterance(spokenContent);
+    utterance.rate = 1.0;
+
+    const voices = window.speechSynthesis.getVoices();
+    if (voices && voices.length > 0) {
+      if (currentLang === 'si') {
+        const v = voices.find((voice) => voice.lang.startsWith('si'));
+        if (v) utterance.voice = v;
+      } else if (currentLang === 'ta') {
+        const v = voices.find((voice) => voice.lang.startsWith('ta'));
+        if (v) utterance.voice = v;
+      } else {
+        const v = voices.find(
+          (voice) =>
+            (voice.lang === 'en-US' || voice.lang === 'en-GB') &&
+            (voice.name.includes('Natural') || voice.name.includes('Google'))
+        );
+        if (v) utterance.voice = v;
+      }
+    }
+
+    utterance.onend = () => setIsSpeaking(false);
+    utterance.onerror = () => setIsSpeaking(false);
+
+    window.speechSynthesis.cancel();
+    window.speechSynthesis.speak(utterance);
+    setIsSpeaking(true);
   };
 
   const formattedDate = article.publishedAt
@@ -263,6 +319,26 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
                 <ExternalLink className="w-3 h-3 text-zinc-400" />
               </a>
             )}
+
+            {/* Audio Listen (Speech Synthesis) */}
+            <button
+              onClick={handleAudioListenToggle}
+              title={isSpeaking ? "Stop Audio" : "Listen to Article Brief"}
+              className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded transition-all cursor-pointer ${
+                isSpeaking
+                  ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40 animate-pulse'
+                  : 'bg-white/[0.05] hover:bg-white/10 text-zinc-300 hover:text-white border border-white/[0.08]'
+              }`}
+            >
+              {isSpeaking ? (
+                <VolumeX className="w-3.5 h-3.5 text-rose-400" />
+              ) : (
+                <Volume2 className="w-3.5 h-3.5 text-zinc-300" />
+              )}
+              <span className="text-xs font-medium">
+                {isSpeaking ? fullArticleLabels.stopAudio[currentLang] : fullArticleLabels.listen[currentLang]}
+              </span>
+            </button>
 
             {/* WhatsApp 1-Click Share */}
             <button

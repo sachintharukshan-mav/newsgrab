@@ -7,6 +7,7 @@ import { HeadlineSlider } from './HeadlineSlider';
 import { AdBanner } from '@/components/ads/AdBanner';
 import { ArrowUpRight } from 'lucide-react';
 import { formatRelativeTime } from '@/lib/time-utils';
+import { PredictionTracker } from '@/components/widgets/PredictionTracker';
 
 interface BentoGridProps {
   articles: Article[];
@@ -145,17 +146,22 @@ export const BentoGrid: React.FC<BentoGridProps> = ({
           )}
         </div>
 
-        {/* Right Rail: The Live Wire Column (4 Columns) */}
-        <aside className="lg:col-span-4 border-t lg:border-t-0 lg:border-l border-white/[0.08] lg:pl-8 space-y-4">
-          <div className="flex items-center justify-between pb-3 border-b border-white/[0.08]">
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
-              <h3 className="font-mono text-xs font-bold uppercase tracking-wider text-zinc-200">
-                The Colombo Wire
-              </h3>
+        {/* Right Rail: Prediction Tracker & The Live Wire Column (4 Columns) */}
+        <aside className="lg:col-span-4 border-t lg:border-t-0 lg:border-l border-white/[0.08] lg:pl-8 space-y-6">
+          {/* Community Sentiment & Prediction Radar */}
+          <PredictionTracker currentLang={currentLang} />
+
+          {/* The Colombo Wire Stream */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-white/[0.08]">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
+                <h3 className="font-mono text-xs font-bold uppercase tracking-wider text-zinc-200">
+                  The Colombo Wire
+                </h3>
+              </div>
+              <span className="text-[10px] font-mono text-zinc-400">Continuous Stream</span>
             </div>
-            <span className="text-[10px] font-mono text-zinc-400">Continuous Stream</span>
-          </div>
 
           <div className="divide-y divide-white/[0.06] space-y-3">
             {wireStories.map((article) => {
@@ -188,6 +194,7 @@ export const BentoGrid: React.FC<BentoGridProps> = ({
                 </div>
               );
             })}
+          </div>
           </div>
 
           {/* Sidebar MREC Ad Unit */}
