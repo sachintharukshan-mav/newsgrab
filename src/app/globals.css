@@ -16,6 +16,9 @@
   --accent-crimson: #e11d48;
   --accent-gold: #eab308;
   --accent-emerald: #10b981;
+
+  --font-noto-sinhala: 'Noto Sans Sinhala', 'Iskoola Pota', 'FMAbhaya', sans-serif;
+  --font-noto-tamil: 'Noto Sans Tamil', 'Latha', sans-serif;
   
   --spring-tactile: linear(
     0, 0.016 0.5%, 0.06 1%, 0.226 2%, 1.116 5.4%, 1.375 6.6%, 1.527 7.7%,

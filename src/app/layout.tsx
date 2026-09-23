@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Newsreader, Noto_Sans_Sinhala, Noto_Sans_Tamil } from "next/font/google";
+import { Geist, Newsreader } from "next/font/google";
 import { CookieConsent } from "@/components/compliance/CookieConsent";
 import "./globals.css";
 
@@ -12,20 +12,6 @@ const newsreader = Newsreader({
   variable: "--font-newsreader",
   subsets: ["latin"],
   style: ["normal", "italic"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-});
-
-const notoSinhala = Noto_Sans_Sinhala({
-  variable: "--font-noto-sinhala",
-  subsets: ["sinhala"],
-  weight: ["400", "500", "600", "700"],
-  display: "swap",
-});
-
-const notoTamil = Noto_Sans_Tamil({
-  variable: "--font-noto-tamil",
-  subsets: ["tamil"],
   weight: ["400", "500", "600", "700"],
   display: "swap",
 });
@@ -124,9 +110,15 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${newsreader.variable} ${notoSinhala.variable} ${notoTamil.variable} h-full antialiased dark`}
+      className={`${geistSans.variable} ${newsreader.variable} h-full antialiased dark`}
     >
       <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Noto+Sans+Sinhala:wght@400;500;600;700&family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
         <link rel="preconnect" href="https://images.unsplash.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://cdn.hirunews.lk" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://pagead2.googlesyndication.com" crossOrigin="anonymous" />
