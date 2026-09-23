@@ -39,7 +39,8 @@ export const MarketTicker: React.FC<MarketTickerProps> = ({ pulse, currentLang =
       <div className="flex financial-ticker-marquee items-center gap-8 whitespace-nowrap">
         {[0, 1].map((copyIndex) => (
           <div key={copyIndex} className="flex items-center gap-8">
-            <span className="font-mono text-zinc-400 font-bold uppercase tracking-wider text-[10px]">
+            <span className="inline-flex items-center gap-1.5 font-mono text-zinc-400 font-bold uppercase tracking-wider text-[10px]">
+              <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
               {tickerLabels.cbsl[currentLang]}
             </span>
 

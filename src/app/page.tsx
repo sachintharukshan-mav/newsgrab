@@ -3,7 +3,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { mockArticles, mockMarketPulse } from '@/lib/mock-data';
-import { Article, Category, Language, DateRange } from '@/lib/types';
+import { Article, Category, Language, DateRange, MarketPulse } from '@/lib/types';
 import { MarketTicker } from '@/components/header/MarketTicker';
 import { Navbar } from '@/components/header/Navbar';
 import { CategoryNav } from '@/components/news/CategoryNav';
@@ -32,6 +32,7 @@ export default function HomePage() {
   const [dateRange, setDateRange] = useState<DateRange>('all');
   const [lastUpdated, setLastUpdated] = useState<Date>(new Date());
   const [isRefreshing, setIsRefreshing] = useState<boolean>(false);
+  const [marketPulse, setMarketPulse] = useState<MarketPulse>(mockMarketPulse);
 
   // Function to fetch articles for the active language
   const fetchNews = async (lang: Language, isSilent = false) => {
@@ -124,6 +125,25 @@ export default function HomePage() {
     return () => controller.abort();
   }, []);
 
+  const fetchMarketRates = async () => {
+    try {
+      const res = await fetch('/api/rates');
+      if (res.ok) {
+        const data = await res.json();
+        if (data && data.cbslRates && data.cbslRates.length > 0) {
+          setMarketPulse(data);
+        }
+      }
+    } catch (err) {
+      console.warn('Market pulse fetch error:', err);
+    }
+  };
+
+  // Load live CBSL, Gold, and Weather rates on initial mount
+  useEffect(() => {
+    fetchMarketRates();
+  }, []);
+
   // When switching language, persist and load fresh dispatches
   const handleLanguageChange = (newLang: Language) => {
     setCurrentLang(newLang);
@@ -147,6 +167,7 @@ export default function HomePage() {
 
   const handleManualRefresh = () => {
     fetchNews(currentLang, false);
+    fetchMarketRates();
   };
 
   // Idle Pre-Warming: Pre-synthesize the top 3 lead/breaking stories during browser idle time
@@ -364,7 +385,7 @@ export default function HomePage() {
       )}
 
       {/* 1. Bloomberg/FT Style Financial Ticker */}
-      <MarketTicker pulse={mockMarketPulse} currentLang={currentLang} />
+      <MarketTicker pulse={marketPulse} currentLang={currentLang} />
 
       {/* 2. Newspaper Broadsheet Masthead with Live Feed Status */}
       <Navbar
