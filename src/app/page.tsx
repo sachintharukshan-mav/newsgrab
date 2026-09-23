@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { mockArticles, mockMarketPulse } from '@/lib/mock-data';
 import { Article, Category, Language, DateRange, MarketPulse } from '@/lib/types';
@@ -128,7 +128,7 @@ export default function HomePage() {
     return () => controller.abort();
   }, []);
 
-  const fetchMarketRates = async () => {
+  const fetchMarketRates = useCallback(async () => {
     try {
       const res = await fetch('/api/rates');
       if (res.ok) {
@@ -140,23 +140,40 @@ export default function HomePage() {
     } catch (err) {
       console.warn('Market pulse fetch error:', err);
     }
-  };
+  }, []);
 
   // Load live CBSL, Gold, and Weather rates on initial mount
   useEffect(() => {
-    fetchMarketRates();
-    // Restore saved articles from localStorage
-    try {
-      const saved = localStorage.getItem('newsgrab_saved_articles');
-      if (saved) {
-        const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed)) {
-          setSavedArticleIds(parsed);
+    let active = true;
+    fetch('/api/rates')
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (active && data && data.cbslRates && data.cbslRates.length > 0) {
+          setMarketPulse(data);
         }
+      })
+      .catch((err) => {
+        console.warn('Market pulse fetch error:', err);
+      });
+
+    const frameId = requestAnimationFrame(() => {
+      try {
+        const saved = localStorage.getItem('newsgrab_saved_articles');
+        if (saved) {
+          const parsed = JSON.parse(saved);
+          if (Array.isArray(parsed)) {
+            setSavedArticleIds(parsed);
+          }
+        }
+      } catch (e) {
+        console.warn('Failed to restore saved articles:', e);
       }
-    } catch (e) {
-      console.warn('Failed to restore saved articles:', e);
-    }
+    });
+
+    return () => {
+      active = false;
+      cancelAnimationFrame(frameId);
+    };
   }, []);
 
   const handleToggleSaveArticle = (article: Article) => {

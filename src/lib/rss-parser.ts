@@ -789,8 +789,12 @@ export async function fetchReutersWorldNews(maxItems = 24): Promise<Partial<Arti
     });
 
     return await Promise.all(articlePromises);
-  } catch (e) {
-    console.warn('Error fetching Reuters World News:', e);
+  } catch (e: unknown) {
+    if ((e as Error)?.name === 'AbortError') {
+      console.warn('Reuters World News feed request timed out. Continuing with other wire sources.');
+    } else {
+      console.warn('Error fetching Reuters World News:', (e as Error)?.message || e);
+    }
     return [];
   }
 }

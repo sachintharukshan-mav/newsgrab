@@ -8,6 +8,7 @@ interface Particle {
   id: number;
   emoji: string;
   xOffset: number;
+  yOffset: number;
   rotate: number;
 }
 
@@ -24,31 +25,36 @@ const EMOJIS = [
   { char: '🤔', label: 'Skeptical' },
 ];
 
+const getDefaultCounts = (id: string): Record<string, number> => ({
+  '🔥': 14 + (id.charCodeAt(0) % 10),
+  '🚀': 8 + (id.charCodeAt(1) % 7),
+  '📉': 6 + (id.charCodeAt(2) % 5),
+  '🇱🇰': 22 + (id.charCodeAt(3) % 15),
+  '🤔': 11 + (id.charCodeAt(0) % 8),
+});
+
 export const EmojiReaction: React.FC<EmojiReactionProps> = ({ id, className }) => {
-  const [counts, setCounts] = useState<Record<string, number>>({});
+  const [counts, setCounts] = useState<Record<string, number>>(() => getDefaultCounts(id));
   const [particles, setParticles] = useState<Particle[]>([]);
   const [selectedEmoji, setSelectedEmoji] = useState<string | null>(null);
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(`newsgrab_reaction_${id}`);
-      if (saved) {
-        setSelectedEmoji(saved);
+    const frameId = requestAnimationFrame(() => {
+      try {
+        const saved = localStorage.getItem(`newsgrab_reaction_${id}`);
+        if (saved) {
+          setSelectedEmoji(saved);
+        }
+      } catch {
+        // localStorage fallback
       }
-    } catch {
-      // localStorage fallback
-    }
-    // Seed sensible defaults for initial counts
-    setCounts({
-      '🔥': 14 + (id.charCodeAt(0) % 10),
-      '🚀': 8 + (id.charCodeAt(1) % 7),
-      '📉': 6 + (id.charCodeAt(2) % 5),
-      '🇱🇰': 22 + (id.charCodeAt(3) % 15),
-      '🤔': 11 + (id.charCodeAt(0) % 8),
+      setCounts(getDefaultCounts(id));
     });
+
+    return () => cancelAnimationFrame(frameId);
   }, [id]);
 
-  const handleReact = (emojiChar: string, e: React.MouseEvent<HTMLButtonElement>) => {
+  const handleReact = (emojiChar: string) => {
     setSelectedEmoji(emojiChar);
     try {
       localStorage.setItem(`newsgrab_reaction_${id}`, emojiChar);
@@ -66,6 +72,7 @@ export const EmojiReaction: React.FC<EmojiReactionProps> = ({ id, className }) =
       id: Date.now() + i + Math.random(),
       emoji: emojiChar,
       xOffset: (Math.random() - 0.5) * 40,
+      yOffset: -70 - Math.random() * 30,
       rotate: (Math.random() - 0.5) * 30,
     }));
 
@@ -88,7 +95,7 @@ export const EmojiReaction: React.FC<EmojiReactionProps> = ({ id, className }) =
               initial={{ opacity: 1, y: 0, x: 0, scale: 0.8, rotate: 0 }}
               animate={{
                 opacity: 0,
-                y: -70 - Math.random() * 30,
+                y: p.yOffset,
                 x: p.xOffset,
                 scale: 1.3,
                 rotate: p.rotate,
@@ -112,7 +119,7 @@ export const EmojiReaction: React.FC<EmojiReactionProps> = ({ id, className }) =
           return (
             <button
               key={e.char}
-              onClick={(evt) => handleReact(e.char, evt)}
+              onClick={() => handleReact(e.char)}
               title={e.label}
               className={cn(
                 'group relative flex items-center gap-1 px-1.5 py-0.5 rounded-full text-xs transition-all duration-200 cursor-pointer active:scale-90',

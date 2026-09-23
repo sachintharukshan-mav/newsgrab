@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Article, Language } from '@/lib/types';
-import { Play, Pause, Square, SkipForward, SkipBack, Volume2, Sparkles, X, ChevronDown, ChevronUp } from 'lucide-react';
+import { Play, Pause, Square, SkipForward, SkipBack } from 'lucide-react';
 
 interface AudioFlashBarProps {
   articles: Article[];
@@ -29,7 +29,7 @@ const flashLabels = {
   story: {
     en: 'Story',
     si: 'පුවත',
-    ta: 'செய்தி'
+    ta: 'செய்தි'
   },
   speed: {
     en: 'Speed',
@@ -52,21 +52,33 @@ export const AudioFlashBar: React.FC<AudioFlashBarProps> = ({
   const [isPaused, setIsPaused] = useState<boolean>(false);
   const [activeStoryIdx, setActiveStoryIdx] = useState<number>(0);
   const [speed, setSpeed] = useState<number>(1);
-  const [isMinimized, setIsMinimized] = useState<boolean>(false);
   const [isSupported, setIsSupported] = useState<boolean>(true);
   const [isClient, setIsClient] = useState<boolean>(false);
 
   const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
+  const playStoryRef = useRef<(index: number) => void>(() => {});
 
   // Top 3 stories for the brief
   const briefStories = articles.slice(0, 3);
 
-  useEffect(() => {
-    setIsClient(true);
-    if (typeof window !== 'undefined' && !('speechSynthesis' in window)) {
-      setIsSupported(false);
+  const handleStop = useCallback(() => {
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
     }
+    setIsPlaying(false);
+    setIsPaused(false);
+  }, []);
+
+  useEffect(() => {
+    const frameId = requestAnimationFrame(() => {
+      setIsClient(true);
+      if (typeof window !== 'undefined' && !('speechSynthesis' in window)) {
+        setIsSupported(false);
+      }
+    });
+
     return () => {
+      cancelAnimationFrame(frameId);
       if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
         window.speechSynthesis.cancel();
       }
@@ -76,9 +88,16 @@ export const AudioFlashBar: React.FC<AudioFlashBarProps> = ({
   // Stop playback when language changes
   useEffect(() => {
     if (isPlaying) {
-      handleStop();
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+      }
+      const frameId = requestAnimationFrame(() => {
+        setIsPlaying(false);
+        setIsPaused(false);
+      });
+      return () => cancelAnimationFrame(frameId);
     }
-  }, [currentLang]);
+  }, [currentLang, isPlaying]);
 
   // Generate clean broadcast spoken text for a story
   const getStorySpokenText = useCallback((story: Article, index: number, total: number, lang: Language) => {
@@ -139,7 +158,7 @@ export const AudioFlashBar: React.FC<AudioFlashBarProps> = ({
       if (safeIndex < briefStories.length - 1) {
         // Transition to next story smoothly
         setTimeout(() => {
-          playStory(safeIndex + 1);
+          playStoryRef.current(safeIndex + 1);
         }, 600);
       } else {
         setIsPlaying(false);
@@ -160,6 +179,10 @@ export const AudioFlashBar: React.FC<AudioFlashBarProps> = ({
     setIsPaused(false);
   }, [briefStories, currentLang, speed, getStorySpokenText]);
 
+  useEffect(() => {
+    playStoryRef.current = playStory;
+  }, [playStory]);
+
   const handlePlayToggle = () => {
     if (!isSupported) return;
 
@@ -174,14 +197,6 @@ export const AudioFlashBar: React.FC<AudioFlashBarProps> = ({
     } else {
       playStory(activeStoryIdx);
     }
-  };
-
-  const handleStop = () => {
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-    }
-    setIsPlaying(false);
-    setIsPaused(false);
   };
 
   const handleNext = () => {

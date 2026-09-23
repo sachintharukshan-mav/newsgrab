@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Language } from '@/lib/types';
-import { Clock, Check, Share2, Sparkles } from 'lucide-react';
+import { Clock, Check, Share2 } from 'lucide-react';
 import { motion } from 'motion/react';
 import { AnimatedCounter } from '@/components/ui/animated-counter';
 import { EmojiReaction } from '@/components/ui/emoji-reaction';
@@ -170,18 +170,20 @@ export const PredictionTracker: React.FC<PredictionTrackerProps> = ({ currentLan
   const [userVotes, setUserVotes] = useState<Record<string, string>>({});
   const [extraVotes, setExtraVotes] = useState<Record<string, Record<string, number>>>({});
   const [copiedId, setCopiedId] = useState<string | null>(null);
-  const [isClient, setIsClient] = useState<boolean>(false);
 
   useEffect(() => {
-    setIsClient(true);
-    try {
-      const saved = localStorage.getItem('newsgrab_prediction_votes');
-      if (saved) {
-        setUserVotes(JSON.parse(saved));
+    const frameId = requestAnimationFrame(() => {
+      try {
+        const saved = localStorage.getItem('newsgrab_prediction_votes');
+        if (saved) {
+          setUserVotes(JSON.parse(saved));
+        }
+      } catch {
+        // LocalStorage access fallback
       }
-    } catch {
-      // LocalStorage access fallback
-    }
+    });
+
+    return () => cancelAnimationFrame(frameId);
   }, []);
 
   const handleVote = (predId: string, optionId: string) => {
