@@ -94,7 +94,7 @@ export const metadata: Metadata = {
     yandex: process.env.NEXT_PUBLIC_YANDEX_VERIFICATION,
     other: {
       'msvalidate.01': [process.env.NEXT_PUBLIC_BING_VERIFICATION || ''],
-      'google-adsense-account': [process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || 'ca-pub-0000000000000000'],
+      'google-adsense-account': [process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || 'ca-pub-1562210028522673'],
     },
   },
   category: 'news',
@@ -105,7 +105,7 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const adsenseClient = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID;
+  const adsenseClient = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || 'ca-pub-1562210028522673';
 
   return (
     <html
