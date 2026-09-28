@@ -13,7 +13,7 @@ interface Particle {
 }
 
 interface EmojiReactionProps {
-  id: string; // unique ID e.g. prediction ID
+  id: string; // unique ID e.g. prediction ID or article ID
   className?: string;
 }
 
@@ -39,19 +39,35 @@ export const EmojiReaction: React.FC<EmojiReactionProps> = ({ id, className }) =
   const [selectedEmoji, setSelectedEmoji] = useState<string | null>(null);
 
   useEffect(() => {
-    const frameId = requestAnimationFrame(() => {
-      try {
-        const saved = localStorage.getItem(`newsgrab_reaction_${id}`);
-        if (saved) {
-          setSelectedEmoji(saved);
-        }
-      } catch {
-        // localStorage fallback
-      }
-      setCounts(getDefaultCounts(id));
-    });
+    let isMounted = true;
 
-    return () => cancelAnimationFrame(frameId);
+    try {
+      const saved = localStorage.getItem(`newsgrab_reaction_${id}`);
+      if (saved) {
+        setSelectedEmoji(saved);
+      }
+    } catch {
+      // localStorage fallback
+    }
+
+    // Load persistent community tallies from Cloudflare D1
+    fetch(`/api/reactions?targetId=${encodeURIComponent(id)}`)
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        if (isMounted && data?.counts && Object.keys(data.counts).length > 0) {
+          setCounts((prev) => ({
+            ...prev,
+            ...data.counts
+          }));
+        }
+      })
+      .catch((err) => {
+        console.warn('Failed to load reactions from D1:', err);
+      });
+
+    return () => {
+      isMounted = false;
+    };
   }, [id]);
 
   const handleReact = (emojiChar: string) => {
@@ -66,6 +82,15 @@ export const EmojiReaction: React.FC<EmojiReactionProps> = ({ id, className }) =
       ...prev,
       [emojiChar]: (prev[emojiChar] || 0) + 1,
     }));
+
+    // Persist to Cloudflare D1
+    fetch('/api/reactions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ targetId: id, emoji: emojiChar })
+    }).catch((err) => {
+      console.warn('Failed to save reaction to D1:', err);
+    });
 
     // Spawn 3 floating particles with organic drift
     const newParticles: Particle[] = Array.from({ length: 3 }).map((_, i) => ({
@@ -101,8 +126,8 @@ export const EmojiReaction: React.FC<EmojiReactionProps> = ({ id, className }) =
                 rotate: p.rotate,
               }}
               exit={{ opacity: 0 }}
-              transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
-              className="absolute left-1/2 -ml-3 text-lg"
+              transition={{ duration: 1.1, ease: 'easeOut' }}
+              className="absolute left-1/2 -translate-x-1/2 text-2xl select-none"
             >
               {p.emoji}
             </motion.div>
@@ -110,32 +135,29 @@ export const EmojiReaction: React.FC<EmojiReactionProps> = ({ id, className }) =
         </AnimatePresence>
       </div>
 
-      {/* Emoji Buttons Strip */}
-      <div className="flex items-center gap-1 rounded-full bg-white/[0.04] p-1 border border-white/[0.06]">
-        {EMOJIS.map((e) => {
-          const isSelected = selectedEmoji === e.char;
-          const count = counts[e.char] || 0;
+      {EMOJIS.map(({ char, label }) => {
+        const count = counts[char] || 0;
+        const isSelected = selectedEmoji === char;
 
-          return (
-            <button
-              key={e.char}
-              onClick={() => handleReact(e.char)}
-              title={e.label}
-              className={cn(
-                'group relative flex items-center gap-1 px-1.5 py-0.5 rounded-full text-xs transition-all duration-200 cursor-pointer active:scale-90',
-                isSelected
-                  ? 'bg-rose-500/25 border border-rose-500/40 text-rose-200 font-semibold'
-                  : 'hover:bg-white/[0.08] text-zinc-400 hover:text-zinc-200'
-              )}
-            >
-              <span className="text-sm transition-transform duration-200 group-hover:scale-125">
-                {e.char}
-              </span>
-              <span className="text-[10px] font-mono tabular-nums opacity-80">{count}</span>
-            </button>
-          );
-        })}
-      </div>
+        return (
+          <button
+            key={char}
+            onClick={() => handleReact(char)}
+            title={label}
+            className={cn(
+              'group relative flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-mono transition-all active:scale-90 cursor-pointer',
+              isSelected
+                ? 'bg-rose-500/20 text-rose-300 ring-1 ring-rose-500/50 shadow-sm shadow-rose-950/40'
+                : 'bg-white/[0.04] text-zinc-400 hover:bg-white/[0.08] hover:text-zinc-200 border border-white/[0.06]'
+            )}
+          >
+            <span className="text-sm transition-transform group-hover:scale-125 duration-200">
+              {char}
+            </span>
+            <span className="text-[11px] font-semibold">{count}</span>
+          </button>
+        );
+      })}
     </div>
   );
 };
