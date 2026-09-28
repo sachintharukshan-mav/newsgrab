@@ -2,13 +2,31 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Article, Language } from '@/lib/types';
-import { Play, Pause, Square, SkipForward, SkipBack } from 'lucide-react';
+import { Play, Pause, Square, SkipForward, SkipBack, Radio, ChevronDown, Check, Loader2 } from 'lucide-react';
 
 interface AudioFlashBarProps {
   articles: Article[];
   currentLang: Language;
   onOpenArticle?: (article: Article) => void;
 }
+
+export type VoiceKey = 'en-us' | 'en-gb' | 'en-in' | 'si' | 'ta';
+
+interface VoiceOption {
+  id: VoiceKey;
+  label: string;
+  shortLabel: string;
+  flag: string;
+  langGroup: Language;
+}
+
+const VOICE_OPTIONS: VoiceOption[] = [
+  { id: 'en-us', label: 'US News Anchor', shortLabel: 'US Anchor', flag: '🇺🇸', langGroup: 'en' },
+  { id: 'en-gb', label: 'BBC World Correspondent', shortLabel: 'BBC UK', flag: '🇬🇧', langGroup: 'en' },
+  { id: 'en-in', label: 'South Asian Wire', shortLabel: 'South Asia', flag: '🌏', langGroup: 'en' },
+  { id: 'si', label: 'Sinhala Broadcast', shortLabel: 'Sinhala', flag: '🇱🇰', langGroup: 'si' },
+  { id: 'ta', label: 'Tamil Broadcast', shortLabel: 'Tamil', flag: '🇱🇰', langGroup: 'ta' }
+];
 
 const flashLabels = {
   title: {
@@ -29,17 +47,22 @@ const flashLabels = {
   story: {
     en: 'Story',
     si: 'පුවත',
-    ta: 'செய்தි'
+    ta: 'செய்தி'
   },
   speed: {
     en: 'Speed',
     si: 'වේගය',
     ta: 'வேகம்'
   },
-  unsupported: {
-    en: 'Audio synthesis is not supported on this browser.',
-    si: 'මෙම බ්‍රවුසරයේ ශ්‍රව්‍ය වාදනය සහාය නොදක්වයි.',
-    ta: 'இந்த உலாவியில் ஆடியோ ஆதரவு இல்லை.'
+  voice: {
+    en: 'Voice Persona',
+    si: 'හඬ විලාසය',
+    ta: 'குரல் தெரிவு'
+  },
+  neural: {
+    en: 'Neural HD',
+    si: 'ස්වභාවික හඬ',
+    ta: 'நரம்பியல் குரல்'
   }
 };
 
@@ -50,116 +73,140 @@ export const AudioFlashBar: React.FC<AudioFlashBarProps> = ({
 }) => {
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [isPaused, setIsPaused] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [activeStoryIdx, setActiveStoryIdx] = useState<number>(0);
   const [speed, setSpeed] = useState<number>(1);
-  const [isSupported, setIsSupported] = useState<boolean>(true);
   const [isClient, setIsClient] = useState<boolean>(false);
+  const [isVoiceMenuOpen, setIsVoiceMenuOpen] = useState<boolean>(false);
 
-  const utteranceRef = useRef<SpeechSynthesisUtterance | null>(null);
-  const playStoryRef = useRef<(index: number) => void>(() => {});
+  // Default voice based on current language
+  const [selectedVoice, setSelectedVoice] = useState<VoiceKey>(() => {
+    if (currentLang === 'si') return 'si';
+    if (currentLang === 'ta') return 'ta';
+    return 'en-us';
+  });
+
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const playStoryRef = useRef<(index: number, voiceKey?: VoiceKey) => void>(() => {});
+  const voiceMenuRef = useRef<HTMLDivElement | null>(null);
 
   // Top 3 stories for the brief
   const briefStories = articles.slice(0, 3);
 
+  // Stop playback cleanly
   const handleStop = useCallback(() => {
+    if (audioRef.current) {
+      audioRef.current.pause();
+      audioRef.current.removeAttribute('src');
+      audioRef.current.load();
+    }
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
       window.speechSynthesis.cancel();
     }
     setIsPlaying(false);
     setIsPaused(false);
+    setIsLoading(false);
   }, []);
 
+  // Initialize client and handle outside clicks for voice dropdown
   useEffect(() => {
     const frameId = requestAnimationFrame(() => {
       setIsClient(true);
-      if (typeof window !== 'undefined' && !('speechSynthesis' in window)) {
-        setIsSupported(false);
-      }
     });
+
+    const handleClickOutside = (e: MouseEvent) => {
+      if (voiceMenuRef.current && !voiceMenuRef.current.contains(e.target as Node)) {
+        setIsVoiceMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
 
     return () => {
       cancelAnimationFrame(frameId);
-      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-      }
+      document.removeEventListener('mousedown', handleClickOutside);
+      handleStop();
     };
-  }, []);
+  }, [handleStop]);
 
-  // Stop playback when language changes
+  // Synchronize voice when user switches primary language tab
   useEffect(() => {
-    if (isPlaying) {
-      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-      }
-      const frameId = requestAnimationFrame(() => {
-        setIsPlaying(false);
-        setIsPaused(false);
-      });
-      return () => cancelAnimationFrame(frameId);
+    let targetVoice: VoiceKey = 'en-us';
+    if (currentLang === 'si') {
+      targetVoice = 'si';
+    } else if (currentLang === 'ta') {
+      targetVoice = 'ta';
+    } else {
+      // If currently Sinhala or Tamil voice, default back to en-us, otherwise keep chosen English voice
+      targetVoice = selectedVoice === 'si' || selectedVoice === 'ta' ? 'en-us' : selectedVoice;
     }
-  }, [currentLang, isPlaying]);
+    setSelectedVoice(targetVoice);
+
+    if (isPlaying) {
+      handleStop();
+    }
+  }, [currentLang]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Generate clean broadcast spoken text for a story
   const getStorySpokenText = useCallback((story: Article, index: number, total: number, lang: Language) => {
-    const title = story.title[lang] || story.title.en || '';
-    const summary = story.summary[lang] || story.summary.en || '';
+    const title = (story.title[lang] || story.title.en || '').trim();
+    const summary = (story.summary[lang] || story.summary.en || '').trim();
 
     if (lang === 'si') {
-      const prefix = index === 0 ? 'ප්‍රධාන පුවත: ' : `මීළඟ පුවත: `;
-      const source = story.publisherName ? ` මූලාශ්‍රය ${story.publisherName}.` : '';
-      return `${prefix}${title}. ${summary}.${source}`;
+      const prefix = index === 0 ? 'ප්‍රධාන පුවත: ' : 'මීළඟ පුවත: ';
+      return `${prefix}${title}. ${summary}`.slice(0, 280);
     }
 
     if (lang === 'ta') {
-      const prefix = index === 0 ? 'முக்கிய செய்தி: ' : `அடுத்த செய்தி: `;
-      const source = story.publisherName ? ` ஆதாரம் ${story.publisherName}.` : '';
-      return `${prefix}${title}. ${summary}.${source}`;
+      const prefix = index === 0 ? 'முக்கிய செய்தி: ' : 'அடுத்த செய்தி: ';
+      return `${prefix}${title}. ${summary}`.slice(0, 280);
     }
 
     // English
-    const prefix = index === 0 ? 'Top headline: ' : `In other news: `;
-    const source = story.publisherName ? ` Reported by ${story.publisherName}.` : '';
-    return `${prefix}${title}. ${summary}.${source}`;
+    const prefix = index === 0 ? 'Top headline: ' : 'In other news: ';
+    return `${prefix}${title}. ${summary}`.slice(0, 280);
   }, []);
 
-  // Play a specific story index
-  const playStory = useCallback((index: number) => {
-    if (typeof window === 'undefined' || !('speechSynthesis' in window)) return;
+  // Play a specific story index using Neural TTS endpoint
+  const playStory = useCallback((index: number, voiceOverride?: VoiceKey) => {
     if (briefStories.length === 0) return;
 
     const safeIndex = Math.max(0, Math.min(index, briefStories.length - 1));
     setActiveStoryIdx(safeIndex);
 
-    window.speechSynthesis.cancel();
-
+    const voiceToUse = voiceOverride || selectedVoice;
     const story = briefStories[safeIndex];
     const spokenText = getStorySpokenText(story, safeIndex, briefStories.length, currentLang);
 
-    const utterance = new SpeechSynthesisUtterance(spokenText);
-    utterance.rate = speed;
-    utterance.pitch = 1.0;
-
-    // Pick appropriate voice
-    const voices = window.speechSynthesis.getVoices();
-    if (voices && voices.length > 0) {
-      if (currentLang === 'si') {
-        const siVoice = voices.find(v => v.lang.startsWith('si'));
-        if (siVoice) utterance.voice = siVoice;
-      } else if (currentLang === 'ta') {
-        const taVoice = voices.find(v => v.lang.startsWith('ta'));
-        if (taVoice) utterance.voice = taVoice;
-      } else {
-        const enVoice = voices.find(v => (v.lang === 'en-US' || v.lang === 'en-GB') && (v.name.includes('Natural') || v.name.includes('Google')));
-        if (enVoice) utterance.voice = enVoice;
-      }
+    // Stop current audio if playing
+    if (audioRef.current) {
+      audioRef.current.pause();
+    }
+    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
     }
 
-    utterance.onend = () => {
+    setIsLoading(true);
+    setIsPlaying(true);
+    setIsPaused(false);
+
+    const audioUrl = `/api/tts?text=${encodeURIComponent(spokenText)}&voice=${encodeURIComponent(
+      voiceToUse
+    )}&lang=${encodeURIComponent(currentLang)}`;
+
+    const audio = new Audio(audioUrl);
+    audio.playbackRate = speed;
+    audioRef.current = audio;
+
+    audio.oncanplay = () => {
+      setIsLoading(false);
+    };
+
+    audio.onended = () => {
       if (safeIndex < briefStories.length - 1) {
-        // Transition to next story smoothly
         setTimeout(() => {
-          playStoryRef.current(safeIndex + 1);
-        }, 600);
+          playStoryRef.current(safeIndex + 1, voiceToUse);
+        }, 500);
       } else {
         setIsPlaying(false);
         setIsPaused(false);
@@ -167,31 +214,56 @@ export const AudioFlashBar: React.FC<AudioFlashBarProps> = ({
       }
     };
 
-    utterance.onerror = (e) => {
-      console.warn('Speech synthesis notice:', e);
-      setIsPlaying(false);
-      setIsPaused(false);
+    audio.onerror = (e) => {
+      console.warn('Neural TTS streaming note:', e);
+      setIsLoading(false);
+
+      // Fallback to browser SpeechSynthesis if network or stream has issue
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(spokenText);
+        utterance.rate = speed;
+        utterance.onend = () => {
+          if (safeIndex < briefStories.length - 1) {
+            playStoryRef.current(safeIndex + 1, voiceToUse);
+          } else {
+            setIsPlaying(false);
+            setIsPaused(false);
+            setActiveStoryIdx(0);
+          }
+        };
+        window.speechSynthesis.speak(utterance);
+      } else {
+        setIsPlaying(false);
+        setIsPaused(false);
+      }
     };
 
-    utteranceRef.current = utterance;
-    window.speechSynthesis.speak(utterance);
-    setIsPlaying(true);
-    setIsPaused(false);
-  }, [briefStories, currentLang, speed, getStorySpokenText]);
+    audio.play().catch((err) => {
+      console.warn('Playback error (e.g. autoplay restriction):', err);
+      setIsLoading(false);
+      setIsPlaying(false);
+    });
+  }, [briefStories, currentLang, speed, selectedVoice, getStorySpokenText]);
 
   useEffect(() => {
     playStoryRef.current = playStory;
   }, [playStory]);
 
   const handlePlayToggle = () => {
-    if (!isSupported) return;
-
     if (isPlaying) {
       if (isPaused) {
-        window.speechSynthesis.resume();
+        if (audioRef.current) {
+          audioRef.current.play().catch(console.warn);
+        } else if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+          window.speechSynthesis.resume();
+        }
         setIsPaused(false);
       } else {
-        window.speechSynthesis.pause();
+        if (audioRef.current) {
+          audioRef.current.pause();
+        } else if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+          window.speechSynthesis.pause();
+        }
         setIsPaused(true);
       }
     } else {
@@ -214,8 +286,18 @@ export const AudioFlashBar: React.FC<AudioFlashBarProps> = ({
   const cycleSpeed = () => {
     const nextSpeed = speed === 1 ? 1.25 : speed === 1.25 ? 1.5 : 1;
     setSpeed(nextSpeed);
-    if (isPlaying && !isPaused) {
-      playStory(activeStoryIdx);
+    if (audioRef.current) {
+      audioRef.current.playbackRate = nextSpeed;
+    }
+  };
+
+  const handleSelectVoice = (voiceKey: VoiceKey) => {
+    setSelectedVoice(voiceKey);
+    setIsVoiceMenuOpen(false);
+
+    // If currently playing, restart active story with new voice
+    if (isPlaying) {
+      playStory(activeStoryIdx, voiceKey);
     }
   };
 
@@ -223,6 +305,7 @@ export const AudioFlashBar: React.FC<AudioFlashBarProps> = ({
 
   const currentStory = briefStories[activeStoryIdx] || briefStories[0];
   const activeTitle = currentStory.title[currentLang] || currentStory.title.en || '';
+  const currentVoiceObj = VOICE_OPTIONS.find((v) => v.id === selectedVoice) || VOICE_OPTIONS[0];
 
   return (
     <div className="relative mb-5 overflow-hidden rounded-xl border border-white/[0.08] bg-gradient-to-r from-[#12141c] via-[#101217] to-[#151722] p-3 sm:p-4 shadow-xl transition-all">
@@ -238,12 +321,14 @@ export const AudioFlashBar: React.FC<AudioFlashBarProps> = ({
             aria-label={isPlaying && !isPaused ? 'Pause 60s brief' : 'Play 60s brief'}
             className="group relative flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-rose-600 text-white shadow-lg shadow-rose-600/30 transition-transform duration-200 hover:scale-105 active:scale-95 cursor-pointer"
           >
-            {isPlaying && !isPaused ? (
+            {isLoading ? (
+              <Loader2 className="h-5 w-5 animate-spin text-white" />
+            ) : isPlaying && !isPaused ? (
               <Pause className="h-5 w-5 fill-white" />
             ) : (
               <Play className="h-5 w-5 fill-white ml-0.5" />
             )}
-            {isPlaying && !isPaused && (
+            {isPlaying && !isPaused && !isLoading && (
               <span className="absolute inset-0 rounded-full border border-rose-400 animate-ping opacity-75" />
             )}
           </button>
@@ -255,7 +340,12 @@ export const AudioFlashBar: React.FC<AudioFlashBarProps> = ({
                 {flashLabels.title[currentLang]}
               </span>
 
-              {isPlaying && !isPaused && (
+              <span className="inline-flex items-center gap-1 rounded bg-white/[0.04] border border-white/[0.08] px-1.5 py-0.5 text-[9px] font-mono text-zinc-400">
+                <Radio className="w-2.5 h-2.5 text-emerald-400" />
+                {flashLabels.neural[currentLang]}
+              </span>
+
+              {isPlaying && !isPaused && !isLoading && (
                 <div className="flex items-center gap-0.5 h-3">
                   <span className="w-0.5 bg-rose-400 h-full animate-[pulse_0.6s_ease-in-out_infinite]" />
                   <span className="w-0.5 bg-rose-400 h-2/3 animate-[pulse_0.4s_ease-in-out_infinite]" />
@@ -279,8 +369,8 @@ export const AudioFlashBar: React.FC<AudioFlashBarProps> = ({
           </div>
         </div>
 
-        {/* Right: Controls & Story Selector */}
-        <div className="flex items-center justify-between md:justify-end gap-2 sm:gap-3 border-t md:border-t-0 pt-2 md:pt-0 border-white/[0.06]">
+        {/* Right: Controls, Voice Selector & Speed */}
+        <div className="flex items-center justify-between md:justify-end gap-2 sm:gap-2.5 border-t md:border-t-0 pt-2 md:pt-0 border-white/[0.06] flex-wrap sm:flex-nowrap">
           {/* Story dots */}
           <div className="flex items-center gap-1.5">
             {briefStories.map((s, idx) => (
@@ -289,9 +379,7 @@ export const AudioFlashBar: React.FC<AudioFlashBarProps> = ({
                 onClick={() => playStory(idx)}
                 title={`Play story ${idx + 1}`}
                 className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
-                  activeStoryIdx === idx
-                    ? 'w-6 bg-rose-500'
-                    : 'w-2 bg-white/20 hover:bg-white/40'
+                  activeStoryIdx === idx ? 'w-6 bg-rose-500' : 'w-2 bg-white/20 hover:bg-white/40'
                 }`}
               />
             ))}
@@ -327,6 +415,49 @@ export const AudioFlashBar: React.FC<AudioFlashBarProps> = ({
             </button>
           </div>
 
+          {/* Voice Persona Dropdown */}
+          <div className="relative" ref={voiceMenuRef}>
+            <button
+              onClick={() => setIsVoiceMenuOpen(!isVoiceMenuOpen)}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/[0.05] hover:bg-white/10 border border-white/[0.08] text-[11px] font-mono text-zinc-200 hover:text-white transition-all cursor-pointer"
+              title="Select Voice Persona"
+            >
+              <span>{currentVoiceObj.flag}</span>
+              <span className="hidden sm:inline font-sans font-medium text-xs text-zinc-300">
+                {currentVoiceObj.shortLabel}
+              </span>
+              <ChevronDown className="w-3 h-3 text-zinc-400" />
+            </button>
+
+            {isVoiceMenuOpen && (
+              <div className="absolute right-0 bottom-full sm:bottom-auto sm:top-full mb-1 sm:mb-0 sm:mt-1 w-52 rounded-lg border border-white/10 bg-[#161822] shadow-2xl p-1.5 z-50 backdrop-blur-md animate-in fade-in zoom-in-95">
+                <div className="px-2 py-1 text-[10px] font-mono font-semibold uppercase tracking-wider text-zinc-400 border-b border-white/[0.06] mb-1">
+                  {flashLabels.voice[currentLang]}
+                </div>
+                {VOICE_OPTIONS.map((v) => {
+                  const isSelected = selectedVoice === v.id;
+                  return (
+                    <button
+                      key={v.id}
+                      onClick={() => handleSelectVoice(v.id)}
+                      className={`w-full flex items-center justify-between px-2 py-1.5 rounded text-xs transition-colors cursor-pointer ${
+                        isSelected
+                          ? 'bg-rose-500/20 text-rose-300 font-medium'
+                          : 'text-zinc-300 hover:bg-white/[0.06] hover:text-white'
+                      }`}
+                    >
+                      <span className="flex items-center gap-2">
+                        <span>{v.flag}</span>
+                        <span>{v.label}</span>
+                      </span>
+                      {isSelected && <Check className="w-3.5 h-3.5 text-rose-400" />}
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+
           {/* Speed Pill */}
           <button
             onClick={cycleSpeed}
@@ -340,7 +471,7 @@ export const AudioFlashBar: React.FC<AudioFlashBarProps> = ({
           {isPlaying && onOpenArticle && (
             <button
               onClick={() => onOpenArticle(currentStory)}
-              className="text-[11px] font-mono text-zinc-400 hover:text-rose-300 underline underline-offset-2 transition-colors cursor-pointer hidden sm:inline"
+              className="text-[11px] font-mono text-zinc-400 hover:text-rose-300 underline underline-offset-2 transition-colors cursor-pointer hidden lg:inline"
             >
               View Dispatch &rarr;
             </button>
