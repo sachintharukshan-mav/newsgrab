@@ -18,6 +18,8 @@ const newsreader = Newsreader({
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://newsgrab.lk';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {

@@ -22,6 +22,8 @@ import {
   BreadcrumbJsonLd
 } from '@/components/seo/JsonLd';
 
+export const dynamic = 'force-dynamic';
+
 export default function HomePage() {
   const [articles, setArticles] = useState<Article[]>(mockArticles);
   const [currentLang, setCurrentLang] = useState<Language>('en');
