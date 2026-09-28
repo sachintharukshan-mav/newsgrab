@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Article, Language } from '@/lib/types';
-import { Play, Pause, Square, SkipForward, SkipBack, Radio, ChevronDown, Check, Loader2 } from 'lucide-react';
+import { Play, Pause, Square, SkipForward, SkipBack, Radio, ChevronDown, Check, Loader2, Volume2 } from 'lucide-react';
 
 interface AudioFlashBarProps {
   articles: Article[];
@@ -308,10 +308,12 @@ export const AudioFlashBar: React.FC<AudioFlashBarProps> = ({
   const currentVoiceObj = VOICE_OPTIONS.find((v) => v.id === selectedVoice) || VOICE_OPTIONS[0];
 
   return (
-    <div className="relative mb-5 overflow-hidden rounded-xl border border-white/[0.08] bg-gradient-to-r from-[#12141c] via-[#101217] to-[#151722] p-3 sm:p-4 shadow-xl transition-all">
-      {/* Glow decorative accent */}
-      <div className="absolute -top-12 -left-12 w-32 h-32 bg-rose-500/10 rounded-full blur-2xl pointer-events-none" />
-      <div className="absolute -bottom-12 -right-12 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl pointer-events-none" />
+    <div className="relative mb-5 rounded-xl border border-white/[0.08] bg-gradient-to-r from-[#12141c] via-[#101217] to-[#151722] p-3 sm:p-4 shadow-xl transition-all z-20">
+      {/* Glow decorative accent isolated so overflow-hidden doesn't clip dropdowns */}
+      <div className="absolute inset-0 overflow-hidden rounded-xl pointer-events-none">
+        <div className="absolute -top-12 -left-12 w-32 h-32 bg-rose-500/10 rounded-full blur-2xl" />
+        <div className="absolute -bottom-12 -right-12 w-32 h-32 bg-amber-500/10 rounded-full blur-2xl" />
+      </div>
 
       <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-3">
         {/* Left: Broadcast Header & Title */}
@@ -334,7 +336,7 @@ export const AudioFlashBar: React.FC<AudioFlashBarProps> = ({
           </button>
 
           <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
               <span className="inline-flex items-center gap-1.5 rounded-full bg-rose-500/15 border border-rose-500/30 px-2 py-0.5 text-[10px] font-mono font-bold tracking-wider text-rose-300 uppercase">
                 <span className="h-1.5 w-1.5 rounded-full bg-rose-400 animate-pulse" />
                 {flashLabels.title[currentLang]}
@@ -418,42 +420,67 @@ export const AudioFlashBar: React.FC<AudioFlashBarProps> = ({
           {/* Voice Persona Dropdown */}
           <div className="relative" ref={voiceMenuRef}>
             <button
-              onClick={() => setIsVoiceMenuOpen(!isVoiceMenuOpen)}
-              className="flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-white/[0.05] hover:bg-white/10 border border-white/[0.08] text-[11px] font-mono text-zinc-200 hover:text-white transition-all cursor-pointer"
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsVoiceMenuOpen((prev) => !prev);
+              }}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white/[0.08] hover:bg-white/[0.14] active:bg-white/[0.18] border border-white/[0.15] text-xs font-medium text-zinc-200 hover:text-white transition-all cursor-pointer shadow-sm"
               title="Select Voice Persona"
+              aria-label="Select Voice Persona"
+              aria-expanded={isVoiceMenuOpen}
             >
+              <Volume2 className="w-3.5 h-3.5 text-rose-400 flex-shrink-0" />
+              <span className="text-[10px] text-zinc-400 uppercase tracking-wider font-mono mr-0.5">Voice:</span>
               <span>{currentVoiceObj.flag}</span>
-              <span className="hidden sm:inline font-sans font-medium text-xs text-zinc-300">
+              <span className="font-sans font-medium text-xs text-zinc-200">
                 {currentVoiceObj.shortLabel}
               </span>
-              <ChevronDown className="w-3 h-3 text-zinc-400" />
+              <ChevronDown
+                className={`w-3.5 h-3.5 text-zinc-400 transition-transform duration-200 ${
+                  isVoiceMenuOpen ? 'rotate-180' : ''
+                }`}
+              />
             </button>
 
             {isVoiceMenuOpen && (
-              <div className="absolute right-0 bottom-full sm:bottom-auto sm:top-full mb-1 sm:mb-0 sm:mt-1 w-52 rounded-lg border border-white/10 bg-[#161822] shadow-2xl p-1.5 z-50 backdrop-blur-md animate-in fade-in zoom-in-95">
-                <div className="px-2 py-1 text-[10px] font-mono font-semibold uppercase tracking-wider text-zinc-400 border-b border-white/[0.06] mb-1">
-                  {flashLabels.voice[currentLang]}
+              <div
+                className="absolute right-0 top-full mt-2 w-64 rounded-xl border border-white/20 bg-[#161824] shadow-2xl p-2 z-50 backdrop-blur-2xl ring-1 ring-black/70 animate-in fade-in slide-in-from-top-1"
+                style={{ minWidth: '240px' }}
+              >
+                <div className="px-2.5 py-1.5 text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-400 border-b border-white/[0.08] mb-1.5 flex items-center justify-between">
+                  <span>{flashLabels.voice[currentLang]}</span>
+                  <span className="text-[9px] text-rose-400 font-mono">Neural HD</span>
                 </div>
-                {VOICE_OPTIONS.map((v) => {
-                  const isSelected = selectedVoice === v.id;
-                  return (
-                    <button
-                      key={v.id}
-                      onClick={() => handleSelectVoice(v.id)}
-                      className={`w-full flex items-center justify-between px-2 py-1.5 rounded text-xs transition-colors cursor-pointer ${
-                        isSelected
-                          ? 'bg-rose-500/20 text-rose-300 font-medium'
-                          : 'text-zinc-300 hover:bg-white/[0.06] hover:text-white'
-                      }`}
-                    >
-                      <span className="flex items-center gap-2">
-                        <span>{v.flag}</span>
-                        <span>{v.label}</span>
-                      </span>
-                      {isSelected && <Check className="w-3.5 h-3.5 text-rose-400" />}
-                    </button>
-                  );
-                })}
+                <div className="flex flex-col gap-1">
+                  {VOICE_OPTIONS.map((v) => {
+                    const isSelected = selectedVoice === v.id;
+                    return (
+                      <button
+                        key={v.id}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleSelectVoice(v.id);
+                        }}
+                        className={`w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-xs transition-all cursor-pointer text-left ${
+                          isSelected
+                            ? 'bg-rose-500/25 border border-rose-500/40 text-rose-200 font-semibold shadow-inner'
+                            : 'text-zinc-200 hover:bg-white/[0.08] hover:text-white border border-transparent'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2.5">
+                          <span className="text-base">{v.flag}</span>
+                          <div className="flex flex-col">
+                            <span className="font-medium text-xs leading-tight text-zinc-100">{v.label}</span>
+                            <span className="text-[10px] text-zinc-400 font-mono">
+                              {v.langGroup === 'en' ? 'English' : v.langGroup === 'si' ? 'Sinhala' : 'Tamil'}
+                            </span>
+                          </div>
+                        </div>
+                        {isSelected && <Check className="w-4 h-4 text-rose-400 flex-shrink-0 ml-2" />}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
             )}
           </div>
