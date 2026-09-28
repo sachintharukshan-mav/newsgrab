@@ -1,7 +1,7 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "newsgrab",
-  "main": ".open-next/worker.js",
+  "main": "worker-entry.js",
   "compatibility_date": "2025-01-01",
   "compatibility_flags": [
     "nodejs_compat"
@@ -9,6 +9,24 @@
   "assets": {
     "directory": ".open-next/assets",
     "binding": "ASSETS"
+  },
+  "kv_namespaces": [
+    {
+      "binding": "NEWS_CACHE",
+      "id": "81e26ff330b64e94a53d2db99067ac7e"
+    }
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "newsgrab_db",
+      "database_id": "c3857545-fc84-4d5f-b80e-ac57487cc049"
+    }
+  ],
+  "triggers": {
+    "crons": [
+      "*/15 * * * *"
+    ]
   },
   "vars": {
     "NEXT_PUBLIC_ADSENSE_CLIENT_ID": "ca-pub-1562210028522673",

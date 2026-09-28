@@ -73,7 +73,7 @@ export const metadata: Metadata = {
     siteName: 'NEWSGRAB',
     images: [
       {
-        url: 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1200&q=80',
+        url: '/api/og',
         width: 1200,
         height: 630,
         alt: 'NEWSGRAB Digital Newsroom Dispatch',
@@ -89,7 +89,7 @@ export const metadata: Metadata = {
     description: 'Real-time multi-newsroom reporting and verified financial data for Sri Lanka.',
     site: '@newsgrab_lk',
     creator: '@newsgrab_lk',
-    images: ['https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1200&q=80'],
+    images: ['/api/og'],
   },
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || 'google-site-verification-newsgrab-lk',
