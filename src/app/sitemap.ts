@@ -1,5 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { mockArticles } from '@/lib/mock-data';
+import { getAggregatedArticles } from '@/lib/news-service';
 import { Category } from '@/lib/types';
 
 const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://newsgrab.lk';
@@ -8,6 +9,10 @@ export const revalidate = 3600; // Refresh sitemap hourly
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date();
+
+  // Fetch live ingested articles from memory/KV cache
+  const liveArticles = await getAggregatedArticles('en').catch(() => []);
+  const articlesPool = liveArticles.length > 0 ? liveArticles : mockArticles;
 
   // 1. Root and Trilingual Homepages
   const rootEntry: MetadataRoute.Sitemap[number] = {
@@ -51,8 +56,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   }));
 
-  // 3. Current Major Editorial & Wire Dispatches
-  const articleEntries: MetadataRoute.Sitemap = mockArticles.map((a) => {
+  // 3. Current Major Editorial & Wire Dispatches (Up to 150 dispatches)
+  const articleEntries: MetadataRoute.Sitemap = articlesPool.slice(0, 150).map((a) => {
     const pubDate = a.publishedAt ? new Date(a.publishedAt) : now;
     return {
       url: `${SITE_URL}/?article=${encodeURIComponent(a.id)}`,
