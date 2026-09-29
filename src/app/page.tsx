@@ -12,6 +12,7 @@ import { PublisherBar } from '@/components/news/PublisherBar';
 import { FullArticlePage } from '@/components/news/FullArticlePage';
 import { SavedArticlesDrawer } from '@/components/news/SavedArticlesDrawer';
 import { AudioFlashBar } from '@/components/audio/AudioFlashBar';
+import { InternationalLiveWire } from '@/components/news/InternationalLiveWire';
 import { AdBanner } from '@/components/ads/AdBanner';
 import { StickyMobileAd } from '@/components/ads/StickyMobileAd';
 import {
@@ -544,6 +545,11 @@ export default function HomePage() {
             articles={filteredArticles}
             currentLang={currentLang}
             onOpenArticle={handleOpenArticle}
+          />
+
+          {/* 24/7 International Newsroom Live Streams */}
+          <InternationalLiveWire
+            currentLang={currentLang}
           />
 
           {/* Newsroom Publisher Filter Strip (Dynamic to Active Category) */}
