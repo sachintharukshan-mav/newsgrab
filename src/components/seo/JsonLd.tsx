@@ -92,7 +92,7 @@ export const NewsArticleJsonLd: React.FC<NewsArticleJsonLdProps> = ({ article, c
     },
     headline: title.slice(0, 110),
     description: summary,
-    image: article.imageUrl ? [article.imageUrl] : [`${SITE_URL}/og-default.jpg`],
+    image: article.imageUrl ? [article.imageUrl] : [`${SITE_URL}/api/og`],
     datePublished: article.publishedAt,
     dateModified: article.publishedAt,
     articleSection: article.category,

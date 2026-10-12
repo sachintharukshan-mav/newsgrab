@@ -14,7 +14,6 @@ import { SavedArticlesDrawer } from '@/components/news/SavedArticlesDrawer';
 import { AudioFlashBar } from '@/components/audio/AudioFlashBar';
 import { InternationalLiveWire } from '@/components/news/InternationalLiveWire';
 import { AdBanner } from '@/components/ads/AdBanner';
-import { StickyMobileAd } from '@/components/ads/StickyMobileAd';
 import {
   OrganizationJsonLd,
   WebSiteJsonLd,
@@ -300,14 +299,14 @@ export default function HomePage() {
   const handleOpenArticle = (article: Article) => {
     setSelectedArticle(article);
     if (typeof window !== 'undefined') {
-      window.history.pushState({ articleId: article.id }, '', `?article=${encodeURIComponent(article.id)}`);
+      window.history.pushState({ articleId: article.id }, '', `/article/${encodeURIComponent(article.id)}?lang=${currentLang}`);
     }
   };
 
   const handleBackToFrontPage = () => {
     setSelectedArticle(null);
     if (typeof window !== 'undefined') {
-      window.history.pushState(null, '', window.location.pathname);
+      window.history.pushState(null, '', `/?lang=${currentLang}`);
     }
   };
 
@@ -497,7 +496,6 @@ export default function HomePage() {
               format="billboard"
               slotId="home-top-billboard"
               adSlot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_TOP_LEADERBOARD}
-              sponsorName="Commercial Bank of Ceylon"
             />
           </div>
 
@@ -578,16 +576,12 @@ export default function HomePage() {
               format="multiplex"
               slotId="home-bottom-multiplex"
               adSlot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_MULTIPLEX}
-              sponsorName="Sponsored Industry Intelligence"
             />
           </div>
         </main>
       )}
 
-      {/* 4. Mobile Sticky Ad Unit */}
-      <StickyMobileAd />
-
-      {/* 5. Saved Dispatches & Reading Queue Slide-Over Drawer */}
+      {/* Saved Dispatches & Reading Queue Slide-Over Drawer */}
       <SavedArticlesDrawer
         isOpen={isSavedDrawerOpen}
         onClose={() => setIsSavedDrawerOpen(false)}

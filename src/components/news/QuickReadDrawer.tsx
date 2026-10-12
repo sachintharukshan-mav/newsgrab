@@ -3,7 +3,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Article, ExecutiveBrief, Language } from '@/lib/types';
 import { X, Share2, Check, ArrowLeft, Clock, ExternalLink, Sparkles, Zap, Quote, ShieldCheck, Loader2 } from 'lucide-react';
-import { AdBanner } from '@/components/ads/AdBanner';
 import { buildOptimisticBrief } from '@/lib/brief-utils';
 
 interface QuickReadDrawerProps {
@@ -440,23 +439,6 @@ export const QuickReadDrawer: React.FC<QuickReadDrawerProps> = ({
             </div>
           </div>
 
-          {/* In-Article Monetization Slot #1 */}
-          <div className="py-2">
-            <AdBanner
-              format="mrec"
-              slotId="in-article-ad-1"
-              sponsorName="Sampath Bank Vishwa"
-            />
-          </div>
-
-          {/* In-Article Monetization Slot #2 */}
-          <div className="py-4 border-t border-divider">
-            <AdBanner
-              format="leaderboard"
-              slotId="in-article-ad-2"
-              sponsorName="Commercial Bank of Ceylon"
-            />
-          </div>
 
           {/* Cross-Publisher Perspectives (Deduplication) */}
           {article.perspectives && article.perspectives.length > 0 && (

@@ -2,52 +2,16 @@ import { NextRequest, NextResponse } from 'next/server';
 import { fetchFullArticle } from '@/lib/full-article-extractor';
 import { synthesizeExecutiveBrief, getCachedBrief } from '@/lib/gemini-synthesizer';
 import { Language } from '@/lib/types';
-
-function isSafeUrl(rawUrl: string): boolean {
-  try {
-    const parsed = new URL(rawUrl);
-    if (parsed.protocol !== 'http:' && parsed.protocol !== 'https:') {
-      return false;
-    }
-    const hostname = parsed.hostname.toLowerCase();
-    if (
-      hostname === 'localhost' ||
-      hostname === '127.0.0.1' ||
-      hostname === '0.0.0.0' ||
-      hostname === '::1' ||
-      hostname === '[::1]' ||
-      hostname.endsWith('.localhost') ||
-      hostname.endsWith('.local') ||
-      hostname.endsWith('.internal')
-    ) {
-      return false;
-    }
-
-    // Check private/link-local IPv4
-    const ipv4Match = hostname.match(/^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/);
-    if (ipv4Match) {
-      const [, a, b] = ipv4Match.map(Number);
-      if (a === 10) return false;
-      if (a === 127) return false;
-      if (a === 169 && b === 254) return false;
-      if (a === 172 && b >= 16 && b <= 31) return false;
-      if (a === 192 && b === 168) return false;
-      if (a === 0) return false;
-    }
-
-    return true;
-  } catch {
-    return false;
-  }
-}
+import { isAllowedPublisherUrl, clampParam } from '@/lib/url-safety';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const url = searchParams.get('url');
-  const headline = searchParams.get('headline') || 'Sri Lanka News Dispatch';
-  const publisher = searchParams.get('publisher') || 'Newsroom Wire';
+  // Clamp free-text params: they are interpolated into the Gemini prompt.
+  const headline = clampParam(searchParams.get('headline'), 300, 'Sri Lanka News Dispatch');
+  const publisher = clampParam(searchParams.get('publisher'), 80, 'Newsroom Wire');
   const rawLang = searchParams.get('lang') || 'en';
-  const fallbackSummary = searchParams.get('fallback') || '';
+  const fallbackSummary = clampParam(searchParams.get('fallback'), 2000);
 
   const lang: Language = (rawLang === 'si' || rawLang === 'ta') ? rawLang : 'en';
 
@@ -55,7 +19,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Missing article URL parameter' }, { status: 400 });
   }
 
-  if (!isSafeUrl(url)) {
+  // Only fetch/synthesize articles from syndicated publisher domains.
+  if (!isAllowedPublisherUrl(url)) {
     return NextResponse.json({ error: 'Invalid or restricted article URL' }, { status: 400 });
   }
 

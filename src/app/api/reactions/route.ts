@@ -3,12 +3,15 @@ import { getCloudflareEnv } from '@/lib/cloudflare';
 
 export const dynamic = 'force-dynamic';
 
+const ALLOWED_EMOJIS = new Set(['🔥', '🚀', '📉', '🇱🇰', '🤔', '👍', '❤️', '👏', '💡']);
+const TARGET_ID_REGEX = /^[a-zA-Z0-9_\-:]{1,128}$/;
+
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
-  const targetId = searchParams.get('targetId');
+  const targetId = searchParams.get('targetId')?.trim();
 
-  if (!targetId) {
-    return NextResponse.json({ error: 'Missing targetId' }, { status: 400 });
+  if (!targetId || !TARGET_ID_REGEX.test(targetId)) {
+    return NextResponse.json({ error: 'Invalid or missing targetId' }, { status: 400 });
   }
 
   const env = await getCloudflareEnv();
@@ -40,10 +43,15 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { targetId, emoji } = body;
+    const targetId = typeof body.targetId === 'string' ? body.targetId.trim() : '';
+    const emoji = typeof body.emoji === 'string' ? body.emoji.trim() : '';
 
-    if (!targetId || !emoji) {
-      return NextResponse.json({ error: 'Missing targetId or emoji' }, { status: 400 });
+    if (!targetId || !TARGET_ID_REGEX.test(targetId)) {
+      return NextResponse.json({ error: 'Invalid or missing targetId' }, { status: 400 });
+    }
+
+    if (!emoji || !ALLOWED_EMOJIS.has(emoji)) {
+      return NextResponse.json({ error: 'Unsupported emoji reaction' }, { status: 400 });
     }
 
     const env = await getCloudflareEnv();

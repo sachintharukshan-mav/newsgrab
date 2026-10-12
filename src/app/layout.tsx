@@ -92,10 +92,10 @@ export const metadata: Metadata = {
     images: ['/api/og'],
   },
   verification: {
-    google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || 'google-site-verification-newsgrab-lk',
-    yandex: process.env.NEXT_PUBLIC_YANDEX_VERIFICATION,
+    ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ? { google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION } : {}),
+    ...(process.env.NEXT_PUBLIC_YANDEX_VERIFICATION ? { yandex: process.env.NEXT_PUBLIC_YANDEX_VERIFICATION } : {}),
     other: {
-      'msvalidate.01': [process.env.NEXT_PUBLIC_BING_VERIFICATION || ''],
+      ...(process.env.NEXT_PUBLIC_BING_VERIFICATION ? { 'msvalidate.01': [process.env.NEXT_PUBLIC_BING_VERIFICATION] } : {}),
       'google-adsense-account': [process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || 'ca-pub-1562210028522673'],
     },
   },

@@ -59,18 +59,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // 3. Current Major Editorial & Wire Dispatches (Up to 150 dispatches)
   const articleEntries: MetadataRoute.Sitemap = articlesPool.slice(0, 150).map((a) => {
     const pubDate = a.publishedAt ? new Date(a.publishedAt) : now;
+    const articlePath = `/article/${encodeURIComponent(a.id)}`;
     return {
-      url: `${SITE_URL}/?article=${encodeURIComponent(a.id)}`,
+      url: `${SITE_URL}${articlePath}`,
       lastModified: isNaN(pubDate.getTime()) ? now : pubDate,
       changeFrequency: 'daily',
       priority: 0.8,
       images: a.imageUrl ? [a.imageUrl] : undefined,
       alternates: {
         languages: {
-          'en-LK': `${SITE_URL}/?article=${encodeURIComponent(a.id)}&lang=en`,
-          'si-LK': `${SITE_URL}/?article=${encodeURIComponent(a.id)}&lang=si`,
-          'ta-LK': `${SITE_URL}/?article=${encodeURIComponent(a.id)}&lang=ta`,
-          'x-default': `${SITE_URL}/?article=${encodeURIComponent(a.id)}`,
+          'en-LK': `${SITE_URL}${articlePath}?lang=en`,
+          'si-LK': `${SITE_URL}${articlePath}?lang=si`,
+          'ta-LK': `${SITE_URL}${articlePath}?lang=ta`,
+          'x-default': `${SITE_URL}${articlePath}`,
         },
       },
     };

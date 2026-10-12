@@ -25,16 +25,16 @@ const EMOJIS = [
   { char: '🤔', label: 'Skeptical' },
 ];
 
-const getDefaultCounts = (id: string): Record<string, number> => ({
-  '🔥': 14 + (id.charCodeAt(0) % 10),
-  '🚀': 8 + (id.charCodeAt(1) % 7),
-  '📉': 6 + (id.charCodeAt(2) % 5),
-  '🇱🇰': 22 + (id.charCodeAt(3) % 15),
-  '🤔': 11 + (id.charCodeAt(0) % 8),
+const getDefaultCounts = (): Record<string, number> => ({
+  '🔥': 0,
+  '🚀': 0,
+  '📉': 0,
+  '🇱🇰': 0,
+  '🤔': 0,
 });
 
 export const EmojiReaction: React.FC<EmojiReactionProps> = ({ id, className }) => {
-  const [counts, setCounts] = useState<Record<string, number>>(() => getDefaultCounts(id));
+  const [counts, setCounts] = useState<Record<string, number>>(() => getDefaultCounts());
   const [particles, setParticles] = useState<Particle[]>([]);
   const [selectedEmoji, setSelectedEmoji] = useState<string | null>(null);
 

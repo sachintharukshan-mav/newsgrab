@@ -132,7 +132,6 @@ export const BentoGrid: React.FC<BentoGridProps> = ({
       <AdBanner
         format="leaderboard"
         slotId="broadsheet-top-ad"
-        sponsorName="Commercial Bank of Ceylon"
       />
 
       {/* 3. Main Broadsheet Split: Grid Stories (Left) & The Wire (Right) */}
@@ -222,7 +221,6 @@ export const BentoGrid: React.FC<BentoGridProps> = ({
             <AdBanner
               format="mrec"
               slotId="sidebar-mrec-ad"
-              sponsorName="Sri Lanka Telecom"
             />
           </div>
         </aside>

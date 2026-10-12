@@ -298,3 +298,24 @@ export async function refreshAllNewsFeeds(): Promise<Record<Language, number>> {
     ta: taArticles.length
   };
 }
+
+/**
+ * Resolves a single article by ID across active language caches, KV storage, or fallback pool.
+ */
+export async function getArticleById(id: string, lang: Language = 'en'): Promise<Article | null> {
+  const decodedId = decodeURIComponent(id);
+  const articles = await getAggregatedArticles(lang);
+  let found = articles.find((a) => a.id === decodedId || a.id === id);
+  if (found) return found;
+
+  // Search across alternative language caches if not found in requested language
+  const otherLangs: Language[] = (['en', 'si', 'ta'] as Language[]).filter((l) => l !== lang);
+  for (const altLang of otherLangs) {
+    const altArticles = await getAggregatedArticles(altLang);
+    found = altArticles.find((a) => a.id === decodedId || a.id === id);
+    if (found) return found;
+  }
+
+  // Fallback to mock pool
+  return mockArticles.find((a) => a.id === decodedId || a.id === id) || null;
+}

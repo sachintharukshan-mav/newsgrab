@@ -636,7 +636,6 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
               <AdBanner
                 format="leaderboard"
                 slotId="fullpage-article-ad-1"
-                sponsorName="Commercial Bank Remittance"
               />
             </div>
 
@@ -682,15 +681,6 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
               </div>
             </div>
 
-            {/* In-Article Monetization Slot #2 */}
-            <div className="py-4 border-t border-divider">
-              <AdBanner
-                format="leaderboard"
-                slotId="fullpage-article-ad-2"
-                sponsorName="Sampath Bank Vishwa"
-              />
-            </div>
-
             {/* Cross-Publisher Verification Matrix */}
             {article.perspectives && article.perspectives.length > 0 && (
               <div className="space-y-3 pt-6 border-t border-divider">
@@ -731,7 +721,6 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
                 format="multiplex"
                 slotId="article-bottom-multiplex"
                 adSlot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_MULTIPLEX}
-                sponsorName="Sponsored Market Recommendations"
               />
             </div>
 
@@ -772,7 +761,6 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
               <AdBanner
                 format="mrec"
                 slotId="fullpage-sidebar-mrec"
-                sponsorName="Sri Lanka Telecom"
               />
 
               {/* The Colombo Wire: More Dispatches */}

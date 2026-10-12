@@ -11,12 +11,15 @@ export default {
     ctx.waitUntil(
       (async () => {
         try {
+          if (!env.CRON_SECRET) {
+            console.error('[NewsGrab Cron] CRON_SECRET is not set. Run `wrangler secret put CRON_SECRET`.');
+            return;
+          }
           const cronUrl = 'https://newsgrab.internal/api/cron/scrape';
           const cronReq = new Request(cronUrl, {
             method: 'GET',
             headers: {
-              'x-cron-trigger': 'true',
-              ...(env.CRON_SECRET ? { authorization: `Bearer ${env.CRON_SECRET}` } : {})
+              authorization: `Bearer ${env.CRON_SECRET}`
             }
           });
           const res = await openNextWorker.fetch(cronReq, env, ctx);
