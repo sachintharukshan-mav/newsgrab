@@ -29,6 +29,49 @@ export const BentoGrid: React.FC<BentoGridProps> = ({
   onToggleSave
 }) => {
   const [visibleCount, setVisibleCount] = React.useState<number>(10);
+  const sentinelRef = React.useRef<HTMLDivElement>(null);
+  const compactSentinelRef = React.useRef<HTMLDivElement>(null);
+
+  // Reset pagination when articles list changes (e.g., category or search change)
+  React.useEffect(() => {
+    setVisibleCount(10);
+  }, [articles, viewMode]);
+
+  const headlineCount = Math.min(5, articles.length);
+  const headlineStories = articles.slice(0, headlineCount);
+  const otherStories = articles.slice(headlineCount);
+  const isSinhala = currentLang === 'si';
+  const isTamil = currentLang === 'ta';
+
+  const hasMoreBroadsheet = otherStories.length > visibleCount;
+  const hasMoreCompact = articles.length > visibleCount * 3;
+
+  // Infinite Scroll IntersectionObserver (Auto-loads next batch as reader nears bottom)
+  React.useEffect(() => {
+    const target = viewMode === 'compact' ? compactSentinelRef.current : sentinelRef.current;
+    if (!target) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        if (entry && entry.isIntersecting) {
+          setVisibleCount((prev) => {
+            const max = viewMode === 'compact' ? Math.ceil(articles.length / 3) : otherStories.length;
+            const step = viewMode === 'compact' ? 10 : 8;
+            return Math.min(prev + step, max);
+          });
+        }
+      },
+      {
+        root: null,
+        rootMargin: '450px', // Begin auto-loading 450px before reader reaches sentinel
+        threshold: 0,
+      }
+    );
+
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, [viewMode, otherStories.length, articles.length, visibleCount]);
 
   if (articles.length === 0) {
     return (
@@ -44,12 +87,6 @@ export const BentoGrid: React.FC<BentoGridProps> = ({
     );
   }
 
-  const headlineCount = Math.min(5, articles.length);
-  const headlineStories = articles.slice(0, headlineCount);
-  const otherStories = articles.slice(headlineCount);
-  const isSinhala = currentLang === 'si';
-  const isTamil = currentLang === 'ta';
-
   // Compact The Wire View (Full-width high density chronological stream)
   if (viewMode === 'compact') {
     const compactArticles = articles.slice(0, visibleCount * 3);
@@ -57,57 +94,84 @@ export const BentoGrid: React.FC<BentoGridProps> = ({
     return (
       <div className="space-y-4 my-6">
         <div className="space-y-1 divide-y divide-white/[0.06] border-y border-white/[0.08]">
-          {compactArticles.map((article) => {
+          {compactArticles.map((article, index) => {
             const title = article.title[currentLang] || article.title.en;
             const timeAgo = formatRelativeTime(article.publishedAt, currentLang);
 
             return (
-              <div
-                key={article.id}
-                onClick={() => onOpenQuickRead(article)}
-                className="group py-3 px-2 flex items-baseline justify-between gap-4 cursor-pointer hover:bg-white/[0.02] transition-colors"
-              >
-                <div className="flex items-baseline gap-4 flex-1">
-                  <span className="font-mono text-xs text-zinc-400 flex-shrink-0" suppressHydrationWarning>{timeAgo}</span>
-                  <span className="font-mono text-[11px] text-zinc-400 uppercase flex-shrink-0 w-28 truncate">
-                    {article.publisherName}
-                  </span>
-                  <h4
-                    className={`text-sm sm:text-base text-zinc-200 group-hover:text-white font-medium transition-colors ${
-                      isSinhala ? 'font-sinhala' : ''
-                    } ${isTamil ? 'font-tamil' : ''}`}
-                  >
-                    {title}
-                  </h4>
-                </div>
-                <div className="flex items-center gap-2 flex-shrink-0">
-                  {onToggleSave && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        onToggleSave(article);
-                      }}
-                      className="p-1 text-zinc-500 hover:text-rose-400 transition-colors cursor-pointer"
-                      title={savedArticleIds.includes(article.id) ? 'Remove bookmark' : 'Bookmark for later'}
+              <React.Fragment key={article.id}>
+                <div
+                  onClick={() => onOpenQuickRead(article)}
+                  className="group py-3 px-2 flex items-baseline justify-between gap-4 cursor-pointer hover:bg-white/[0.02] transition-colors"
+                >
+                  <div className="flex items-baseline gap-4 flex-1">
+                    <span className="font-mono text-xs text-zinc-400 flex-shrink-0" suppressHydrationWarning>{timeAgo}</span>
+                    <span className="font-mono text-[11px] text-zinc-400 uppercase flex-shrink-0 w-28 truncate">
+                      {article.publisherName}
+                    </span>
+                    <h4
+                      className={`text-sm sm:text-base text-zinc-200 group-hover:text-white font-medium transition-colors ${
+                        isSinhala ? 'font-sinhala' : ''
+                      } ${isTamil ? 'font-tamil' : ''}`}
                     >
-                      <Bookmark className={`w-3.5 h-3.5 ${savedArticleIds.includes(article.id) ? 'text-rose-400 fill-current' : ''}`} />
-                    </button>
-                  )}
-                  <ArrowUpRight className="w-3.5 h-3.5 text-zinc-400 group-hover:text-white transition-colors" />
+                      {title}
+                    </h4>
+                  </div>
+                  <div className="flex items-center gap-2 flex-shrink-0">
+                    {onToggleSave && (
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onToggleSave(article);
+                        }}
+                        className="p-1 text-zinc-500 hover:text-rose-400 transition-colors cursor-pointer"
+                        title={savedArticleIds.includes(article.id) ? 'Remove bookmark' : 'Bookmark for later'}
+                      >
+                        <Bookmark className={`w-3.5 h-3.5 ${savedArticleIds.includes(article.id) ? 'text-rose-400 fill-current' : ''}`} />
+                      </button>
+                    )}
+                    <ArrowUpRight className="w-3.5 h-3.5 text-zinc-400 group-hover:text-white transition-colors" />
+                  </div>
                 </div>
-              </div>
+
+                {/* In-feed programmatic ad slot every 15 compact stories */}
+                {(index + 1) % 15 === 0 && index < compactArticles.length - 1 && (
+                  <div className="py-4">
+                    <AdBanner
+                      format="infeed"
+                      slotId={`infeed-compact-ad-${Math.floor((index + 1) / 15)}`}
+                      adSlot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_INFEED}
+                    />
+                  </div>
+                )}
+              </React.Fragment>
             );
           })}
         </div>
 
-        {articles.length > compactArticles.length && (
-          <div className="pt-4 text-center">
-            <button
-              onClick={() => setVisibleCount((prev) => prev + 15)}
-              className="px-6 py-2.5 rounded bg-white/[0.05] hover:bg-white/10 text-xs font-mono font-semibold uppercase tracking-wider text-zinc-200 hover:text-white transition-all border border-white/[0.08] cursor-pointer"
-            >
-              Load More Dispatches ({articles.length - compactArticles.length} remaining)
-            </button>
+        {/* Compact Auto-load Sentinel */}
+        {hasMoreCompact && (
+          <div ref={compactSentinelRef} className="pt-6 pb-2 text-center space-y-2">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.03] border border-white/[0.06] text-xs font-mono text-zinc-400">
+              <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping" />
+              <span>Auto-loading chronological stream...</span>
+            </div>
+            <div>
+              <button
+                onClick={() => setVisibleCount((prev) => prev + 10)}
+                className="text-[11px] font-mono text-zinc-500 hover:text-zinc-300 underline underline-offset-4 cursor-pointer"
+              >
+                Load immediately ({articles.length - compactArticles.length} remaining)
+              </button>
+            </div>
+          </div>
+        )}
+
+        {!hasMoreCompact && articles.length > 15 && (
+          <div className="pt-8 pb-4 text-center border-t border-white/[0.06] mt-4">
+            <p className="text-xs font-mono text-zinc-500">
+              ✓ All {articles.length} dispatches loaded · 24/7 Colombo Wire up to date
+            </p>
           </div>
         )}
       </div>
@@ -139,28 +203,54 @@ export const BentoGrid: React.FC<BentoGridProps> = ({
         {/* Primary Story Cards (8 Columns) */}
         <div className="lg:col-span-8 space-y-6">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            {gridStories.map((article) => (
-              <NewsCard
-                key={article.id}
-                article={article}
-                currentLang={currentLang}
-                onOpenQuickRead={onOpenQuickRead}
-                variant="standard"
-                isSaved={savedArticleIds.includes(article.id)}
-                onToggleSave={onToggleSave}
-              />
+            {gridStories.map((article, index) => (
+              <React.Fragment key={article.id}>
+                <NewsCard
+                  article={article}
+                  currentLang={currentLang}
+                  onOpenQuickRead={onOpenQuickRead}
+                  variant="standard"
+                  isSaved={savedArticleIds.includes(article.id)}
+                  onToggleSave={onToggleSave}
+                />
+
+                {/* In-feed Ad Banner after every 8 articles (Spans both columns) */}
+                {(index + 1) % 8 === 0 && index < gridStories.length - 1 && (
+                  <div className="col-span-1 sm:col-span-2 my-2">
+                    <AdBanner
+                      format="infeed"
+                      slotId={`infeed-grid-ad-${Math.floor((index + 1) / 8)}`}
+                      adSlot={process.env.NEXT_PUBLIC_ADSENSE_SLOT_INFEED}
+                    />
+                  </div>
+                )}
+              </React.Fragment>
             ))}
           </div>
 
-          {/* Load More Button for Broadsheet Grid */}
-          {otherStories.length > visibleCount && (
-            <div className="pt-6 text-center">
-              <button
-                onClick={() => setVisibleCount((prev) => prev + 10)}
-                className="px-8 py-3 rounded bg-[#15171e] hover:bg-white/10 text-xs font-mono font-bold uppercase tracking-wider text-zinc-200 hover:text-white transition-all border border-white/[0.08] shadow-sm cursor-pointer"
-              >
-                Load 10 More Dispatches ({otherStories.length - visibleCount} remaining)
-              </button>
+          {/* Broadsheet Infinite Scroll Auto-load Sentinel */}
+          {hasMoreBroadsheet && (
+            <div ref={sentinelRef} className="pt-6 pb-2 text-center space-y-2">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/[0.03] border border-white/[0.06] text-xs font-mono text-zinc-400">
+                <span className="w-2 h-2 rounded-full bg-rose-500 animate-ping" />
+                <span>Auto-loading next dispatches...</span>
+              </div>
+              <div>
+                <button
+                  onClick={() => setVisibleCount((prev) => prev + 8)}
+                  className="text-[11px] font-mono text-zinc-500 hover:text-zinc-300 underline underline-offset-4 cursor-pointer"
+                >
+                  Load immediately ({otherStories.length - visibleCount} remaining)
+                </button>
+              </div>
+            </div>
+          )}
+
+          {!hasMoreBroadsheet && otherStories.length > 8 && (
+            <div className="pt-8 pb-4 text-center border-t border-white/[0.06] mt-4">
+              <p className="text-xs font-mono text-zinc-500">
+                ✓ All {articles.length} dispatches loaded · 24/7 Colombo Wire up to date
+              </p>
             </div>
           )}
         </div>
@@ -182,38 +272,38 @@ export const BentoGrid: React.FC<BentoGridProps> = ({
               <span className="text-[10px] font-mono text-zinc-400">Continuous Stream</span>
             </div>
 
-          <div className="divide-y divide-white/[0.06] space-y-3">
-            {wireStories.map((article) => {
-              const title = article.title[currentLang] || article.title.en;
-              const timeAgo = formatRelativeTime(article.publishedAt, currentLang);
-              return (
-                <div
-                  key={article.id}
-                  onClick={() => onOpenQuickRead(article)}
-                  className="pt-3 group cursor-pointer space-y-1.5 transition-transform duration-200 hover:translate-x-1"
-                >
-                  <div className="flex items-center justify-between text-[11px] font-mono text-zinc-400">
-                    <div className="flex items-center gap-1.5">
-                      <span className="font-medium text-zinc-300">{article.publisherName}</span>
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/[0.04]">
-                        {article.region === 'world' ? '🌐 World' : '🇱🇰 SL'}
+            <div className="divide-y divide-white/[0.06] space-y-3">
+              {wireStories.map((article) => {
+                const title = article.title[currentLang] || article.title.en;
+                const timeAgo = formatRelativeTime(article.publishedAt, currentLang);
+                return (
+                  <div
+                    key={article.id}
+                    onClick={() => onOpenQuickRead(article)}
+                    className="pt-3 group cursor-pointer space-y-1.5 transition-transform duration-200 hover:translate-x-1"
+                  >
+                    <div className="flex items-center justify-between text-[11px] font-mono text-zinc-400">
+                      <div className="flex items-center gap-1.5">
+                        <span className="font-medium text-zinc-300">{article.publisherName}</span>
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/[0.04]">
+                          {article.region === 'world' ? '🌐 World' : '🇱🇰 SL'}
+                        </span>
+                      </div>
+                      <span className="text-[10px] text-zinc-500 font-sans" suppressHydrationWarning>
+                        {timeAgo}
                       </span>
                     </div>
-                    <span className="text-[10px] text-zinc-500 font-sans" suppressHydrationWarning>
-                      {timeAgo}
-                    </span>
+                    <h4
+                      className={`text-sm font-semibold text-zinc-200 group-hover:text-white transition-colors line-clamp-2 leading-snug ${
+                        isSinhala ? 'font-sinhala' : ''
+                      } ${isTamil ? 'font-tamil' : ''}`}
+                    >
+                      {title}
+                    </h4>
                   </div>
-                  <h4
-                    className={`text-sm font-semibold text-zinc-200 group-hover:text-white transition-colors line-clamp-2 leading-snug ${
-                      isSinhala ? 'font-sinhala' : ''
-                    } ${isTamil ? 'font-tamil' : ''}`}
-                  >
-                    {title}
-                  </h4>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
           </div>
 
           {/* Sidebar MREC Ad Unit */}
