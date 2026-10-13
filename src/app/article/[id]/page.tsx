@@ -5,8 +5,7 @@ import { getArticleById } from '@/lib/news-service';
 import { Language } from '@/lib/types';
 import { NewsArticleJsonLd } from '@/components/seo/JsonLd';
 import { ArticleViewContainer } from '@/components/news/ArticleViewContainer';
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://newsgrab.lk';
+import { getSiteUrl } from '@/lib/site-config';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -22,6 +21,7 @@ export async function generateMetadata({
   const { id } = await params;
   const { lang = 'en' } = await searchParams;
   const currentLang = (lang === 'si' || lang === 'ta' ? lang : 'en') as Language;
+  const SITE_URL = getSiteUrl();
 
   const article = await getArticleById(id, currentLang);
   if (!article) {

@@ -2,8 +2,9 @@
 
 import React from 'react';
 import { Article, Category, Language } from '@/lib/types';
+import { getSiteUrl } from '@/lib/site-config';
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://newsgrab.lk';
+const SITE_URL = getSiteUrl();
 
 interface OrganizationJsonLdProps {
   currentLang?: Language;
@@ -88,7 +89,7 @@ export const NewsArticleJsonLd: React.FC<NewsArticleJsonLdProps> = ({ article, c
     '@type': 'NewsArticle',
     mainEntityOfPage: {
       '@type': 'WebPage',
-      '@id': `${SITE_URL}/?article=${encodeURIComponent(article.id)}`,
+      '@id': `${SITE_URL}/article/${encodeURIComponent(article.id)}`,
     },
     headline: title.slice(0, 110),
     description: summary,
@@ -141,7 +142,7 @@ export const ItemListJsonLd: React.FC<ItemListJsonLdProps> = ({ articles, curren
         '@type': 'ListItem',
         position: index + 1,
         name: title,
-        url: `${SITE_URL}/?article=${encodeURIComponent(article.id)}`,
+        url: `${SITE_URL}/article/${encodeURIComponent(article.id)}`,
         image: article.imageUrl || undefined,
       };
     }),

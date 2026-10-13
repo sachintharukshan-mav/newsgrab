@@ -2,12 +2,12 @@ import type { MetadataRoute } from 'next';
 import { mockArticles } from '@/lib/mock-data';
 import { getAggregatedArticles } from '@/lib/news-service';
 import { Category } from '@/lib/types';
-
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://newsgrab.lk';
+import { getSiteUrl } from '@/lib/site-config';
 
 export const revalidate = 3600; // Refresh sitemap hourly
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  const SITE_URL = getSiteUrl();
   const now = new Date();
 
   // Fetch live ingested articles from memory/KV cache

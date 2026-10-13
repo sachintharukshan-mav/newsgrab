@@ -29,6 +29,7 @@
     ]
   },
   "vars": {
+    "NEXT_PUBLIC_SITE_URL": "https://newsgrab.makemytourlk.workers.dev",
     "NEXT_PUBLIC_ADSENSE_CLIENT_ID": "ca-pub-1562210028522673",
     "NEXT_PUBLIC_ADSENSE_PUB_ID": "pub-1562210028522673"
   }

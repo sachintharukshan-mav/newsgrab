@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Newsreader } from "next/font/google";
 import { CookieConsent } from "@/components/compliance/CookieConsent";
+import { getSiteUrl } from "@/lib/site-config";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -16,7 +17,7 @@ const newsreader = Newsreader({
   display: "swap",
 });
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://newsgrab.lk';
+const SITE_URL = getSiteUrl();
 
 export const dynamic = 'force-dynamic';
 
