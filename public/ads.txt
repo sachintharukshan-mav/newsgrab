@@ -1,6 +1,6 @@
-# NewsGrab (newsgrab.lk) - Authorized Digital Sellers (ads.txt)
+# Lanka Dispatch (lankadispatch.com) - Authorized Digital Sellers (ads.txt)
 # Specification: IAB Tech Lab Ads.txt v1.1
-# Last Updated: 2026-09-29
+# Last Updated: 2026-10-13
 
 # -------------------------------------------------------------
 # Google AdSense (Primary Direct Publisher Account)

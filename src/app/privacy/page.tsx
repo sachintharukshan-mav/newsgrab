@@ -6,7 +6,7 @@ import { ArrowLeft, Shield, Lock, Eye, CheckCircle2 } from 'lucide-react';
 export const metadata: Metadata = {
   title: 'Privacy Policy & Cookie Disclosures',
   description:
-    'NewsGrab Privacy Policy, Google AdSense & third-party advertising cookie disclosures, GDPR/CCPA rights, and user data protection commitments.',
+    'Lanka Dispatch Privacy Policy, Google AdSense & third-party advertising cookie disclosures, GDPR/CCPA rights, and user data protection commitments.',
 };
 
 export default function PrivacyPolicyPage() {
@@ -25,11 +25,11 @@ export default function PrivacyPolicyPage() {
           <Link
             href="/"
             className="inline-block cursor-pointer hover:opacity-90 transition-opacity"
-            title="NEWSGRAB Front Page"
-            aria-label="NEWSGRAB Front Page"
+            title="LANKA DISPATCH Front Page"
+            aria-label="LANKA DISPATCH Front Page"
           >
             <div className="text-sm font-extrabold text-white font-headline uppercase tracking-tight">
-              NEWS<span className="text-rose-500">GRAB</span>
+              LANKA<span className="text-rose-500">DISPATCH</span>
             </div>
           </Link>
         </div>
@@ -58,7 +58,7 @@ export default function PrivacyPolicyPage() {
             <span>Our Privacy Commitment</span>
           </h3>
           <p className="text-sm text-zinc-300 leading-relaxed">
-            NewsGrab (&quot;we&quot;, &quot;our&quot;, or &quot;us&quot;) operates newsgrab.lk as an independent trilingual news aggregator. We respect your personal privacy and are committed to full compliance with global privacy standards, including the <strong>Sri Lanka Personal Data Protection Act No. 9 of 2022</strong>, the European Union <strong>General Data Protection Regulation (GDPR)</strong>, the <strong>California Consumer Privacy Act (CCPA)</strong>, and the <strong>Google Publisher &amp; AdSense Policies</strong>.
+            Lanka Dispatch (&quot;we&quot;, &quot;our&quot;, or &quot;us&quot;) operates lankadispatch.com as an independent trilingual news aggregator. We respect your personal privacy and are committed to full compliance with global privacy standards, including the <strong>Sri Lanka Personal Data Protection Act No. 9 of 2022</strong>, the European Union <strong>General Data Protection Regulation (GDPR)</strong>, the <strong>California Consumer Privacy Act (CCPA)</strong>, and the <strong>Google Publisher &amp; AdSense Policies</strong>.
           </p>
         </div>
 
@@ -74,7 +74,7 @@ export default function PrivacyPolicyPage() {
             </p>
             <ul className="list-disc list-inside space-y-2 pl-2 text-zinc-300">
               <li>
-                <strong>Third-Party Vendors &amp; Google Cookies:</strong> Third-party vendors, including Google, use cookies to serve ads based on a user&apos;s prior visits to newsgrab.lk or other websites on the Internet.
+                <strong>Third-Party Vendors &amp; Google Cookies:</strong> Third-party vendors, including Google, use cookies to serve ads based on a user&apos;s prior visits to lankadispatch.com or other websites on the Internet.
               </li>
               <li>
                 <strong>DoubleClick &amp; Advertising Cookies:</strong> Google&apos;s use of advertising cookies enables it and its certified partners to serve relevant advertisements to users based on their browsing history across participating web properties.
@@ -110,7 +110,7 @@ export default function PrivacyPolicyPage() {
                 .
               </li>
               <li>
-                <strong>Better Ads Standards:</strong> NewsGrab strictly adheres to the Coalition for Better Ads standards. We do not employ deceptive ad labels, auto-playing audio ads, pop-unders, or sticky units covering more than 30% of mobile screens.
+                <strong>Better Ads Standards:</strong> Lanka Dispatch strictly adheres to the Coalition for Better Ads standards. We do not employ deceptive ad labels, auto-playing audio ads, pop-unders, or sticky units covering more than 30% of mobile screens.
               </li>
             </ul>
           </div>
@@ -175,8 +175,8 @@ export default function PrivacyPolicyPage() {
             For questions regarding this policy, opting out of advertising identifiers, or submitting formal data subject access requests (DSAR):
           </p>
           <div className="p-4 rounded bg-[#101216] border border-white/[0.06] text-xs font-mono space-y-1 text-zinc-300">
-            <div>Data Protection Officer: <span className="text-white">NEWSGRAB Media Network</span></div>
-            <div>Official Email: <span className="text-rose-400">privacy@newsgrab.lk</span></div>
+            <div>Data Protection Officer: <span className="text-white">LANKA DISPATCH Media Network</span></div>
+            <div>Official Email: <span className="text-rose-400">privacy@lankadispatch.com</span></div>
             <div>Newsdesk Bureau: <span className="text-zinc-300">Level 12, World Trade Center, Colombo 01, Sri Lanka</span></div>
           </div>
         </section>
@@ -185,7 +185,7 @@ export default function PrivacyPolicyPage() {
       {/* Footer */}
       <footer className="border-t border-white/[0.08] bg-[#07080a] py-8 text-xs text-zinc-500">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono">
-          <div>&copy; {new Date().getFullYear()} NEWSGRAB. All rights reserved.</div>
+          <div>&copy; {new Date().getFullYear()} LANKA DISPATCH. All rights reserved.</div>
           <div className="flex items-center gap-4">
             <Link href="/terms" className="hover:text-zinc-300 transition-colors">Terms of Service</Link>
             <span>•</span>

@@ -36,9 +36,9 @@ function wrapText(text: string, maxCharsPerLine = 42, maxLines = 3): string[] {
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
 
-  const rawTitle = searchParams.get('title') || 'NEWSGRAB — The Sri Lankan Dispatch & Intelligence Desk';
+  const rawTitle = searchParams.get('title') || 'LANKA DISPATCH — The Sri Lankan Dispatch & Intelligence Desk';
   const rawCategory = (searchParams.get('category') || 'INTELLIGENCE').toUpperCase();
-  const rawPublisher = searchParams.get('pub') || 'NEWSGRAB WIRE';
+  const rawPublisher = searchParams.get('pub') || 'LANKA DISPATCH WIRE';
   const rawRegion = (searchParams.get('region') || 'SRI LANKA').toUpperCase();
 
   const titleLines = wrapText(rawTitle, 40, 3);
@@ -122,9 +122,9 @@ export async function GET(request: NextRequest) {
       SOURCE: <tspan fill="#38bdf8" font-weight="700">${escapedPublisher}</tspan>
     </text>
 
-    <!-- NewsGrab Brand Tag -->
+    <!-- Lanka Dispatch Brand Tag -->
     <text x="1040" y="0" text-anchor="end" font-family="ui-monospace, monospace" font-size="16" font-weight="700" fill="#f43f5e" letter-spacing="1.5">
-      NEWSGRAB.LK // 24/7 WIRE
+      LANKADISPATCH.COM // 24/7 WIRE
     </text>
   </g>
 </svg>

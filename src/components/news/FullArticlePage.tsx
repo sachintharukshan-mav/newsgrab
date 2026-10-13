@@ -166,7 +166,7 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
     whyItMatters: { en: 'Why It Matters', si: 'මෙය වැදගත් වන්නේ ඇයි?', ta: 'இது ஏன் முக்கியமானது?' },
     whatsNext: { en: 'What to Watch For', si: 'ඉදිරි අපේක්ෂාවන්', ta: 'அடுத்து கவனிக்க வேண்டியவை' },
     synthesizedByGemini: { en: 'Synthesized by Gemini 2.0 Flash · 100% Original Editorial Expression', si: 'Gemini 2.0 Flash මගින් සම්පාදිත ස්වාධීන සංස්කාරක විශ්ලේෂණය', ta: 'Gemini 2.0 Flash மூலம் தொகுக்கப்பட்ட சுயாதீன பகுப்பாய்வு' },
-    synthesizedByDesk: { en: 'NewsGrab Wire Intelligence Synthesis', si: 'NewsGrab ප්‍රවෘත්ති කාමර සංස්කරණය', ta: 'NewsGrab செய்திப்பிரிவு தொகுப்பு' },
+    synthesizedByDesk: { en: 'Lanka Dispatch Wire Intelligence Synthesis', si: 'Lanka Dispatch ප්‍රවෘත්ති කාමර සංස්කරණය', ta: 'Lanka Dispatch செய்திப்பிரிவு தொகுப்பு' },
     synthesizingBrief: { en: 'Synthesizing executive intelligence brief...', si: 'සත්‍යාපිත විධායක පුවත් වාර්තාව සකස් වෙමින් පවතී...', ta: 'சரிபார்க்கப்பட்ட செய்தி சுருக்கம் தயாராகிறது...' }
   };
 
@@ -190,7 +190,7 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
   const handleWhatsAppShare = () => {
     if (typeof window === 'undefined') return;
     const shareUrl = encodeURIComponent(window.location.href);
-    const shareText = encodeURIComponent(`${title} — NewsGrab: `);
+    const shareText = encodeURIComponent(`${title} — Lanka Dispatch: `);
     window.open(`https://api.whatsapp.com/send?text=${shareText}${shareUrl}`, '_blank', 'noopener,noreferrer');
   };
 
@@ -672,7 +672,7 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
                 <span className="text-zinc-400 truncate max-w-[260px]">
                   {(() => {
                     try {
-                      return new URL(article.sourceUrl.startsWith('http') ? article.sourceUrl : 'https://newsgrab.lk').hostname;
+                      return new URL(article.sourceUrl.startsWith('http') ? article.sourceUrl : 'https://lankadispatch.com').hostname;
                     } catch {
                       return article.publisherName;
                     }
@@ -728,7 +728,7 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
             <div className="pt-8 border-t border-divider flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
               <div className="text-xs font-mono text-zinc-500 space-y-1">
                 <p>
-                  Original wire: <span className="text-zinc-300 font-semibold">{article.publisherName}</span>. Formatted for continuous, uninterrupted reading on NewsGrab.
+                  Original wire: <span className="text-zinc-300 font-semibold">{article.publisherName}</span>. Formatted for continuous, uninterrupted reading on Lanka Dispatch.
                 </p>
                 {article.sourceUrl && article.sourceUrl !== '#' && (
                   <a

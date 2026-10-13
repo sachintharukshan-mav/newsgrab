@@ -111,17 +111,17 @@ export const AdBanner: React.FC<AdBannerProps> = ({
           /* Legitimate House Inventory Placeholder */
           <div className="p-4 w-full h-full flex flex-col items-center justify-center text-center space-y-1 text-zinc-500">
             <div className="text-[10px] font-mono uppercase tracking-wider text-zinc-400">
-              NEWSGRAB Digital Network
+              LANKA DISPATCH Digital Network
             </div>
             <p className="text-[11px] font-mono text-zinc-500 max-w-md">
               Ad Space Reserved ({format.toUpperCase()})
             </p>
             <a
-              href="mailto:advertising@newsgrab.lk"
+              href="mailto:advertising@lankadispatch.com"
               className="inline-flex items-center gap-1 text-[10px] font-mono text-zinc-400 hover:text-zinc-200 transition-colors pt-1"
             >
               <Mail className="w-3 h-3" />
-              <span>Partner Inquiries: advertising@newsgrab.lk</span>
+              <span>Partner Inquiries: advertising@lankadispatch.com</span>
             </a>
           </div>
         )}

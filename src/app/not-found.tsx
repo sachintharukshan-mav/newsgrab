@@ -14,7 +14,7 @@ export default function NotFound() {
             </div>
             <div className="flex flex-col">
               <span className="font-serif font-black text-xl tracking-tight text-white group-hover:text-zinc-200 transition-colors">
-                NEWSGRAB<span className="text-rose-500">.LK</span>
+                LANKA<span className="text-rose-500">DISPATCH</span>
               </span>
               <span className="text-[9px] font-mono tracking-widest text-zinc-500 uppercase">
                 National News Wire Desk
@@ -69,7 +69,7 @@ export default function NotFound() {
 
       {/* Footer */}
       <footer className="border-t border-white/[0.08] bg-[#07080a] py-6 text-center text-xs font-mono text-zinc-500">
-        <p>© {new Date().getFullYear()} NewsGrab Colombo Bureau. Multi-Source Verified Reporting.</p>
+        <p>© {new Date().getFullYear()} Lanka Dispatch Bureau. Multi-Source Verified Reporting.</p>
       </footer>
     </div>
   );

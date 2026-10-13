@@ -9,7 +9,7 @@ export function getSiteUrl(): string {
     if (envUrl && !envUrl.includes('localhost')) {
       return envUrl.replace(/\/$/, '');
     }
-    return 'https://newsgrab.makemytourlk.workers.dev';
+    return 'https://lankadispatch.com';
   }
 
   // Local development fallback
@@ -17,5 +17,5 @@ export function getSiteUrl(): string {
     return envUrl.replace(/\/$/, '');
   }
 
-  return 'http://localhost:3000';
+  return 'https://lankadispatch.com';
 }

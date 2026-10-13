@@ -161,7 +161,7 @@ function checkAndRecordRateLimit(): boolean {
     };
     const targetLanguage = languageNames[lang] || 'English';
 
-    const systemPrompt = `You are the executive editor for NEWSGRAB, Sri Lanka's leading digital intelligence wire.
+    const systemPrompt = `You are the executive editor for LANKA DISPATCH, Sri Lanka's leading digital intelligence wire.
 Your task is to transform the provided raw news text into an authoritative, 100% original "Axios Smart Brevity" executive dispatch.
 
 STRICT EDITORIAL REQUIREMENTS:

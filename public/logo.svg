@@ -6,8 +6,9 @@
     </linearGradient>
   </defs>
   <rect width="512" height="512" rx="112" fill="url(#grad)" />
-  <!-- Stylized Newsroom Monogram 'N' -->
-  <path d="M144 368V144h56l120 152V144h48v224h-56L192 216v152h-48z" fill="#ffffff" />
+  <!-- Lanka Dispatch Monogram 'LD' -->
+  <path d="M96 144 h52 v180 h76 v48 H96 Z" fill="#ffffff" />
+  <path fill-rule="evenodd" d="M240 144 h64 c66 0 114 46 114 114 c0 68 -48 114 -114 114 h-64 Z M292 196 v124 h12 c36 0 62 -24 62 -62 c0 -38 -26 -62 -62 -62 Z" fill="#ffffff" />
   <!-- Breaking Pulse Dot -->
-  <circle cx="384" cy="128" r="40" fill="#facc15" stroke="#be123c" stroke-width="12" />
+  <circle cx="418" cy="118" r="32" fill="#facc15" stroke="#be123c" stroke-width="10" />
 </svg>

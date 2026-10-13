@@ -103,7 +103,7 @@ export const CookieConsent: React.FC = () => {
       </div>
 
       <p className="text-xs text-zinc-300 leading-relaxed">
-        NewsGrab uses essential cookies to remember your trilingual preferences, and Google AdSense cookies to support free, independent news syndication. Learn more in our{' '}
+        Lanka Dispatch uses essential cookies to remember your trilingual preferences, and Google AdSense cookies to support free, independent news syndication. Learn more in our{' '}
         <Link href="/privacy" className="text-rose-400 underline hover:text-rose-300">
           Privacy Policy
         </Link>

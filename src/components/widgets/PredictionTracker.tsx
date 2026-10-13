@@ -212,8 +212,8 @@ export const PredictionTracker: React.FC<PredictionTrackerProps> = ({ currentLan
 
   const handleShare = (pred: PredictionItem) => {
     const qText = pred.question[currentLang] || pred.question.en;
-    const url = typeof window !== 'undefined' ? window.location.origin : 'https://newsgrab.lk';
-    const message = `🎯 NewsGrab Prediction Radar: "${qText}" — Cast your vote and see live crowd sentiment: ${url}`;
+    const url = typeof window !== 'undefined' ? window.location.origin : 'https://lankadispatch.com';
+    const message = `🎯 Lanka Dispatch Prediction Radar: "${qText}" — Cast your vote and see live crowd sentiment: ${url}`;
     const whatsappUrl = `https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`;
 
     if (typeof window !== 'undefined') {

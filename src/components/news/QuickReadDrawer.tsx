@@ -430,7 +430,7 @@ export const QuickReadDrawer: React.FC<QuickReadDrawerProps> = ({
               <span className="truncate max-w-[180px]">
                 {(() => {
                   try {
-                    return new URL(article.sourceUrl.startsWith('http') ? article.sourceUrl : 'https://newsgrab.lk').hostname;
+                    return new URL(article.sourceUrl.startsWith('http') ? article.sourceUrl : 'https://lankadispatch.com').hostname;
                   } catch {
                     return article.publisherName;
                   }
@@ -468,7 +468,7 @@ export const QuickReadDrawer: React.FC<QuickReadDrawerProps> = ({
           {/* Source Attribution & Close Action */}
           <div className="pt-6 border-t border-divider text-center space-y-3">
             <p className="text-[11px] font-mono text-zinc-400">
-              Original reporting by <span className="text-zinc-300 font-semibold">{article.publisherName}</span>. Indexed and synthesized for digital discovery on NewsGrab LK.
+              Original reporting by <span className="text-zinc-300 font-semibold">{article.publisherName}</span>. Indexed and synthesized for digital discovery on Lanka Dispatch.
             </p>
             <button
               onClick={onClose}

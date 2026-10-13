@@ -172,7 +172,7 @@ export const ArticleViewContainer: React.FC<ArticleViewContainerProps> = ({
       <footer className="border-t border-white/[0.08] bg-[#07080a] py-10 mt-12 text-xs font-mono text-zinc-500">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
-            <span className="font-bold text-zinc-300">NEWSGRAB</span> · Sri Lanka Digital Intelligence Desk
+            <span className="font-bold text-zinc-300">LANKA DISPATCH</span> · Sri Lanka Digital Intelligence Desk
           </div>
           <div className="flex items-center gap-6">
             <Link href="/about" className="hover:text-zinc-300 transition-colors">

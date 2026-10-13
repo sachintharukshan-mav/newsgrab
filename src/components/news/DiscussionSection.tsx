@@ -58,8 +58,8 @@ const discussionTranslations = {
     ta: 'பதிவாகிறது...'
   },
   guidelinesNotice: {
-    en: 'NewsGrab enforces strict community standards. Defamation, hate speech, and spam are automatically filtered.',
-    si: 'නිව්ස්ග්‍රැබ් ආචාරධර්ම අනුව අපහාසාත්මක හෝ අසත්‍ය තොරතුරු ස්වයංක්‍රීයව පෙරහන් කෙරේ.',
+    en: 'Lanka Dispatch enforces strict community standards. Defamation, hate speech, and spam are automatically filtered.',
+    si: 'ලංකා ඩිස්පැච් ආචාරධර්ම අනුව අපහාසාත්මක හෝ අසත්‍ය තොරතුරු ස්වයංක්‍රීයව පෙරහන් කෙරේ.',
     ta: 'அவதூறு மற்றும் தவறான தகவல்கள் தானாகவே வடிகட்டப்படும்.'
   },
   sortLatest: {

@@ -222,11 +222,11 @@ export const Navbar: React.FC<NavbarProps> = ({
               if (onLogoClick) onLogoClick();
             }}
             className="inline-block group cursor-pointer transition-opacity hover:opacity-90"
-            title="NEWSGRAB Front Page"
-            aria-label="NEWSGRAB Front Page"
+            title="LANKA DISPATCH Front Page"
+            aria-label="LANKA DISPATCH Front Page"
           >
             <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white font-headline uppercase">
-              NEWS<span className="text-rose-500">GRAB</span>
+              LANKA<span className="text-rose-500">DISPATCH</span>
             </h1>
           </Link>
           <p className="text-[11px] text-zinc-400 tracking-widest uppercase mt-0.5 font-mono">

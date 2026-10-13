@@ -602,11 +602,11 @@ export default function HomePage() {
                 href="/"
                 onClick={handleLogoClick}
                 className="inline-block group cursor-pointer transition-opacity hover:opacity-90"
-                title="NEWSGRAB Front Page"
-                aria-label="NEWSGRAB Front Page"
+                title="LANKA DISPATCH Front Page"
+                aria-label="LANKA DISPATCH Front Page"
               >
                 <div className="text-xl font-extrabold text-white font-headline uppercase tracking-tight">
-                  NEWS<span className="text-rose-500">GRAB</span>
+                  LANKA<span className="text-rose-500">DISPATCH</span>
                 </div>
               </Link>
               <p className="text-zinc-400 text-xs leading-relaxed">
@@ -668,10 +668,10 @@ export default function HomePage() {
                 Newsdesk &amp; Contact
               </div>
               <ul className="space-y-1.5 text-zinc-400">
-                <li>Editorial Desk: <span className="text-zinc-200">desk@newsgrab.lk</span></li>
-                <li>Advertising &amp; SSPs: <span className="text-zinc-200">advertising@newsgrab.lk</span></li>
-                <li>Press Releases: <span className="text-zinc-200">wire@newsgrab.lk</span></li>
-                <li>Corrections &amp; Legal: <span className="text-zinc-200">legal@newsgrab.lk</span></li>
+                <li>Editorial Desk: <span className="text-zinc-200">desk@lankadispatch.com</span></li>
+                <li>Advertising &amp; SSPs: <span className="text-zinc-200">advertising@lankadispatch.com</span></li>
+                <li>Press Releases: <span className="text-zinc-200">wire@lankadispatch.com</span></li>
+                <li>Corrections &amp; Legal: <span className="text-zinc-200">legal@lankadispatch.com</span></li>
                 <li>Compliance: <Link href="/about" className="text-zinc-200 hover:text-white underline underline-offset-2">About Us</Link> · <Link href="/privacy" className="text-zinc-200 hover:text-white underline underline-offset-2">Privacy Policy</Link> · <button type="button" onClick={() => window.dispatchEvent(new CustomEvent('newsgrab:open-cookie-consent'))} className="text-zinc-200 hover:text-white underline underline-offset-2 cursor-pointer">Cookie Preferences</button> · <Link href="/terms" className="text-zinc-200 hover:text-white underline underline-offset-2">Terms</Link> · <a href="/ads.txt" className="text-zinc-200 hover:text-white underline underline-offset-2">ads.txt</a></li>
                 <li className="pt-1 text-[10px] text-emerald-400">● 24/7 Automated Ingestion Active</li>
               </ul>
@@ -680,7 +680,7 @@ export default function HomePage() {
 
           <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] font-mono text-zinc-400">
             <div>
-              &copy; {new Date().getFullYear()} NEWSGRAB Media Network. All wire stories and original reporting remain the copyright of their respective publishers.
+              &copy; {new Date().getFullYear()} LANKA DISPATCH Media Network. All wire stories and original reporting remain the copyright of their respective publishers.
             </div>
             <div className="flex items-center gap-4">
               <Link href="/about" className="hover:text-zinc-200 transition-colors">About</Link>

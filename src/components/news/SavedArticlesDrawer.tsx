@@ -234,7 +234,7 @@ export const SavedArticlesDrawer: React.FC<SavedArticlesDrawerProps> = ({
 
           {/* Drawer Footer */}
           <div className="p-4 border-t border-white/[0.08] bg-black/40 text-[11px] font-mono text-zinc-500 flex items-center justify-between">
-            <span>NewsGrab Offline Dispatch Queue</span>
+            <span>Lanka Dispatch Offline Dispatch Queue</span>
             <span>Local Cache · 0 Cloud Tracking</span>
           </div>
         </div>

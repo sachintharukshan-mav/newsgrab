@@ -14,8 +14,8 @@ export const OrganizationJsonLd: React.FC<OrganizationJsonLdProps> = () => {
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'NewsMediaOrganization',
-    name: 'NEWSGRAB',
-    alternateName: ['NewsGrab Sri Lanka', 'NewsGrab Digital Dispatch', 'NewsGrab Newsroom'],
+    name: 'LANKA DISPATCH',
+    alternateName: ['Lanka Dispatch', 'Lanka Dispatch Digital Wire', 'LankaDispatch.com'],
     url: SITE_URL,
     logo: {
       '@type': 'ImageObject',
@@ -24,7 +24,7 @@ export const OrganizationJsonLd: React.FC<OrganizationJsonLdProps> = () => {
       height: 512,
     },
     description:
-      'Independent digital news aggregator for Sri Lanka and the global diaspora. Real-time multi-newsroom syndication across 11 national newsdesks with CBSL verified macroeconomic indicators.',
+      'Independent digital news aggregator and wire desk for Sri Lanka and the global diaspora. Real-time multi-newsroom syndication across 11 national newsdesks with CBSL verified macroeconomic indicators.',
     foundingDate: '2024-01-01',
     areaServed: {
       '@type': 'Country',
@@ -36,9 +36,9 @@ export const OrganizationJsonLd: React.FC<OrganizationJsonLdProps> = () => {
     diversityPolicy: `${SITE_URL}/#diversity-policy`,
     ethicsPolicy: `${SITE_URL}/#ethics-policy`,
     sameAs: [
-      'https://twitter.com/newsgrab_lk',
-      'https://facebook.com/newsgrab.lk',
-      'https://linkedin.com/company/newsgrab-lk',
+      'https://twitter.com/lankadispatch',
+      'https://facebook.com/lankadispatch',
+      'https://linkedin.com/company/lankadispatch',
     ],
   };
 
@@ -54,7 +54,7 @@ export const WebSiteJsonLd: React.FC = () => {
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'NEWSGRAB — The Sri Lankan Dispatch & Intelligence Desk',
+    name: 'LANKA DISPATCH — The Sri Lankan Digital Dispatch & Intelligence Desk',
     url: SITE_URL,
     potentialAction: {
       '@type': 'SearchAction',
@@ -108,7 +108,7 @@ export const NewsArticleJsonLd: React.FC<NewsArticleJsonLdProps> = ({ article, c
     ],
     publisher: {
       '@type': 'NewsMediaOrganization',
-      name: 'NEWSGRAB',
+      name: 'LANKA DISPATCH',
       url: SITE_URL,
       logo: {
         '@type': 'ImageObject',

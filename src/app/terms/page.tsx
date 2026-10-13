@@ -6,7 +6,7 @@ import { ArrowLeft, FileText, CheckCircle2, Scale } from 'lucide-react';
 export const metadata: Metadata = {
   title: 'Terms of Service & Wire Syndication Guidelines',
   description:
-    'NewsGrab Terms of Service, wire syndication guidelines, publisher copyright notices, and financial indicator disclaimers.',
+    'Lanka Dispatch Terms of Service, wire syndication guidelines, publisher copyright notices, and financial indicator disclaimers.',
 };
 
 export default function TermsOfServicePage() {
@@ -25,11 +25,11 @@ export default function TermsOfServicePage() {
           <Link
             href="/"
             className="inline-block cursor-pointer hover:opacity-90 transition-opacity"
-            title="NEWSGRAB Front Page"
-            aria-label="NEWSGRAB Front Page"
+            title="LANKA DISPATCH Front Page"
+            aria-label="LANKA DISPATCH Front Page"
           >
             <div className="text-sm font-extrabold text-white font-headline uppercase tracking-tight">
-              NEWS<span className="text-rose-500">GRAB</span>
+              LANKA<span className="text-rose-500">DISPATCH</span>
             </div>
           </Link>
         </div>
@@ -58,7 +58,7 @@ export default function TermsOfServicePage() {
             <span>Agreement to Terms</span>
           </h3>
           <p className="text-sm text-zinc-300 leading-relaxed">
-            By accessing or using NewsGrab (&quot;newsgrab.lk&quot;), you agree to be bound by these Terms of Service. If you do not agree to these terms, please discontinue your use of the service.
+            By accessing or using Lanka Dispatch (&quot;lankadispatch.com&quot;), you agree to be bound by these Terms of Service. If you do not agree to these terms, please discontinue your use of the service.
           </p>
         </div>
 
@@ -70,17 +70,17 @@ export default function TermsOfServicePage() {
           </h2>
           <div className="space-y-3 text-sm text-zinc-300 leading-relaxed">
             <p>
-              NewsGrab functions as an independent trilingual news discovery and analysis platform indexing public feeds across verified Sri Lankan and international newsrooms (including Ada Derana, Hiru News, Daily Mirror, Virakesari, and BBC).
+              Lanka Dispatch functions as an independent trilingual news discovery and analysis platform indexing public feeds across verified Sri Lankan and international newsrooms (including Ada Derana, Hiru News, Daily Mirror, Virakesari, and BBC).
             </p>
             <ul className="list-disc list-inside space-y-2 pl-2 text-zinc-300">
               <li>
-                <strong>Statutory Compliance (Sri Lanka IP Act No. 36 of 2003):</strong> All indexing and quotation on NewsGrab are conducted strictly under the &quot;Fair Practice&quot; provisions of Section 12(1)(a) of the Intellectual Property Act No. 36 of 2003 of Sri Lanka and international Fair Use doctrines. NewsGrab does not serve as a market substitute for original reporting.
+                <strong>Statutory Compliance (Sri Lanka IP Act No. 36 of 2003):</strong> All indexing and quotation on Lanka Dispatch are conducted strictly under the &quot;Fair Practice&quot; provisions of Section 12(1)(a) of the Intellectual Property Act No. 36 of 2003 of Sri Lanka and international Fair Use doctrines. Lanka Dispatch does not serve as a market substitute for original reporting.
               </li>
               <li>
-                <strong>Executive Synthesis Model:</strong> NewsGrab displays original transformative synthesis—specifically concise editorial lead summaries, AI-generated key takeaways, and cross-publisher perspective comparisons. We do not reproduce unabridged article bodies.
+                <strong>Executive Synthesis Model:</strong> Lanka Dispatch displays original transformative synthesis—specifically concise editorial lead summaries, AI-generated key takeaways, and cross-publisher perspective comparisons. We do not reproduce unabridged article bodies.
               </li>
               <li>
-                <strong>Direct Publisher Referral:</strong> Every story presented on NewsGrab includes clear publisher attribution, timestamping, and a prominent outbound link directing readers directly to the original publisher&apos;s website.
+                <strong>Direct Publisher Referral:</strong> Every story presented on Lanka Dispatch includes clear publisher attribution, timestamping, and a prominent outbound link directing readers directly to the original publisher&apos;s website.
               </li>
               <li>
                 <strong>Intellectual Property &amp; Trademarks:</strong> All headlines, original photography, and reporting remain the intellectual property and copyright of their respective originating news organizations.
@@ -96,10 +96,10 @@ export default function TermsOfServicePage() {
           </h2>
           <div className="space-y-3 text-sm text-zinc-300 leading-relaxed">
             <p>
-              Financial indicators, exchange rates (USD/LKR, GBP/LKR, EUR/LKR), and Colombo Stock Exchange (CSE) data displayed on NewsGrab are provided for informational and editorial awareness only.
+              Financial indicators, exchange rates (USD/LKR, GBP/LKR, EUR/LKR), and Colombo Stock Exchange (CSE) data displayed on Lanka Dispatch are provided for informational and editorial awareness only.
             </p>
             <p className="text-zinc-400 text-xs">
-              NewsGrab is not an investment adviser, broker, or financial institution. Exchange rate fixing data is aggregated from official Central Bank of Sri Lanka daily releases. We recommend consulting licensed financial advisers or commercial banking partners before executing commercial currency or equity transactions.
+              Lanka Dispatch is not an investment adviser, broker, or financial institution. Exchange rate fixing data is aggregated from official Central Bank of Sri Lanka daily releases. We recommend consulting licensed financial advisers or commercial banking partners before executing commercial currency or equity transactions.
             </p>
           </div>
         </section>
@@ -111,7 +111,7 @@ export default function TermsOfServicePage() {
           </h2>
           <div className="space-y-3 text-sm text-zinc-300 leading-relaxed">
             <p>
-              NewsGrab displays advertisements served by Google AdSense, Google Ad Manager, and vetted direct corporate sponsors. All commercial placements are explicitly demarcated with &quot;ADVERTISEMENT&quot; or &quot;SPONSORED&quot; labels in accordance with Google Publisher Policies and IAB standards.
+              Lanka Dispatch displays advertisements served by Google AdSense, Google Ad Manager, and vetted direct corporate sponsors. All commercial placements are explicitly demarcated with &quot;ADVERTISEMENT&quot; or &quot;SPONSORED&quot; labels in accordance with Google Publisher Policies and IAB standards.
             </p>
             <p>
               Advertisements are served on our original index views, analytical dashboards, and aggregated comparison layouts—never on scraped full-text articles. Advertisers are solely responsible for the contents and claims in their promotional materials. Commercial sponsorship does not influence our unbiased algorithmic news curation.
@@ -126,11 +126,11 @@ export default function TermsOfServicePage() {
           </h2>
           <div className="space-y-3 text-sm text-zinc-300 leading-relaxed">
             <p>
-              NewsGrab deeply values the work of newsrooms and investigative journalists. If you are a copyright holder, editorial representative, or publisher and wish to adjust how your public feed is indexed, or request immediate exclusion of your content from our discovery index, we honor all verified requests within 24 hours:
+              Lanka Dispatch deeply values the work of newsrooms and investigative journalists. If you are a copyright holder, editorial representative, or publisher and wish to adjust how your public feed is indexed, or request immediate exclusion of your content from our discovery index, we honor all verified requests within 24 hours:
             </p>
             <div className="p-4 rounded bg-[#121319] border border-white/[0.08] text-xs font-mono space-y-1 text-zinc-300">
-              <div>Publisher Opt-Out Desk: <span className="text-rose-400">publishers@newsgrab.lk</span></div>
-              <div>DMCA &amp; Copyright Agent: <span className="text-rose-400">legal@newsgrab.lk</span></div>
+              <div>Publisher Opt-Out Desk: <span className="text-rose-400">publishers@lankadispatch.com</span></div>
+              <div>DMCA &amp; Copyright Agent: <span className="text-rose-400">legal@lankadispatch.com</span></div>
               <div>Response Timeframe: <span className="text-emerald-400 font-bold">&lt; 24 Business Hours</span></div>
             </div>
             <p className="text-xs text-zinc-400">
@@ -145,9 +145,9 @@ export default function TermsOfServicePage() {
             5. Newsroom Bureau &amp; General Inquiries
           </h2>
           <div className="p-4 rounded bg-[#101216] border border-white/[0.06] text-xs font-mono space-y-1 text-zinc-300">
-            <div>Operating Network: <span className="text-white">NEWSGRAB Media Network</span></div>
-            <div>Editorial Corrections: <span className="text-zinc-300">desk@newsgrab.lk</span></div>
-            <div>Technical Desk: <span className="text-zinc-300">sysadmin@newsgrab.lk</span></div>
+            <div>Operating Network: <span className="text-white">LANKA DISPATCH Media Network</span></div>
+            <div>Editorial Corrections: <span className="text-zinc-300">desk@lankadispatch.com</span></div>
+            <div>Technical Desk: <span className="text-zinc-300">sysadmin@lankadispatch.com</span></div>
           </div>
         </section>
       </main>
@@ -155,7 +155,7 @@ export default function TermsOfServicePage() {
       {/* Footer */}
       <footer className="border-t border-white/[0.08] bg-[#07080a] py-8 text-xs text-zinc-500">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 font-mono">
-          <div>&copy; {new Date().getFullYear()} NEWSGRAB. All rights reserved.</div>
+          <div>&copy; {new Date().getFullYear()} LANKA DISPATCH. All rights reserved.</div>
           <div className="flex items-center gap-4">
             <Link href="/terms" className="text-zinc-300 hover:text-white transition-colors">Terms of Service</Link>
             <span>•</span>

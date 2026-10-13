@@ -24,13 +24,14 @@ export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: 'NEWSGRAB — The Sri Lankan Dispatch & Intelligence Desk',
-    template: '%s | NEWSGRAB',
+    default: 'LANKA DISPATCH — The Sri Lankan Digital Dispatch & Intelligence Desk',
+    template: '%s | LANKA DISPATCH',
   },
   description:
     'Sri Lanka’s authoritative trilingual digital dispatch. Real-time newsroom syndication across Ada Derana, Hiru, Daily Mirror, Virakesari, BBC, and CBSL verified financial indicators.',
   keywords: [
     'Sri Lanka News',
+    'Lanka Dispatch',
     'Colombo Wire',
     'Sri Lanka Politics',
     'Sri Lanka Economy',
@@ -49,9 +50,9 @@ export const metadata: Metadata = {
     'வீரகேசரி',
     'ஹிரு',
   ],
-  authors: [{ name: 'NEWSGRAB Editorial Desk', url: SITE_URL }],
-  creator: 'NEWSGRAB Media Network',
-  publisher: 'NEWSGRAB',
+  authors: [{ name: 'LANKA DISPATCH Editorial Desk', url: SITE_URL }],
+  creator: 'LANKA DISPATCH Media Network',
+  publisher: 'LANKA DISPATCH',
   formatDetection: {
     email: false,
     address: false,
@@ -67,17 +68,17 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: 'NEWSGRAB — The Sri Lankan Dispatch & Intelligence Desk',
+    title: 'LANKA DISPATCH — The Sri Lankan Digital Dispatch & Intelligence Desk',
     description:
       'Real-time trilingual news aggregation, CBSL macroeconomic fixing, and verified multi-newsroom perspectives.',
     url: SITE_URL,
-    siteName: 'NEWSGRAB',
+    siteName: 'LANKA DISPATCH',
     images: [
       {
         url: '/api/og',
         width: 1200,
         height: 630,
-        alt: 'NEWSGRAB Digital Newsroom Dispatch',
+        alt: 'LANKA DISPATCH Digital Newsroom',
       },
     ],
     locale: 'en_LK',
@@ -86,10 +87,10 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'NEWSGRAB — Sri Lankan Dispatch',
+    title: 'LANKA DISPATCH — Sri Lankan Digital News Wire',
     description: 'Real-time multi-newsroom reporting and verified financial data for Sri Lanka.',
-    site: '@newsgrab_lk',
-    creator: '@newsgrab_lk',
+    site: '@lankadispatch',
+    creator: '@lankadispatch',
     images: ['/api/og'],
   },
   verification: {

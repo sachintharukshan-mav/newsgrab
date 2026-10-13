@@ -20,11 +20,11 @@ export default function AboutPage() {
           <Link
             href="/"
             className="inline-block cursor-pointer hover:opacity-90 transition-opacity"
-            title="NEWSGRAB Front Page"
-            aria-label="NEWSGRAB Front Page"
+            title="LANKA DISPATCH Front Page"
+            aria-label="LANKA DISPATCH Front Page"
           >
             <div className="text-sm font-extrabold text-white font-headline uppercase tracking-tight">
-              NEWS<span className="text-rose-500">GRAB</span>
+              LANKA<span className="text-rose-500">DISPATCH</span>
             </div>
           </Link>
         </div>
@@ -39,7 +39,7 @@ export default function AboutPage() {
             <span>Digital Newsroom &amp; Editorial Intelligence</span>
           </div>
           <h1 className="text-3xl sm:text-4xl font-extrabold text-white font-headline">
-            About NEWSGRAB
+            About LANKA DISPATCH
           </h1>
           <p className="text-sm font-mono text-zinc-400">
             Colombo Bureau • Trilingual Syndication (English · සිංහල · தமிழ்) • Verified Digital Architecture
@@ -53,10 +53,10 @@ export default function AboutPage() {
             <span>1. Our Editorial Mission</span>
           </h2>
           <p className="text-sm text-zinc-300 leading-relaxed">
-            <strong>NEWSGRAB</strong> is an authoritative, independent digital news aggregation platform and editorial intelligence service headquartered in Colombo, Sri Lanka. We provide 24/7 real-time journalism, multi-source perspective indexing, and macroeconomic data indicators for the Sri Lankan public and the global diaspora.
+            <strong>LANKA DISPATCH</strong> is an authoritative, independent digital news aggregation platform and editorial intelligence service headquartered in Colombo, Sri Lanka. We provide 24/7 real-time journalism, multi-source perspective indexing, and macroeconomic data indicators for the Sri Lankan public and the global diaspora.
           </p>
           <p className="text-sm text-zinc-300 leading-relaxed">
-            By bridging verified national broadsheets (Ada Derana, Hiru News, Daily Mirror, Daily FT, Virakesari, NewsWire, EconomyNext) with accredited global wire services (Reuters, BBC World News, The Guardian), NewsGrab delivers comprehensive, non-partisan, and transparent news coverage.
+            By bridging verified national broadsheets (Ada Derana, Hiru News, Daily Mirror, Daily FT, Virakesari, NewsWire, EconomyNext) with accredited global wire services (Reuters, BBC World News, The Guardian), Lanka Dispatch delivers comprehensive, non-partisan, and transparent news coverage.
           </p>
         </section>
 
@@ -96,7 +96,7 @@ export default function AboutPage() {
             <span>3. Advertising &amp; Commercial Partnerships</span>
           </h2>
           <p className="text-sm text-zinc-300 leading-relaxed">
-            To maintain our free, uninterrupted newsroom operations, NewsGrab partners with certified programmatic advertising networks, including <strong>Google AdSense</strong>, <strong>Google Ad Manager</strong>, and accredited supply-side platforms (SSPs).
+            To maintain our free, uninterrupted newsroom operations, Lanka Dispatch partners with certified programmatic advertising networks, including <strong>Google AdSense</strong>, <strong>Google Ad Manager</strong>, and accredited supply-side platforms (SSPs).
           </p>
           <ul className="list-disc list-inside space-y-2 text-sm text-zinc-300 pl-2">
             <li>
@@ -106,7 +106,7 @@ export default function AboutPage() {
               <strong>Editorial Separation:</strong> Advertising units are clearly designated with &quot;Advertisement&quot; or &quot;Sponsored&quot; badges and never compromise journalistic independence.
             </li>
             <li>
-              <strong>Direct Brand Sponsorships:</strong> Corporate partners can run certified wire campaigns adhering to IAB standards. For media kits and CPM rates, contact <span className="text-zinc-200 font-mono">advertising@newsgrab.lk</span>.
+              <strong>Direct Brand Sponsorships:</strong> Corporate partners can run certified wire campaigns adhering to IAB standards. For media kits and CPM rates, contact <span className="text-zinc-200 font-mono">advertising@lankadispatch.com</span>.
             </li>
           </ul>
         </section>
@@ -120,16 +120,16 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs font-mono">
             <div className="p-4 rounded-lg bg-[#111216] border border-white/[0.06] space-y-1.5">
               <div className="text-zinc-400 uppercase tracking-wider font-bold">Editorial Bureau</div>
-              <div className="text-zinc-200">NEWSGRAB Media Network</div>
+              <div className="text-zinc-200">LANKA DISPATCH Media Network</div>
               <div className="text-zinc-400">Level 12, World Trade Center</div>
               <div className="text-zinc-400">Colombo 00100, Sri Lanka</div>
             </div>
 
             <div className="p-4 rounded-lg bg-[#111216] border border-white/[0.06] space-y-1.5">
               <div className="text-zinc-400 uppercase tracking-wider font-bold">Contact Inquiries</div>
-              <div>Editorial Desk: <span className="text-zinc-200">desk@newsgrab.lk</span></div>
-              <div>Advertising &amp; SSPs: <span className="text-zinc-200">advertising@newsgrab.lk</span></div>
-              <div>Legal &amp; Grievances: <span className="text-zinc-200">legal@newsgrab.lk</span></div>
+              <div>Editorial Desk: <span className="text-zinc-200">desk@lankadispatch.com</span></div>
+              <div>Advertising &amp; SSPs: <span className="text-zinc-200">advertising@lankadispatch.com</span></div>
+              <div>Legal &amp; Grievances: <span className="text-zinc-200">legal@lankadispatch.com</span></div>
             </div>
           </div>
         </section>

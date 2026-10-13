@@ -26,7 +26,7 @@ export async function generateMetadata({
   const article = await getArticleById(id, currentLang);
   if (!article) {
     return {
-      title: 'Dispatch Not Found | NEWSGRAB',
+      title: 'Dispatch Not Found | LANKA DISPATCH',
       description: 'The requested news wire dispatch could not be found or has expired from the live index.',
     };
   }
@@ -54,7 +54,7 @@ export async function generateMetadata({
       title,
       description: summary,
       url: canonicalUrl,
-      siteName: 'NEWSGRAB',
+      siteName: 'LANKA DISPATCH',
       images: [
         {
           url: ogImageUrl,
@@ -73,7 +73,7 @@ export async function generateMetadata({
       title,
       description: summary,
       images: [ogImageUrl],
-      site: '@newsgrab_lk',
+      site: '@lankadispatch',
     },
   };
 }
