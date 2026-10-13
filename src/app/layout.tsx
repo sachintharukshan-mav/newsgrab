@@ -101,6 +101,16 @@ export const metadata: Metadata = {
       'google-adsense-account': [process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || 'ca-pub-1562210028522673'],
     },
   },
+  icons: {
+    icon: [
+      { url: '/icon.svg', type: 'image/svg+xml' },
+      { url: '/favicon.ico', sizes: 'any' },
+    ],
+    shortcut: '/icon.svg',
+    apple: [
+      { url: '/logo.svg', type: 'image/svg+xml' },
+    ],
+  },
   category: 'news',
 };
 
