@@ -63,23 +63,23 @@ export const NewsCard: React.FC<NewsCardProps> = ({
       <article
         onClick={() => onOpenQuickRead(article)}
         onMouseEnter={handleMouseEnter}
-        className="group cursor-pointer grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 pb-8 mb-8 border-b border-white/[0.08]"
+        className="group cursor-pointer grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 pb-8 mb-8 border-b border-[var(--border-line)]"
       >
         {/* Left Headline & Analysis (7 cols) */}
         <div className="lg:col-span-7 flex flex-col justify-between order-2 lg:order-1 space-y-4">
           <div className="space-y-3">
             <div className="flex items-center justify-between gap-2">
               <div className="flex items-center gap-2 text-[11px] uppercase tracking-wider font-mono">
-                <span className="px-1.5 py-0.5 rounded bg-white/[0.08] text-[10px] font-mono text-zinc-300">
+                <span className="px-1.5 py-0.5 rounded bg-white/[0.08] text-[10px] font-mono text-[var(--text-body)]">
                   {article.region === 'world' ? '🌐 World' : '🇱🇰 Sri Lanka'}
                 </span>
-                <span className="text-rose-500 font-bold">
+                <span className="text-[var(--accent-crimson)] font-bold">
                   {article.isBreaking ? cardLabels.urgent[currentLang] : article.category}
                 </span>
-                <span className="text-zinc-600">/</span>
-                <span className="text-zinc-400 font-medium">{article.publisherName}</span>
-                <span className="text-zinc-600">•</span>
-                <span className="text-zinc-400 font-sans" suppressHydrationWarning>{relativeTime}</span>
+                <span className="text-[var(--text-faint)]">/</span>
+                <span className="text-[var(--text-muted)] font-medium">{article.publisherName}</span>
+                <span className="text-[var(--text-faint)]">•</span>
+                <span className="text-[var(--text-muted)] font-sans" suppressHydrationWarning>{relativeTime}</span>
               </div>
 
               {/* Bookmark Button */}
@@ -92,7 +92,7 @@ export const NewsCard: React.FC<NewsCardProps> = ({
                   className={`p-1.5 rounded-full transition-colors cursor-pointer flex-shrink-0 ${
                     isSaved
                       ? 'bg-rose-500/20 text-rose-400 border border-rose-500/40'
-                      : 'bg-white/[0.06] text-zinc-400 hover:text-white hover:bg-white/10'
+                      : 'bg-white/[0.06] text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-white/10'
                   }`}
                   title={isSaved ? cardLabels.saved[currentLang] : cardLabels.save[currentLang]}
                   aria-label="Bookmark article"
@@ -103,7 +103,7 @@ export const NewsCard: React.FC<NewsCardProps> = ({
             </div>
 
             <h2
-              className={`text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white font-headline leading-[1.2] group-hover:text-zinc-200 transition-colors ${
+              className={`text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[var(--text-main)] font-headline leading-[1.2] group-hover:text-[var(--text-muted)] transition-colors ${
                 isSinhala ? 'font-sinhala leading-[1.35]' : ''
               } ${isTamil ? 'font-tamil leading-[1.3]' : ''}`}
             >
@@ -111,7 +111,7 @@ export const NewsCard: React.FC<NewsCardProps> = ({
             </h2>
 
             <p
-              className={`text-sm sm:text-base text-zinc-300 leading-relaxed ${
+              className={`text-sm sm:text-base text-[var(--text-body)] leading-relaxed ${
                 isSinhala ? 'font-sinhala leading-loose' : ''
               } ${isTamil ? 'font-tamil leading-relaxed' : ''}`}
             >
@@ -182,7 +182,7 @@ export const NewsCard: React.FC<NewsCardProps> = ({
     <article
       onClick={() => onOpenQuickRead(article)}
       onMouseEnter={handleMouseEnter}
-      className="group cursor-pointer flex flex-col justify-between editorial-card p-4 rounded-lg bg-[#181a20] border border-white/[0.07] hover:border-white/[0.14] hover:bg-[#1e2027] transition-all duration-300 relative"
+      className="group cursor-pointer flex flex-col justify-between editorial-card p-4 rounded-lg bg-[var(--bg-card)] border border-[var(--border-line)] hover:border-[var(--border-strong)] hover:bg-[var(--bg-card-hover)] transition-all duration-300 relative shadow-sm"
     >
       <div className="space-y-3">
         {/* Editorial Photography */}

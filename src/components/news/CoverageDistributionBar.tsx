@@ -243,14 +243,14 @@ export const CoverageDistributionBar: React.FC<CoverageDistributionBarProps> = (
 
   // FULL VARIANT (Used on FullArticlePage)
   return (
-    <div className="my-8 p-5 rounded-xl bg-[#0e0f13] border border-white/[0.1] shadow-lg">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-white/[0.08]">
+    <div className="my-8 p-5 rounded-xl bg-[var(--bg-subtle)] border border-[var(--border-line)] shadow-lg">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-[var(--border-line)]">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
-            <span className="flex items-center justify-center w-6 h-6 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400">
+            <span className="flex items-center justify-center w-6 h-6 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-500 dark:text-emerald-400">
               <Scale className="w-3.5 h-3.5" />
             </span>
-            <h4 className="text-sm font-bold text-white uppercase tracking-wider font-mono">
+            <h4 className="text-sm font-bold text-[var(--text-main)] uppercase tracking-wider font-mono">
               {translations.coverageSpectrum[currentLang]}
             </h4>
             <span className="px-1.5 py-0.5 rounded bg-white/[0.06] text-[9px] font-mono text-zinc-400 uppercase">

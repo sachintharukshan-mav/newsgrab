@@ -35,12 +35,12 @@ export const MarketTicker: React.FC<MarketTickerProps> = ({ pulse, currentLang =
   const { cbslRates, goldPrice24kPerSovereign, cseIndex, colomboWeather } = pulse;
 
   return (
-    <div className="w-full bg-[#0e0f13] border-b border-white/[0.06] text-[11px] py-1.5 overflow-hidden select-none">
+    <div className="w-full bg-[var(--ticker-bg)] border-b border-[var(--border-line)] text-[11px] py-1.5 overflow-hidden select-none transition-colors duration-200">
       <div className="flex financial-ticker-marquee items-center gap-8 whitespace-nowrap">
         {[0, 1].map((copyIndex) => (
           <div key={copyIndex} className="flex items-center gap-8">
-            <span className="inline-flex items-center gap-1.5 font-mono text-zinc-400 font-bold uppercase tracking-wider text-[10px]">
-              <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
+            <span className="inline-flex items-center gap-1.5 font-mono text-[var(--text-muted)] font-bold uppercase tracking-wider text-[10px]">
+              <span className="inline-block w-1.5 h-1.5 rounded-full bg-[var(--accent-emerald)] animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
               {tickerLabels.cbsl[currentLang]}
             </span>
 
@@ -48,9 +48,9 @@ export const MarketTicker: React.FC<MarketTickerProps> = ({ pulse, currentLang =
               const isPositive = rate.change24h >= 0;
               return (
                 <div key={`${copyIndex}-${rate.code}`} className="flex items-center gap-1.5 font-mono">
-                  <span className="text-zinc-400 font-semibold">{rate.code}/LKR</span>
-                  <span className="text-zinc-100 font-medium">{rate.sellRate.toFixed(2)}</span>
-                  <span className={`text-[10px] ${isPositive ? 'text-emerald-400' : 'text-rose-400'}`}>
+                  <span className="text-[var(--text-muted)] font-semibold">{rate.code}/LKR</span>
+                  <span className="text-[var(--text-main)] font-medium">{rate.sellRate.toFixed(2)}</span>
+                  <span className={`text-[10px] ${isPositive ? 'text-emerald-500 dark:text-emerald-400' : 'text-rose-500 dark:text-rose-400'}`}>
                     {isPositive ? '▲' : '▼'} {Math.abs(rate.change24h)}%
                   </span>
                 </div>
@@ -58,21 +58,21 @@ export const MarketTicker: React.FC<MarketTickerProps> = ({ pulse, currentLang =
             })}
 
             <div className="flex items-center gap-1.5 font-mono">
-              <span className="text-zinc-400">{tickerLabels.gold[currentLang]}</span>
-              <span className="text-amber-200/90 font-medium">Rs. {goldPrice24kPerSovereign.lkr.toLocaleString()}</span>
+              <span className="text-[var(--text-muted)]">{tickerLabels.gold[currentLang]}</span>
+              <span className="text-amber-600 dark:text-amber-200 font-medium">Rs. {goldPrice24kPerSovereign.lkr.toLocaleString()}</span>
             </div>
 
             <div className="flex items-center gap-1.5 font-mono">
-              <span className="text-zinc-400">{tickerLabels.cse[currentLang]}</span>
-              <span className="text-zinc-200 font-medium">{cseIndex.aspi.toFixed(2)}</span>
-              <span className="text-emerald-400 text-[10px]">▲ {cseIndex.changePercent}%</span>
+              <span className="text-[var(--text-muted)]">{tickerLabels.cse[currentLang]}</span>
+              <span className="text-[var(--text-main)] font-medium">{cseIndex.aspi.toFixed(2)}</span>
+              <span className="text-emerald-500 dark:text-emerald-400 text-[10px]">▲ {cseIndex.changePercent}%</span>
             </div>
 
-            <div className="flex items-center gap-1.5 font-mono text-zinc-400">
+            <div className="flex items-center gap-1.5 font-mono text-[var(--text-muted)]">
               <span>{tickerLabels.colombo[currentLang]}: {colomboWeather.tempC}°C ({colomboWeather.condition})</span>
             </div>
 
-            <span className="text-zinc-700">{"///"}</span>
+            <span className="text-[var(--text-faint)]">{"///"}</span>
           </div>
         ))}
       </div>

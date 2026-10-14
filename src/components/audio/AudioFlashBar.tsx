@@ -351,7 +351,7 @@ export const AudioFlashBar: React.FC<AudioFlashBarProps> = ({
   const isActive = isPlaying || isPaused || isLoading;
 
   return (
-    <div className="relative mb-5 rounded-xl border border-white/[0.08] bg-gradient-to-r from-[#12141c] via-[#101217] to-[#151722] p-3 sm:p-4 shadow-xl transition-all z-20">
+    <div className="relative mb-5 rounded-xl border border-[var(--border-line)] bg-gradient-to-r dark:from-[#12141c] dark:via-[#101217] dark:to-[#151722] from-[#f7f5ed] via-[#f3eee4] to-[#f9f7f0] p-3 sm:p-4 shadow-xl transition-all z-20">
       {/* Glow decorative accent isolated so overflow-hidden doesn't clip dropdowns */}
       <div className="absolute inset-0 overflow-hidden rounded-xl pointer-events-none">
         <div className="absolute -top-12 -left-12 w-32 h-32 bg-rose-500/10 rounded-full blur-2xl" />
@@ -380,13 +380,13 @@ export const AudioFlashBar: React.FC<AudioFlashBarProps> = ({
 
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2 flex-wrap sm:flex-nowrap">
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-rose-500/15 border border-rose-500/30 px-2 py-0.5 text-[10px] font-mono font-bold tracking-wider text-rose-300 uppercase">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-rose-500/15 border border-rose-500/30 px-2 py-0.5 text-[10px] font-mono font-bold tracking-wider text-rose-400 dark:text-rose-300 uppercase">
                 <span className="h-1.5 w-1.5 rounded-full bg-rose-400 animate-pulse" />
                 {flashLabels.title[currentLang]}
               </span>
 
-              <span className="inline-flex items-center gap-1 rounded bg-white/[0.04] border border-white/[0.08] px-1.5 py-0.5 text-[9px] font-mono text-zinc-400">
-                <Radio className="w-2.5 h-2.5 text-emerald-400" />
+              <span className="inline-flex items-center gap-1 rounded bg-white/[0.04] border border-[var(--border-line)] px-1.5 py-0.5 text-[9px] font-mono text-[var(--text-muted)]">
+                <Radio className="w-2.5 h-2.5 text-emerald-500 dark:text-emerald-400" />
                 {flashLabels.neural[currentLang]}
               </span>
 
@@ -401,9 +401,9 @@ export const AudioFlashBar: React.FC<AudioFlashBarProps> = ({
             </div>
 
             <div className="mt-1 flex items-center gap-2">
-              <p className="text-xs sm:text-sm font-semibold text-zinc-200 truncate">
+              <p className="text-xs sm:text-sm font-semibold text-[var(--text-main)] truncate">
                 {isActive ? (
-                  <span className="text-rose-200">
+                  <span className="text-[var(--accent-crimson)] font-medium">
                     [{flashLabels.story[currentLang]} {activeStoryIdx + 1}/{briefStories.length}] {activeTitle}
                   </span>
                 ) : (
@@ -415,7 +415,7 @@ export const AudioFlashBar: React.FC<AudioFlashBarProps> = ({
         </div>
 
         {/* Right: Controls, Voice Selector & Speed */}
-        <div className="flex items-center justify-between md:justify-end gap-2 sm:gap-2.5 border-t md:border-t-0 pt-2 md:pt-0 border-white/[0.06] flex-wrap sm:flex-nowrap">
+        <div className="flex items-center justify-between md:justify-end gap-2 sm:gap-2.5 border-t md:border-t-0 pt-2 md:pt-0 border-[var(--border-line)] flex-wrap sm:flex-nowrap">
           {/* Story dots */}
           <div className="flex items-center gap-1.5">
             {briefStories.map((s, idx) => (

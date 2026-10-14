@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Language, DateRange } from '@/lib/types';
-import { Search, RefreshCw, X, Clock, Bookmark } from 'lucide-react';
+import { Search, RefreshCw, X, Clock, Bookmark, Sun, Moon } from 'lucide-react';
 
 interface NavbarProps {
   currentLang: Language;
@@ -85,6 +85,34 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenSavedDrawer
 }) => {
   const [timeAgoStr, setTimeAgoStr] = useState<string>('Just now');
+  const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('newsgrab_theme');
+      if (stored === 'light' || stored === 'dark') {
+        setTheme(stored);
+      } else {
+        const isLight = document.documentElement.classList.contains('light');
+        setTheme(isLight ? 'light' : 'dark');
+      }
+    } catch (e) {
+      console.warn('Failed to read theme:', e);
+    }
+  }, []);
+
+  const toggleTheme = () => {
+    const nextTheme = theme === 'dark' ? 'light' : 'dark';
+    setTheme(nextTheme);
+    try {
+      localStorage.setItem('newsgrab_theme', nextTheme);
+      document.documentElement.classList.remove('dark', 'light');
+      document.documentElement.classList.add(nextTheme);
+      document.documentElement.setAttribute('data-theme', nextTheme);
+    } catch (e) {
+      console.warn('Failed to save theme:', e);
+    }
+  };
 
   useEffect(() => {
     const updateRelativeTime = () => {
@@ -115,13 +143,13 @@ export const Navbar: React.FC<NavbarProps> = ({
   );
 
   return (
-    <header className="w-full border-b border-white/[0.08] bg-[#0b0c0e]">
+    <header className="w-full border-b border-[var(--border-line)] bg-[var(--bg-page)] text-[var(--text-main)] transition-colors duration-200">
       {/* Top Editorial Metadata & Live Feed Status Bar */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 border-b border-white/[0.06] flex flex-wrap items-center justify-between gap-3 text-[11px] text-zinc-400">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2 border-b border-[var(--border-line)] flex flex-wrap items-center justify-between gap-3 text-[11px] text-[var(--text-muted)]">
         <div className="flex items-center gap-3">
-          <span className="font-mono text-zinc-300" suppressHydrationWarning>{currentDate}</span>
-          <span className="hidden sm:inline text-zinc-600">|</span>
-          <span className="hidden sm:inline text-zinc-400">{navbarTranslations.edition[currentLang]}</span>
+          <span className="font-mono text-[var(--text-body)]" suppressHydrationWarning>{currentDate}</span>
+          <span className="hidden sm:inline text-[var(--text-faint)]">|</span>
+          <span className="hidden sm:inline text-[var(--text-muted)]">{navbarTranslations.edition[currentLang]}</span>
         </div>
 
         {/* Live Status + Update Frequency + Language Selector */}
@@ -203,10 +231,32 @@ export const Navbar: React.FC<NavbarProps> = ({
               <button
                 onClick={() => onLanguageChange('ta')}
                 className={`px-2 py-0.5 font-tamil transition-colors cursor-pointer ${
-                  currentLang === 'ta' ? 'text-white font-bold underline underline-offset-4 decoration-rose-500' : 'text-zinc-400 hover:text-zinc-200'
+                  currentLang === 'ta' ? 'text-[var(--text-main)] font-bold underline underline-offset-4 decoration-[var(--accent-crimson)]' : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'
                 }`}
               >
                 தமிழ்
+              </button>
+            </div>
+
+            {/* Visual Theme Toggle (Night vs Broadsheet Paper) */}
+            <div className="flex items-center pl-2 border-l border-[var(--border-line)]">
+              <button
+                onClick={toggleTheme}
+                className="flex items-center gap-1.5 px-2.5 py-1 rounded-md border border-[var(--border-line)] hover:border-[var(--border-strong)] bg-[var(--bg-subtle)] hover:bg-[var(--bg-card-hover)] text-[var(--text-body)] hover:text-[var(--text-main)] text-[11px] font-mono cursor-pointer transition-all shadow-sm"
+                title={theme === 'dark' ? 'Switch to Classic Broadsheet (Light Mode)' : 'Switch to Warm Obsidian (Night Mode)'}
+                aria-label="Toggle visual theme"
+              >
+                {theme === 'dark' ? (
+                  <>
+                    <Sun className="w-3.5 h-3.5 text-amber-400" />
+                    <span className="hidden sm:inline font-medium">Paper</span>
+                  </>
+                ) : (
+                  <>
+                    <Moon className="w-3.5 h-3.5 text-stone-700" />
+                    <span className="hidden sm:inline font-medium">Night</span>
+                  </>
+                )}
               </button>
             </div>
           </div>
@@ -225,11 +275,11 @@ export const Navbar: React.FC<NavbarProps> = ({
             title="LANKA DISPATCH Front Page"
             aria-label="LANKA DISPATCH Front Page"
           >
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-white font-headline uppercase">
-              LANKA<span className="text-rose-500">DISPATCH</span>
+            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-[var(--text-main)] font-headline uppercase">
+              LANKA<span className="text-[var(--accent-crimson)]">DISPATCH</span>
             </h1>
           </Link>
-          <p className="text-[11px] text-zinc-400 tracking-widest uppercase mt-0.5 font-mono">
+          <p className="text-[11px] text-[var(--text-muted)] tracking-widest uppercase mt-0.5 font-mono">
             {navbarTranslations.tagline[currentLang]}
           </p>
         </div>
@@ -237,18 +287,18 @@ export const Navbar: React.FC<NavbarProps> = ({
         {/* Editorial Search with Historical Date-Range Scope */}
         <div className="w-full md:w-96 flex items-center gap-2">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[var(--text-muted)]" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => onSearchChange(e.target.value)}
               placeholder={navbarTranslations.searchPlaceholder[currentLang]}
-              className="w-full pl-9 pr-8 py-2 bg-white/[0.04] border border-white/10 rounded-md text-xs text-zinc-100 placeholder:text-zinc-500 focus:outline-none focus:border-white/30 transition-colors"
+              className="w-full pl-9 pr-8 py-2 bg-[var(--bg-card)] border border-[var(--border-line)] rounded-md text-xs text-[var(--text-main)] placeholder:text-[var(--text-muted)] focus:outline-none focus:border-[var(--border-strong)] transition-colors"
             />
             {searchQuery && (
               <button
                 onClick={() => onSearchChange('')}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white p-0.5 cursor-pointer"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[var(--text-muted)] hover:text-[var(--text-main)] p-0.5 cursor-pointer"
                 title="Clear search"
                 aria-label="Clear search"
               >
@@ -263,23 +313,23 @@ export const Navbar: React.FC<NavbarProps> = ({
               <select
                 value={dateRange}
                 onChange={(e) => onDateRangeChange(e.target.value as DateRange)}
-                className="appearance-none bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 rounded-md text-[11px] font-mono text-zinc-300 py-2 pl-2.5 pr-6 focus:outline-none focus:border-white/30 transition-colors cursor-pointer"
+                className="appearance-none bg-[var(--bg-card)] hover:bg-[var(--bg-card-hover)] border border-[var(--border-line)] rounded-md text-[11px] font-mono text-[var(--text-body)] py-2 pl-2.5 pr-6 focus:outline-none focus:border-[var(--border-strong)] transition-colors cursor-pointer"
                 title="Filter dispatches by historical date range"
                 aria-label="Historical Date Range Scope"
               >
-                <option value="all" className="bg-[#111216] text-zinc-300">
+                <option value="all" className="bg-[var(--dropdown-bg)] text-[var(--text-main)]">
                   {navbarTranslations.timeRangeAll[currentLang]}
                 </option>
-                <option value="24h" className="bg-[#111216] text-zinc-300">
+                <option value="24h" className="bg-[var(--dropdown-bg)] text-[var(--text-main)]">
                   {navbarTranslations.timeRange24h[currentLang]}
                 </option>
-                <option value="7d" className="bg-[#111216] text-zinc-300">
+                <option value="7d" className="bg-[var(--dropdown-bg)] text-[var(--text-main)]">
                   {navbarTranslations.timeRange7d[currentLang]}
                 </option>
-                <option value="30d" className="bg-[#111216] text-zinc-300">
+                <option value="30d" className="bg-[var(--dropdown-bg)] text-[var(--text-main)]">
                   {navbarTranslations.timeRange30d[currentLang]}
                 </option>
-                <option value="1y" className="bg-[#111216] text-rose-400 font-semibold">
+                <option value="1y" className="bg-[var(--dropdown-bg)] text-[var(--accent-crimson)] font-semibold">
                   {navbarTranslations.timeRange1y[currentLang]}
                 </option>
               </select>

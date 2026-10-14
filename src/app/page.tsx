@@ -438,7 +438,7 @@ export default function HomePage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0b0c0e] text-zinc-100 selection:bg-rose-900/40 selection:text-white">
+    <div className="min-h-screen flex flex-col bg-[var(--bg-page)] text-[var(--text-main)] transition-colors duration-200">
       {/* Schema.org Rich Results Structured Data */}
       <OrganizationJsonLd currentLang={currentLang} />
       <WebSiteJsonLd />
@@ -593,9 +593,9 @@ export default function HomePage() {
       />
 
       {/* 5. Authoritative Newspaper Broadsheet Footer (Google News & Search Console Compliant) */}
-      <footer className="w-full border-t border-white/[0.08] bg-[#07080a] py-14 text-xs text-zinc-400">
+      <footer className="w-full border-t border-[var(--border-line)] bg-[var(--footer-bg)] py-14 text-xs text-[var(--text-muted)] transition-colors duration-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-10 border-b border-white/[0.06]">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 pb-10 border-b border-[var(--border-line)]">
             {/* Column 1: Masthead & Mission */}
             <div className="space-y-3">
               <Link

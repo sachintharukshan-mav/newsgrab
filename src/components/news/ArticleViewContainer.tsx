@@ -126,7 +126,7 @@ export const ArticleViewContainer: React.FC<ArticleViewContainerProps> = ({
   const savedArticles = allArticles.filter((a) => savedArticleIds.includes(a.id));
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0b0c0e] text-[#f1f2f4]">
+    <div className="min-h-screen flex flex-col bg-[var(--bg-page)] text-[var(--text-main)] transition-colors duration-200">
       {/* 1. Live Market Ticker */}
       <MarketTicker
         pulse={marketPulse}
@@ -169,7 +169,7 @@ export const ArticleViewContainer: React.FC<ArticleViewContainerProps> = ({
       />
 
       {/* 5. Institutional Footer */}
-      <footer className="border-t border-white/[0.08] bg-[#07080a] py-10 mt-12 text-xs font-mono text-zinc-500">
+      <footer className="border-t border-[var(--border-line)] bg-[var(--footer-bg)] py-10 mt-12 text-xs font-mono text-[var(--text-muted)] transition-colors duration-200">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
             <span className="font-bold text-zinc-300">LANKA DISPATCH</span> · Sri Lanka Digital Intelligence Desk

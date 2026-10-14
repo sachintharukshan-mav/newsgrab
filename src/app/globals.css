@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
-:root {
+:root, html.dark, [data-theme="dark"] {
+  color-scheme: dark;
   --bg-page: #111216;
   --bg-card: #181a20;
   --bg-card-hover: #1e2027;
@@ -16,19 +17,34 @@
   --accent-crimson: #d97706;
   --accent-gold: #f59e0b;
   --accent-emerald: #34d399;
+  --ticker-bg: #0e0f13;
+  --footer-bg: #0a0b0e;
+  --dropdown-bg: #181a20;
 
   --font-noto-sinhala: 'Noto Sans Sinhala', 'Iskoola Pota', 'FMAbhaya', sans-serif;
   --font-noto-tamil: 'Noto Sans Tamil', 'Latha', sans-serif;
-  
-  --spring-tactile: linear(
-    0, 0.016 0.5%, 0.06 1%, 0.226 2%, 1.116 5.4%, 1.375 6.6%, 1.527 7.7%,
-    1.565 8.2%, 1.585 8.8%, 1.581 9.3%, 1.559 9.8%, 1.458 10.9%, 0.937 14.3%,
-    0.784 15.5%, 0.693 16.6%, 0.67 17.1%, 0.657 17.7%, 0.671 18.7%, 0.729 19.8%,
-    1.042 23.3%, 1.13 24.5%, 1.182 25.6%, 1.201 26.7%, 1.192 27.7%, 1.156 28.8%,
-    0.977 32.2%, 0.925 33.4%, 0.894 34.5%, 0.882 35.6%, 0.887 36.6%, 0.907 37.7%,
-    1.045 42.4%, 1.069 44.5%, 1.059 46.3%, 0.979 50.9%, 0.96 53.4%, 0.966 55.3%,
-    1.013 59.9%, 1.024 62.3%, 0.986 71.2%, 1.008 79.9%, 0.995 88.9%, 1
-  );
+}
+
+html.light, [data-theme="light"] {
+  color-scheme: light;
+  --bg-page: #fbf9f4;
+  --bg-card: #ffffff;
+  --bg-card-hover: #f5f2ea;
+  --bg-subtle: #eeeadf;
+  --border-line: rgba(28, 25, 23, 0.09);
+  --border-strong: rgba(28, 25, 23, 0.18);
+
+  --text-main: #1c1917;
+  --text-body: #383532;
+  --text-muted: #716c65;
+  --text-faint: #a8a29e;
+
+  --accent-crimson: #991b1b;
+  --accent-gold: #b45309;
+  --accent-emerald: #059669;
+  --ticker-bg: #f4efe4;
+  --footer-bg: #f2eee4;
+  --dropdown-bg: #ffffff;
 }
 
 body {
@@ -37,6 +53,7 @@ body {
   font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease;
 }
 
 /* Editorial Serif Headlines (Like The Verge, NYT, Financial Times) */

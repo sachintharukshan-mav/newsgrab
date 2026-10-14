@@ -120,17 +120,17 @@ export const HeadlineSlider: React.FC<HeadlineSliderProps> = ({
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
-      className="relative w-full rounded-xl bg-[#0f1015] border border-white/[0.08] shadow-2xl overflow-hidden focus:outline-none focus:ring-1 focus:ring-rose-500/50 transition-all duration-300 mb-8"
+      className="relative w-full rounded-xl bg-[var(--bg-card)] border border-[var(--border-line)] shadow-2xl overflow-hidden focus:outline-none focus:ring-1 focus:ring-[var(--accent-crimson)] transition-all duration-300 mb-8"
     >
       {/* Top Subtle Header Bar with Carousel Label & Controls */}
-      <div className="px-5 py-3 border-b border-white/[0.06] bg-[#0b0c0f] flex items-center justify-between text-xs font-mono">
+      <div className="px-5 py-3 border-b border-[var(--border-line)] bg-[var(--bg-subtle)] flex items-center justify-between text-xs font-mono">
         <div className="flex items-center gap-2">
-          <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
-          <span className="font-bold uppercase tracking-wider text-zinc-200">
+          <span className="w-2 h-2 rounded-full bg-[var(--accent-crimson)] animate-pulse" />
+          <span className="font-bold uppercase tracking-wider text-[var(--text-main)]">
             {sliderLabels.leadDispatches[currentLang]}
           </span>
-          <span className="text-zinc-600 hidden sm:inline">|</span>
-          <span className="text-zinc-400 hidden sm:inline">
+          <span className="text-[var(--text-faint)] hidden sm:inline">|</span>
+          <span className="text-[var(--text-muted)] hidden sm:inline">
             {safeIndex + 1} of {total}
           </span>
         </div>
@@ -344,7 +344,7 @@ export const HeadlineSlider: React.FC<HeadlineSliderProps> = ({
 
       {/* Bottom Story Tabs / Indicator Pills */}
       {total > 1 && (
-        <div className="px-5 py-3 border-t border-white/[0.06] bg-[#0b0c0f] flex items-center justify-between gap-4 overflow-x-auto no-scrollbar">
+        <div className="px-5 py-3 border-t border-[var(--border-line)] bg-[var(--bg-subtle)] flex items-center justify-between gap-4 overflow-x-auto no-scrollbar">
           <div className="flex items-center gap-2 w-full">
             {articles.map((art, idx) => {
               const artTitle = art.title[currentLang] || art.title.en || '';
