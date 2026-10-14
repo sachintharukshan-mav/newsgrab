@@ -182,7 +182,7 @@ export const NewsCard: React.FC<NewsCardProps> = ({
     <article
       onClick={() => onOpenQuickRead(article)}
       onMouseEnter={handleMouseEnter}
-      className="group cursor-pointer flex flex-col justify-between editorial-card p-4 rounded-lg bg-[#111216] border border-white/[0.06] hover:border-white/[0.16] hover:bg-[#13141a] transition-all duration-300 relative"
+      className="group cursor-pointer flex flex-col justify-between editorial-card p-4 rounded-lg bg-[#181a20] border border-white/[0.07] hover:border-white/[0.14] hover:bg-[#1e2027] transition-all duration-300 relative"
     >
       <div className="space-y-3">
         {/* Editorial Photography */}
@@ -248,7 +248,7 @@ export const NewsCard: React.FC<NewsCardProps> = ({
 
         {/* Headline */}
         <h3
-          className={`text-base sm:text-lg font-bold text-zinc-100 font-headline leading-snug group-hover:text-white transition-colors line-clamp-3 ${
+          className={`text-base sm:text-lg font-bold text-[#eceef2] font-headline leading-snug group-hover:text-white transition-colors line-clamp-3 ${
             isSinhala ? 'font-sinhala leading-[1.3]' : ''
           } ${isTamil ? 'font-tamil leading-[1.28]' : ''}`}
         >
@@ -257,7 +257,7 @@ export const NewsCard: React.FC<NewsCardProps> = ({
 
         {/* Summary Snippet */}
         <p
-          className={`text-xs text-zinc-400 line-clamp-2 leading-relaxed ${
+          className={`text-xs text-[#bcc1cd] line-clamp-2 leading-relaxed ${
             isSinhala ? 'font-sinhala leading-normal' : ''
           } ${isTamil ? 'font-tamil leading-normal' : ''}`}
         >

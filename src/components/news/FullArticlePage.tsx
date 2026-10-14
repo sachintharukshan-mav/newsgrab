@@ -268,7 +268,7 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
       />
 
       {/* Sticky Sub-Header with Back Navigation & Action Controls */}
-      <div className="sticky top-0 z-30 w-full bg-[#0b0c0e]/95 backdrop-blur-md border-b border-white/[0.08] py-3">
+      <div className="sticky top-0 z-30 w-full bg-[#111216]/95 backdrop-blur-md border-b border-white/[0.07] py-3">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
           <button
             onClick={onBack}
@@ -392,7 +392,7 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
             <span className="px-2 py-0.5 rounded bg-white/[0.08] text-[11px] font-mono text-zinc-200">
               {article.region === 'world' ? '🌐 World' : '🇱🇰 Sri Lanka'}
             </span>
-            <span className="text-rose-500 font-bold">{article.category}</span>
+            <span className="text-amber-400 font-bold">{article.category}</span>
             <span className="text-zinc-600">/</span>
             <span className="text-zinc-300 font-medium">{article.publisherName}</span>
             <span className="text-zinc-600">•</span>
@@ -404,7 +404,7 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
 
           {/* Grand Broadsheet Headline */}
           <h1
-            className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-white font-headline leading-[1.12] tracking-tight ${
+            className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-[#eceef2] font-headline leading-[1.12] tracking-tight ${
               isSinhala ? 'font-sinhala' : ''
             } ${isTamil ? 'font-tamil' : ''}`}
           >

@@ -1,21 +1,21 @@
 @import "tailwindcss";
 
 :root {
-  --bg-page: #0b0c0e;
-  --bg-card: #131418;
-  --bg-card-hover: #17191f;
-  --bg-subtle: #191b22;
-  --border-line: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.18);
+  --bg-page: #111216;
+  --bg-card: #181a20;
+  --bg-card-hover: #1e2027;
+  --bg-subtle: #22242d;
+  --border-line: rgba(255, 255, 255, 0.07);
+  --border-strong: rgba(255, 255, 255, 0.14);
   
-  --text-main: #f8f9fa;
-  --text-body: #c4c7d0;
-  --text-muted: #848794;
-  --text-faint: #525560;
+  --text-main: #eceef2;
+  --text-body: #bcc1cd;
+  --text-muted: #767b8a;
+  --text-faint: #545864;
 
-  --accent-crimson: #e11d48;
-  --accent-gold: #eab308;
-  --accent-emerald: #10b981;
+  --accent-crimson: #d97706;
+  --accent-gold: #f59e0b;
+  --accent-emerald: #34d399;
 
   --font-noto-sinhala: 'Noto Sans Sinhala', 'Iskoola Pota', 'FMAbhaya', sans-serif;
   --font-noto-tamil: 'Noto Sans Tamil', 'Latha', sans-serif;
@@ -66,7 +66,7 @@ body {
 
 .editorial-card:hover {
   transform: translateY(-2px);
-  border-color: rgba(255, 255, 255, 0.18);
+  border-color: rgba(255, 255, 255, 0.14);
 }
 
 /* Smooth Financial Ticker */
@@ -94,7 +94,7 @@ body {
 .article-prose {
   font-size: 1.05rem;
   line-height: 1.85;
-  color: #d1d5db;
+  color: var(--text-body);
 }
 
 .article-prose.prose-normal {
@@ -120,17 +120,17 @@ body {
   font-family: var(--font-newsreader), Georgia, serif;
   font-size: 1.4rem;
   font-weight: 700;
-  color: #f8f9fa;
+  color: var(--text-main);
   margin-top: 2rem;
   margin-bottom: 0.8rem;
 }
 
 .article-prose blockquote {
-  border-left: 3px solid #e11d48;
+  border-left: 3px solid var(--accent-gold);
   padding-left: 1.25rem;
   margin: 1.5rem 0;
   font-style: italic;
-  color: #e5e7eb;
+  color: var(--text-main);
 }
 
 .article-prose img {

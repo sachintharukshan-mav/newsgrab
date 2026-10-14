@@ -148,7 +148,7 @@ export default function RootLayout({
           />
         )}
       </head>
-      <body className="min-h-full flex flex-col bg-[#0b0c0e] text-[#f1f2f4]">
+      <body className="min-h-full flex flex-col bg-[#111216] text-[#eceef2]">
         {children}
         <CookieConsent />
       </body>

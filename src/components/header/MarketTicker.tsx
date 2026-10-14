@@ -35,7 +35,7 @@ export const MarketTicker: React.FC<MarketTickerProps> = ({ pulse, currentLang =
   const { cbslRates, goldPrice24kPerSovereign, cseIndex, colomboWeather } = pulse;
 
   return (
-    <div className="w-full bg-[#08090b] border-b border-white/[0.08] text-[11px] py-1.5 overflow-hidden select-none">
+    <div className="w-full bg-[#0e0f13] border-b border-white/[0.06] text-[11px] py-1.5 overflow-hidden select-none">
       <div className="flex financial-ticker-marquee items-center gap-8 whitespace-nowrap">
         {[0, 1].map((copyIndex) => (
           <div key={copyIndex} className="flex items-center gap-8">
