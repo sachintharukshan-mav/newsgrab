@@ -101,18 +101,18 @@ export const SavedArticlesDrawer: React.FC<SavedArticlesDrawerProps> = ({
       />
 
       <div className="fixed inset-y-0 right-0 max-w-full flex pl-10">
-        <div className="w-screen max-w-md bg-[#0e0f13] border-l border-white/[0.1] shadow-2xl flex flex-col justify-between animate-in slide-in-from-right duration-300">
+        <div className="w-screen max-w-md bg-[var(--bg-page)] border-l border-[var(--border-line)] shadow-2xl flex flex-col justify-between animate-in slide-in-from-right duration-300">
           {/* Header */}
-          <div className="p-5 border-b border-white/[0.08] flex items-center justify-between">
+          <div className="p-5 border-b border-[var(--border-line)] flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <span className="w-8 h-8 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center">
+              <span className="w-8 h-8 rounded-lg bg-rose-500/10 border border-rose-500/20 text-rose-500 flex items-center justify-center">
                 <Bookmark className="w-4 h-4 fill-current" />
               </span>
               <div>
-                <h3 className="text-sm font-bold text-white font-mono uppercase tracking-wider">
+                <h3 className="text-sm font-bold text-[var(--text-main)] font-mono uppercase tracking-wider">
                   {drawerLabels.savedDispatches[currentLang]}
                 </h3>
-                <p className="text-[11px] text-zinc-400 font-mono">
+                <p className="text-[11px] text-[var(--text-muted)] font-mono">
                   {savedArticles.length} {drawerLabels.storiesCount[currentLang]}
                 </p>
               </div>
@@ -122,7 +122,7 @@ export const SavedArticlesDrawer: React.FC<SavedArticlesDrawerProps> = ({
               {savedArticles.length > 0 && (
                 <button
                   onClick={onClearAll}
-                  className="px-2 py-1 rounded bg-white/[0.04] hover:bg-rose-500/10 border border-white/10 hover:border-rose-500/20 text-[10px] font-mono text-zinc-400 hover:text-rose-400 transition-colors cursor-pointer flex items-center gap-1"
+                  className="px-2 py-1 rounded bg-[var(--bg-subtle)] hover:bg-rose-500/10 border border-[var(--border-line)] hover:border-rose-500/20 text-[10px] font-mono text-[var(--text-muted)] hover:text-rose-500 transition-colors cursor-pointer flex items-center gap-1"
                   title="Clear all saved articles"
                 >
                   <Trash2 className="w-3 h-3" />
@@ -131,7 +131,7 @@ export const SavedArticlesDrawer: React.FC<SavedArticlesDrawerProps> = ({
               )}
               <button
                 onClick={onClose}
-                className="w-8 h-8 rounded-lg bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-zinc-400 hover:text-white flex items-center justify-center transition-colors cursor-pointer"
+                className="w-8 h-8 rounded-lg bg-[var(--bg-subtle)] hover:bg-[var(--bg-card)] border border-[var(--border-line)] text-[var(--text-muted)] hover:text-[var(--text-main)] flex items-center justify-center transition-colors cursor-pointer"
                 aria-label="Close drawer"
               >
                 <X className="w-4 h-4" />
@@ -140,16 +140,16 @@ export const SavedArticlesDrawer: React.FC<SavedArticlesDrawerProps> = ({
           </div>
 
           {/* Body Content */}
-          <div className="flex-1 overflow-y-auto p-5 divide-y divide-white/[0.06] space-y-4">
+          <div className="flex-1 overflow-y-auto p-5 divide-y divide-[var(--border-line)] space-y-4">
             {savedArticles.length === 0 ? (
               <div className="h-full flex flex-col items-center justify-center text-center p-6 space-y-3">
-                <div className="w-12 h-12 rounded-full bg-white/[0.04] border border-white/10 flex items-center justify-center text-zinc-500">
+                <div className="w-12 h-12 rounded-full bg-[var(--bg-subtle)] border border-[var(--border-line)] flex items-center justify-center text-[var(--text-muted)]">
                   <BookOpen className="w-6 h-6" />
                 </div>
-                <h4 className="text-sm font-bold text-zinc-200 font-mono">
+                <h4 className="text-sm font-bold text-[var(--text-main)] font-mono">
                   {drawerLabels.emptyTitle[currentLang]}
                 </h4>
-                <p className="text-xs text-zinc-400 max-w-xs leading-relaxed">
+                <p className="text-xs text-[var(--text-muted)] max-w-xs leading-relaxed">
                   {drawerLabels.emptyDesc[currentLang]}
                 </p>
               </div>
@@ -162,7 +162,7 @@ export const SavedArticlesDrawer: React.FC<SavedArticlesDrawerProps> = ({
                 return (
                   <div
                     key={article.id}
-                    className="pt-4 first:pt-0 group flex items-start gap-3 hover:bg-white/[0.02] p-2 rounded-lg transition-colors"
+                    className="pt-4 first:pt-0 group flex items-start gap-3 hover:bg-[var(--bg-card-hover)] p-2 rounded-lg transition-colors"
                   >
                     {/* Thumbnail */}
                     <div
@@ -170,7 +170,7 @@ export const SavedArticlesDrawer: React.FC<SavedArticlesDrawerProps> = ({
                         onSelectArticle(article);
                         onClose();
                       }}
-                      className="relative w-20 h-16 rounded overflow-hidden flex-shrink-0 bg-zinc-900 border border-white/10 cursor-pointer"
+                      className="relative w-20 h-16 rounded overflow-hidden flex-shrink-0 bg-[var(--bg-card)] border border-[var(--border-line)] cursor-pointer"
                     >
                       <img
                         src={displayImage}
@@ -188,18 +188,18 @@ export const SavedArticlesDrawer: React.FC<SavedArticlesDrawerProps> = ({
                         }}
                         className="cursor-pointer"
                       >
-                        <div className="flex items-center gap-1.5 text-[10px] font-mono text-zinc-400 mb-1">
-                          <span className="text-rose-400 font-semibold">{article.category}</span>
-                          <span className="text-zinc-600">·</span>
+                        <div className="flex items-center gap-1.5 text-[10px] font-mono text-[var(--text-muted)] mb-1">
+                          <span className="text-rose-600 dark:text-rose-400 font-semibold">{article.category}</span>
+                          <span className="text-[var(--text-faint)]">·</span>
                           <span className="truncate">{article.publisherName}</span>
                         </div>
-                        <h4 className="text-xs font-semibold text-zinc-200 line-clamp-2 group-hover:text-white transition-colors leading-snug">
+                        <h4 className="text-xs font-semibold text-[var(--text-main)] line-clamp-2 group-hover:text-rose-600 transition-colors leading-snug">
                           {title}
                         </h4>
                       </div>
 
                       {/* Footer Actions */}
-                      <div className="flex items-center justify-between mt-2 pt-1 text-[10px] font-mono text-zinc-500">
+                      <div className="flex items-center justify-between mt-2 pt-1 text-[10px] font-mono text-[var(--text-muted)]">
                         <span className="flex items-center gap-1">
                           <Clock className="w-2.5 h-2.5" />
                           <span suppressHydrationWarning>{relativeTime}</span>
@@ -208,7 +208,7 @@ export const SavedArticlesDrawer: React.FC<SavedArticlesDrawerProps> = ({
                         <div className="flex items-center gap-2">
                           <button
                             onClick={() => onRemoveArticle(article.id)}
-                            className="text-zinc-500 hover:text-rose-400 transition-colors p-1 cursor-pointer"
+                            className="text-[var(--text-muted)] hover:text-rose-600 transition-colors p-1 cursor-pointer"
                             title={drawerLabels.remove[currentLang]}
                           >
                             <Trash2 className="w-3 h-3" />
@@ -218,7 +218,7 @@ export const SavedArticlesDrawer: React.FC<SavedArticlesDrawerProps> = ({
                               onSelectArticle(article);
                               onClose();
                             }}
-                            className="text-zinc-300 hover:text-white flex items-center gap-0.5 font-medium transition-colors cursor-pointer"
+                            className="text-[var(--text-muted)] hover:text-[var(--text-main)] flex items-center gap-0.5 font-medium transition-colors cursor-pointer"
                           >
                             <span>{drawerLabels.readNow[currentLang]}</span>
                             <ArrowUpRight className="w-3 h-3" />
@@ -233,7 +233,7 @@ export const SavedArticlesDrawer: React.FC<SavedArticlesDrawerProps> = ({
           </div>
 
           {/* Drawer Footer */}
-          <div className="p-4 border-t border-white/[0.08] bg-black/40 text-[11px] font-mono text-zinc-500 flex items-center justify-between">
+          <div className="p-4 border-t border-[var(--border-line)] bg-[var(--bg-subtle)] text-[11px] font-mono text-[var(--text-muted)] flex items-center justify-between">
             <span>Lanka Dispatch Offline Dispatch Queue</span>
             <span>Local Cache · 0 Cloud Tracking</span>
           </div>

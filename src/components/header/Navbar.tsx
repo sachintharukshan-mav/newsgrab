@@ -167,7 +167,8 @@ export const Navbar: React.FC<NavbarProps> = ({
             </div>
 
             {/* Auto-Refresh Frequency Pill */}
-            <span className="hidden md:inline-block text-[10px] font-mono text-zinc-500 px-1.5 py-0.5 rounded bg-white/[0.03] border border-white/[0.06]">
+            {/* Auto-Refresh Frequency Pill */}
+            <span className="hidden md:inline-block text-[10px] font-mono text-[var(--text-muted)] px-1.5 py-0.5 rounded bg-[var(--bg-subtle)] border border-[var(--border-line)]">
               {navbarTranslations.autoCadence[currentLang]}
             </span>
 
@@ -176,11 +177,11 @@ export const Navbar: React.FC<NavbarProps> = ({
               <button
                 onClick={onManualRefresh}
                 disabled={isRefreshing}
-                className="flex items-center gap-1 px-2 py-0.5 rounded bg-white/[0.05] hover:bg-white/[0.1] border border-white/10 text-zinc-300 text-[10px] font-mono cursor-pointer transition-colors disabled:opacity-50"
+                className="flex items-center gap-1 px-2 py-0.5 rounded bg-[var(--bg-subtle)] hover:bg-[var(--bg-card-hover)] border border-[var(--border-line)] text-[var(--text-body)] hover:text-[var(--text-main)] text-[10px] font-mono cursor-pointer transition-colors disabled:opacity-50"
                 title="Click to fetch live updates immediately"
                 aria-label="Refresh news feed"
               >
-                <RefreshCw className={`w-2.5 h-2.5 ${isRefreshing ? 'animate-spin text-rose-400' : ''}`} />
+                <RefreshCw className={`w-2.5 h-2.5 ${isRefreshing ? 'animate-spin text-rose-500' : ''}`} />
                 <span>{isRefreshing ? navbarTranslations.refreshing[currentLang] : navbarTranslations.refresh[currentLang]}</span>
               </button>
             )}
@@ -191,13 +192,13 @@ export const Navbar: React.FC<NavbarProps> = ({
                 onClick={onOpenSavedDrawer}
                 className={`flex items-center gap-1 px-2 py-0.5 rounded border transition-colors cursor-pointer text-[10px] font-mono ${
                   savedCount > 0
-                    ? 'bg-rose-500/10 hover:bg-rose-500/20 border-rose-500/30 text-rose-300 font-semibold'
-                    : 'bg-white/[0.04] hover:bg-white/[0.08] border-white/10 text-zinc-300'
+                    ? 'bg-rose-500/10 hover:bg-rose-500/20 border-rose-500/30 text-rose-600 dark:text-rose-300 font-semibold'
+                    : 'bg-[var(--bg-subtle)] hover:bg-[var(--bg-card-hover)] border-[var(--border-line)] text-[var(--text-body)] hover:text-[var(--text-main)]'
                 }`}
                 title={navbarTranslations.savedQueue[currentLang]}
                 aria-label="Open saved reading list"
               >
-                <Bookmark className={`w-2.5 h-2.5 ${savedCount > 0 ? 'fill-current text-rose-400' : 'text-zinc-400'}`} />
+                <Bookmark className={`w-2.5 h-2.5 ${savedCount > 0 ? 'fill-current text-rose-500' : 'text-[var(--text-muted)]'}`} />
                 <span>{navbarTranslations.saved[currentLang]}</span>
                 {savedCount > 0 && (
                   <span className="px-1 py-0.2 rounded-full bg-rose-500 text-white text-[9px] font-bold font-mono">
@@ -210,12 +211,12 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* Language Selection */}
           <div className="flex items-center gap-2 text-xs">
-            <span className="text-zinc-500 font-mono text-[10px] uppercase">Edition:</span>
-            <div className="flex items-center divide-x divide-white/10 text-[11px] font-medium">
+            <span className="text-[var(--text-muted)] font-mono text-[10px] uppercase">Edition:</span>
+            <div className="flex items-center divide-x divide-[var(--border-line)] text-[11px] font-medium">
               <button
                 onClick={() => onLanguageChange('en')}
                 className={`px-2 py-0.5 transition-colors cursor-pointer ${
-                  currentLang === 'en' ? 'text-white font-bold underline underline-offset-4 decoration-rose-500' : 'text-zinc-400 hover:text-zinc-200'
+                  currentLang === 'en' ? 'text-[var(--text-main)] font-bold underline underline-offset-4 decoration-[var(--accent-crimson)]' : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'
                 }`}
               >
                 English
@@ -223,7 +224,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               <button
                 onClick={() => onLanguageChange('si')}
                 className={`px-2 py-0.5 font-sinhala transition-colors cursor-pointer ${
-                  currentLang === 'si' ? 'text-white font-bold underline underline-offset-4 decoration-rose-500' : 'text-zinc-400 hover:text-zinc-200'
+                  currentLang === 'si' ? 'text-[var(--text-main)] font-bold underline underline-offset-4 decoration-[var(--accent-crimson)]' : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'
                 }`}
               >
                 සිංහල
@@ -341,11 +342,11 @@ export const Navbar: React.FC<NavbarProps> = ({
           {onOpenSavedDrawer && (
             <button
               onClick={onOpenSavedDrawer}
-              className="relative p-2 rounded-md bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 text-zinc-300 hover:text-white transition-colors cursor-pointer flex-shrink-0"
+              className="relative p-2 rounded-md bg-[var(--bg-subtle)] hover:bg-[var(--bg-card-hover)] border border-[var(--border-line)] text-[var(--text-body)] hover:text-[var(--text-main)] transition-colors cursor-pointer flex-shrink-0"
               title={navbarTranslations.savedQueue[currentLang]}
               aria-label="Open saved articles drawer"
             >
-              <Bookmark className={`w-3.5 h-3.5 ${savedCount > 0 ? 'fill-current text-rose-400' : 'text-zinc-400'}`} />
+              <Bookmark className={`w-3.5 h-3.5 ${savedCount > 0 ? 'fill-current text-rose-500' : 'text-[var(--text-muted)]'}`} />
               {savedCount > 0 && (
                 <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-rose-500 text-white text-[9px] font-bold font-mono flex items-center justify-center shadow-md">
                   {savedCount}

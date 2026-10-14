@@ -93,7 +93,7 @@ export const BentoGrid: React.FC<BentoGridProps> = ({
 
     return (
       <div className="space-y-4 my-6">
-        <div className="space-y-1 divide-y divide-white/[0.06] border-y border-white/[0.08]">
+        <div className="space-y-1 divide-y divide-[var(--border-line)] border-y border-[var(--border-line)]">
           {compactArticles.map((article, index) => {
             const title = article.title[currentLang] || article.title.en;
             const timeAgo = formatRelativeTime(article.publishedAt, currentLang);
@@ -102,15 +102,15 @@ export const BentoGrid: React.FC<BentoGridProps> = ({
               <React.Fragment key={article.id}>
                 <div
                   onClick={() => onOpenQuickRead(article)}
-                  className="group py-3 px-2 flex items-baseline justify-between gap-4 cursor-pointer hover:bg-white/[0.02] transition-colors"
+                  className="group py-3 px-2 flex items-baseline justify-between gap-4 cursor-pointer hover:bg-[var(--bg-card-hover)] transition-colors"
                 >
                   <div className="flex items-baseline gap-4 flex-1">
-                    <span className="font-mono text-xs text-zinc-400 flex-shrink-0" suppressHydrationWarning>{timeAgo}</span>
-                    <span className="font-mono text-[11px] text-zinc-400 uppercase flex-shrink-0 w-28 truncate">
+                    <span className="font-mono text-xs text-[var(--text-muted)] flex-shrink-0" suppressHydrationWarning>{timeAgo}</span>
+                    <span className="font-mono text-[11px] text-[var(--text-muted)] uppercase flex-shrink-0 w-28 truncate">
                       {article.publisherName}
                     </span>
                     <h4
-                      className={`text-sm sm:text-base text-zinc-200 group-hover:text-white font-medium transition-colors ${
+                      className={`text-sm sm:text-base text-[var(--text-main)] group-hover:text-rose-600 font-medium transition-colors ${
                         isSinhala ? 'font-sinhala' : ''
                       } ${isTamil ? 'font-tamil' : ''}`}
                     >
@@ -124,13 +124,13 @@ export const BentoGrid: React.FC<BentoGridProps> = ({
                           e.stopPropagation();
                           onToggleSave(article);
                         }}
-                        className="p-1 text-zinc-500 hover:text-rose-400 transition-colors cursor-pointer"
+                        className="p-1 text-[var(--text-muted)] hover:text-rose-500 transition-colors cursor-pointer"
                         title={savedArticleIds.includes(article.id) ? 'Remove bookmark' : 'Bookmark for later'}
                       >
-                        <Bookmark className={`w-3.5 h-3.5 ${savedArticleIds.includes(article.id) ? 'text-rose-400 fill-current' : ''}`} />
+                        <Bookmark className={`w-3.5 h-3.5 ${savedArticleIds.includes(article.id) ? 'text-rose-500 fill-current' : ''}`} />
                       </button>
                     )}
-                    <ArrowUpRight className="w-3.5 h-3.5 text-zinc-400 group-hover:text-white transition-colors" />
+                    <ArrowUpRight className="w-3.5 h-3.5 text-[var(--text-muted)] group-hover:text-[var(--text-main)] transition-colors" />
                   </div>
                 </div>
 
@@ -256,23 +256,23 @@ export const BentoGrid: React.FC<BentoGridProps> = ({
         </div>
 
         {/* Right Rail: Prediction Tracker & The Live Wire Column (4 Columns) */}
-        <aside className="lg:col-span-4 border-t lg:border-t-0 lg:border-l border-white/[0.08] lg:pl-8 space-y-6">
+        <aside className="lg:col-span-4 border-t lg:border-t-0 lg:border-l border-[var(--border-line)] lg:pl-8 space-y-6">
           {/* Community Sentiment & Prediction Radar */}
           <PredictionTracker currentLang={currentLang} />
 
           {/* The Colombo Wire Stream */}
           <div className="space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-white/[0.08]">
+            <div className="flex items-center justify-between pb-3 border-b border-[var(--border-line)]">
               <div className="flex items-center gap-2">
                 <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
-                <h3 className="font-mono text-xs font-bold uppercase tracking-wider text-zinc-200">
+                <h3 className="font-mono text-xs font-bold uppercase tracking-wider text-[var(--text-main)]">
                   The Colombo Wire
                 </h3>
               </div>
-              <span className="text-[10px] font-mono text-zinc-400">Continuous Stream</span>
+              <span className="text-[10px] font-mono text-[var(--text-muted)]">Continuous Stream</span>
             </div>
 
-            <div className="divide-y divide-white/[0.06] space-y-3">
+            <div className="divide-y divide-[var(--border-line)] space-y-3">
               {wireStories.map((article) => {
                 const title = article.title[currentLang] || article.title.en;
                 const timeAgo = formatRelativeTime(article.publishedAt, currentLang);
@@ -282,19 +282,19 @@ export const BentoGrid: React.FC<BentoGridProps> = ({
                     onClick={() => onOpenQuickRead(article)}
                     className="pt-3 group cursor-pointer space-y-1.5 transition-transform duration-200 hover:translate-x-1"
                   >
-                    <div className="flex items-center justify-between text-[11px] font-mono text-zinc-400">
+                    <div className="flex items-center justify-between text-[11px] font-mono text-[var(--text-muted)]">
                       <div className="flex items-center gap-1.5">
-                        <span className="font-medium text-zinc-300">{article.publisherName}</span>
-                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/[0.04]">
+                        <span className="font-medium text-[var(--text-body)]">{article.publisherName}</span>
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-[var(--bg-subtle)] border border-[var(--border-line)]">
                           {article.region === 'world' ? '🌐 World' : '🇱🇰 SL'}
                         </span>
                       </div>
-                      <span className="text-[10px] text-zinc-500 font-sans" suppressHydrationWarning>
+                      <span className="text-[10px] text-[var(--text-muted)] font-sans" suppressHydrationWarning>
                         {timeAgo}
                       </span>
                     </div>
                     <h4
-                      className={`text-sm font-semibold text-zinc-200 group-hover:text-white transition-colors line-clamp-2 leading-snug ${
+                      className={`text-sm font-semibold text-[var(--text-main)] group-hover:text-rose-600 transition-colors line-clamp-2 leading-snug ${
                         isSinhala ? 'font-sinhala' : ''
                       } ${isTamil ? 'font-tamil' : ''}`}
                     >

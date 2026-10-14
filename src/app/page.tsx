@@ -512,26 +512,26 @@ export default function HomePage() {
 
           {/* Active Category Scope & Historical Filter Status Banner */}
           {(currentCategory !== 'all' || dateRange !== 'all') && (
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 mb-3 border-b border-white/[0.06] text-xs font-mono text-zinc-400 gap-2">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 mb-3 border-b border-[var(--border-line)] text-xs font-mono text-[var(--text-muted)] gap-2">
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
-                <span className={`text-zinc-200 font-bold uppercase tracking-wider ${currentLang === 'si' ? 'font-sinhala' : ''} ${currentLang === 'ta' ? 'font-tamil' : ''}`}>
+                <span className="w-2 h-2 rounded-full bg-[var(--accent-crimson)] animate-pulse" />
+                <span className={`text-[var(--text-main)] font-bold uppercase tracking-wider ${currentLang === 'si' ? 'font-sinhala' : ''} ${currentLang === 'ta' ? 'font-tamil' : ''}`}>
                   {categoryWireTitles[currentCategory][currentLang]}
                 </span>
                 {dateRange !== 'all' && (
-                  <span className="px-2 py-0.5 rounded bg-rose-500/15 border border-rose-500/30 text-rose-300 font-semibold text-[11px] font-mono">
+                  <span className="px-2 py-0.5 rounded bg-rose-500/15 border border-rose-500/30 text-rose-600 dark:text-rose-300 font-semibold text-[11px] font-mono">
                     ⏱️ {dateRangeLabels[dateRange][currentLang]}
                   </span>
                 )}
-                <span className="text-zinc-600">|</span>
-                <span className="text-zinc-400">
+                <span className="text-[var(--text-faint)]">|</span>
+                <span className="text-[var(--text-muted)]">
                   {filteredArticles.length} {uiText.dispatches[currentLang]} {Object.keys(publisherCounts).length} {uiText.newsrooms[currentLang]}
                 </span>
               </div>
 
               <button
                 onClick={handleResetFilters}
-                className="text-zinc-400 hover:text-zinc-200 text-[11px] underline underline-offset-2 cursor-pointer transition-colors self-start sm:self-auto"
+                className="text-[var(--text-muted)] hover:text-[var(--text-main)] text-[11px] underline underline-offset-2 cursor-pointer transition-colors self-start sm:self-auto"
               >
                 {uiText.reset[currentLang]}
               </button>
@@ -605,27 +605,27 @@ export default function HomePage() {
                 title="LANKA DISPATCH Front Page"
                 aria-label="LANKA DISPATCH Front Page"
               >
-                <div className="text-xl font-extrabold text-white font-headline uppercase tracking-tight">
-                  LANKA<span className="text-rose-500">DISPATCH</span>
+                <div className="text-xl font-extrabold text-[var(--text-main)] font-headline uppercase tracking-tight">
+                  LANKA<span className="text-[var(--accent-crimson)]">DISPATCH</span>
                 </div>
               </Link>
-              <p className="text-zinc-400 text-xs leading-relaxed">
+              <p className="text-[var(--text-body)] text-xs leading-relaxed">
                 Independent trilingual digital newsroom and editorial aggregator for Sri Lanka and the global diaspora. Syndicating national dispatches in English, Sinhala, and Tamil with verified Central Bank fixing indicators.
               </p>
-              <div className="text-[11px] font-mono text-zinc-500">
+              <div className="text-[11px] font-mono text-[var(--text-muted)]">
                 <span>Bureau: Colombo 01, Sri Lanka</span>
               </div>
             </div>
 
             {/* Column 2: Newsrooms & Syndication */}
             <div className="space-y-2 font-mono text-[11px]">
-              <div className="font-bold text-zinc-200 uppercase tracking-wider text-xs font-sans">
+              <div className="font-bold text-[var(--text-main)] uppercase tracking-wider text-xs font-sans">
                 Syndicated Wire (15)
               </div>
-              <ul className="grid grid-cols-2 gap-x-4 gap-y-1 text-zinc-400">
-                <li className="text-zinc-200 font-semibold">Reuters (World)</li>
-                <li className="text-zinc-200 font-semibold">BBC World News</li>
-                <li className="text-zinc-200 font-semibold">The Guardian (World)</li>
+              <ul className="grid grid-cols-2 gap-x-4 gap-y-1 text-[var(--text-muted)]">
+                <li className="text-[var(--text-main)] font-semibold">Reuters (World)</li>
+                <li className="text-[var(--text-main)] font-semibold">BBC World News</li>
+                <li className="text-[var(--text-main)] font-semibold">The Guardian (World)</li>
                 <li>Ada Derana (EN/SI)</li>
                 <li>Hiru News (EN/SI/TA)</li>
                 <li>Daily Mirror</li>
@@ -643,61 +643,61 @@ export default function HomePage() {
 
             {/* Column 3: Standards & Editorial Policies (Google News Trust Indicators) */}
             <div className="space-y-2 font-mono text-[11px]">
-              <div className="font-bold text-zinc-200 uppercase tracking-wider text-xs font-sans">
+              <div className="font-bold text-[var(--text-main)] uppercase tracking-wider text-xs font-sans">
                 Editorial Transparency
               </div>
-              <ul className="space-y-1.5 text-zinc-400">
+              <ul className="space-y-1.5 text-[var(--text-muted)]">
                 <li id="editorial-policy">
-                  <span className="text-zinc-300 font-semibold">Editorial Policy:</span> Direct original attribution &amp; fair use wire reporting.
+                  <span className="text-[var(--text-main)] font-semibold">Editorial Policy:</span> Direct original attribution &amp; fair use wire reporting.
                 </li>
                 <li id="corrections-policy">
-                  <span className="text-zinc-300 font-semibold">Corrections:</span> Updates reflect publisher modifications immediately.
+                  <span className="text-[var(--text-main)] font-semibold">Corrections:</span> Updates reflect publisher modifications immediately.
                 </li>
                 <li id="ethics-policy">
-                  <span className="text-zinc-300 font-semibold">Ethics:</span> Non-partisan, impartial multi-source perspective indexing.
+                  <span className="text-[var(--text-main)] font-semibold">Ethics:</span> Non-partisan, impartial multi-source perspective indexing.
                 </li>
                 <li id="diversity-policy">
-                  <span className="text-zinc-300 font-semibold">Diversity:</span> Unbiased trilingual coverage (සිංහල · தமிழ் · English).
+                  <span className="text-[var(--text-main)] font-semibold">Diversity:</span> Unbiased trilingual coverage (සිංහල · தமிழ் · English).
                 </li>
               </ul>
             </div>
 
             {/* Column 4: Contact & Grievances */}
             <div className="space-y-2 font-mono text-[11px]">
-              <div className="font-bold text-zinc-200 uppercase tracking-wider text-xs font-sans">
+              <div className="font-bold text-[var(--text-main)] uppercase tracking-wider text-xs font-sans">
                 Newsdesk &amp; Contact
               </div>
-              <ul className="space-y-1.5 text-zinc-400">
-                <li>Editorial Desk: <span className="text-zinc-200">desk@lankadispatch.com</span></li>
-                <li>Advertising &amp; SSPs: <span className="text-zinc-200">advertising@lankadispatch.com</span></li>
-                <li>Press Releases: <span className="text-zinc-200">wire@lankadispatch.com</span></li>
-                <li>Corrections &amp; Legal: <span className="text-zinc-200">legal@lankadispatch.com</span></li>
-                <li>Compliance: <Link href="/about" className="text-zinc-200 hover:text-white underline underline-offset-2">About Us</Link> · <Link href="/privacy" className="text-zinc-200 hover:text-white underline underline-offset-2">Privacy Policy</Link> · <button type="button" onClick={() => window.dispatchEvent(new CustomEvent('newsgrab:open-cookie-consent'))} className="text-zinc-200 hover:text-white underline underline-offset-2 cursor-pointer">Cookie Preferences</button> · <Link href="/terms" className="text-zinc-200 hover:text-white underline underline-offset-2">Terms</Link> · <a href="/ads.txt" className="text-zinc-200 hover:text-white underline underline-offset-2">ads.txt</a></li>
-                <li className="pt-1 text-[10px] text-emerald-400">● 24/7 Automated Ingestion Active</li>
+              <ul className="space-y-1.5 text-[var(--text-muted)]">
+                <li>Editorial Desk: <span className="text-[var(--text-main)]">desk@lankadispatch.com</span></li>
+                <li>Advertising &amp; SSPs: <span className="text-[var(--text-main)]">advertising@lankadispatch.com</span></li>
+                <li>Press Releases: <span className="text-[var(--text-main)]">wire@lankadispatch.com</span></li>
+                <li>Corrections &amp; Legal: <span className="text-[var(--text-main)]">legal@lankadispatch.com</span></li>
+                <li>Compliance: <Link href="/about" className="text-[var(--text-main)] hover:text-[var(--accent-crimson)] underline underline-offset-2">About Us</Link> · <Link href="/privacy" className="text-[var(--text-main)] hover:text-[var(--accent-crimson)] underline underline-offset-2">Privacy Policy</Link> · <button type="button" onClick={() => window.dispatchEvent(new CustomEvent('newsgrab:open-cookie-consent'))} className="text-[var(--text-main)] hover:text-[var(--accent-crimson)] underline underline-offset-2 cursor-pointer">Cookie Preferences</button> · <Link href="/terms" className="text-[var(--text-main)] hover:text-[var(--accent-crimson)] underline underline-offset-2">Terms</Link> · <a href="/ads.txt" className="text-[var(--text-main)] hover:text-[var(--accent-crimson)] underline underline-offset-2">ads.txt</a></li>
+                <li className="pt-1 text-[10px] text-emerald-500 dark:text-emerald-400">● 24/7 Automated Ingestion Active</li>
               </ul>
             </div>
           </div>
 
-          <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] font-mono text-zinc-400">
+          <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] font-mono text-[var(--text-muted)]">
             <div>
               &copy; {new Date().getFullYear()} LANKA DISPATCH Media Network. All wire stories and original reporting remain the copyright of their respective publishers.
             </div>
             <div className="flex items-center gap-4">
-              <Link href="/about" className="hover:text-zinc-200 transition-colors">About</Link>
+              <Link href="/about" className="hover:text-[var(--text-main)] transition-colors">About</Link>
               <span>•</span>
-              <Link href="/privacy" className="hover:text-zinc-200 transition-colors">Privacy</Link>
+              <Link href="/privacy" className="hover:text-[var(--text-main)] transition-colors">Privacy</Link>
               <span>•</span>
               <button
                 type="button"
                 onClick={() => window.dispatchEvent(new CustomEvent('newsgrab:open-cookie-consent'))}
-                className="hover:text-zinc-200 transition-colors cursor-pointer"
+                className="hover:text-[var(--text-main)] transition-colors cursor-pointer"
               >
                 Cookie Preferences
               </button>
               <span>•</span>
-              <Link href="/terms" className="hover:text-zinc-200 transition-colors">Terms</Link>
+              <Link href="/terms" className="hover:text-[var(--text-main)] transition-colors">Terms</Link>
               <span>•</span>
-              <a href="/ads.txt" className="hover:text-zinc-200 transition-colors">ads.txt</a>
+              <a href="/ads.txt" className="hover:text-[var(--text-main)] transition-colors">ads.txt</a>
               <span>•</span>
               <span>Colombo, Sri Lanka</span>
             </div>

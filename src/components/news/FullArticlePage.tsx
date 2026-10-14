@@ -268,11 +268,11 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
       />
 
       {/* Sticky Sub-Header with Back Navigation & Action Controls */}
-      <div className="sticky top-0 z-30 w-full bg-[#111216]/95 backdrop-blur-md border-b border-white/[0.07] py-3">
+      <div className="sticky top-0 z-30 w-full bg-[var(--bg-page)]/95 backdrop-blur-md border-b border-[var(--border-line)] py-3">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
           <button
             onClick={onBack}
-            className="flex items-center gap-2 text-xs font-mono text-zinc-300 hover:text-white transition-colors cursor-pointer group"
+            className="flex items-center gap-2 text-xs font-mono text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors cursor-pointer group"
           >
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
             <span className={`font-semibold uppercase tracking-wider ${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
@@ -280,14 +280,14 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
             </span>
           </button>
 
-          <div className="flex items-center gap-3 text-xs font-mono text-zinc-400">
+          <div className="flex items-center gap-3 text-xs font-mono text-[var(--text-muted)]">
             {/* Font Size Adjuster */}
-            <div className="hidden sm:flex items-center bg-white/[0.04] p-0.5 rounded border border-white/[0.08]">
+            <div className="hidden sm:flex items-center bg-[var(--bg-subtle)] p-0.5 rounded border border-[var(--border-line)]">
               <button
                 onClick={() => setFontSize('normal')}
                 title="Default text size"
                 className={`px-2 py-0.5 text-[11px] rounded transition-colors cursor-pointer ${
-                  fontSize === 'normal' ? 'bg-white/20 text-white font-bold' : 'text-zinc-400 hover:text-zinc-200'
+                  fontSize === 'normal' ? 'bg-[var(--bg-card)] text-[var(--text-main)] font-bold shadow-xs' : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'
                 }`}
               >
                 A
@@ -296,7 +296,7 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
                 onClick={() => setFontSize('large')}
                 title="Larger text size"
                 className={`px-2 py-0.5 text-xs rounded transition-colors cursor-pointer ${
-                  fontSize === 'large' ? 'bg-white/20 text-white font-bold' : 'text-zinc-400 hover:text-zinc-200'
+                  fontSize === 'large' ? 'bg-[var(--bg-card)] text-[var(--text-main)] font-bold shadow-xs' : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'
                 }`}
               >
                 A+
@@ -305,7 +305,7 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
                 onClick={() => setFontSize('xl')}
                 title="Extra large text size"
                 className={`px-2 py-0.5 text-sm rounded transition-colors cursor-pointer ${
-                  fontSize === 'xl' ? 'bg-white/20 text-white font-bold' : 'text-zinc-400 hover:text-zinc-200'
+                  fontSize === 'xl' ? 'bg-[var(--bg-card)] text-[var(--text-main)] font-bold shadow-xs' : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'
                 }`}
               >
                 A++
@@ -318,10 +318,10 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
                 target="_blank"
                 rel="noopener noreferrer"
                 title="View original wire story"
-                className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded bg-white/[0.03] hover:bg-white/[0.08] text-zinc-400 hover:text-zinc-200 transition-colors"
+                className="hidden md:flex items-center gap-1.5 px-3 py-1.5 rounded bg-[var(--bg-card)] hover:bg-[var(--bg-card-hover)] text-[var(--text-muted)] hover:text-[var(--text-main)] border border-[var(--border-line)] transition-colors"
               >
                 <span>{fullArticleLabels.originalWire[currentLang]}</span>
-                <ExternalLink className="w-3 h-3 text-zinc-400" />
+                <ExternalLink className="w-3 h-3 text-[var(--text-muted)]" />
               </a>
             )}
 
@@ -331,14 +331,14 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
               title={isSpeaking ? "Stop Audio" : "Listen to Article Brief"}
               className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded transition-all cursor-pointer ${
                 isSpeaking
-                  ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40 animate-pulse'
-                  : 'bg-white/[0.05] hover:bg-white/10 text-zinc-300 hover:text-white border border-white/[0.08]'
+                  ? 'bg-rose-500/20 text-rose-600 dark:text-rose-300 border border-rose-500/40 animate-pulse'
+                  : 'bg-[var(--bg-card)] hover:bg-[var(--bg-card-hover)] text-[var(--text-body)] hover:text-[var(--text-main)] border border-[var(--border-line)]'
               }`}
             >
               {isSpeaking ? (
-                <VolumeX className="w-3.5 h-3.5 text-rose-400" />
+                <VolumeX className="w-3.5 h-3.5 text-rose-500" />
               ) : (
-                <Volume2 className="w-3.5 h-3.5 text-zinc-300" />
+                <Volume2 className="w-3.5 h-3.5 text-[var(--text-body)]" />
               )}
               <span className="text-xs font-medium">
                 {isSpeaking ? fullArticleLabels.stopAudio[currentLang] : fullArticleLabels.listen[currentLang]}
@@ -349,9 +349,9 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
             <button
               onClick={handleWhatsAppShare}
               title="Share via WhatsApp"
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 transition-colors cursor-pointer"
             >
-              <MessageCircle className="w-3.5 h-3.5 text-emerald-400" />
+              <MessageCircle className="w-3.5 h-3.5 text-emerald-500" />
               <span className="hidden sm:inline">WhatsApp</span>
             </button>
 
@@ -359,9 +359,9 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
             <button
               onClick={handleShare}
               title="Share Article"
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-white/[0.05] hover:bg-white/10 text-zinc-300 hover:text-white transition-colors cursor-pointer"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-[var(--bg-card)] hover:bg-[var(--bg-card-hover)] text-[var(--text-body)] hover:text-[var(--text-main)] border border-[var(--border-line)] transition-colors cursor-pointer"
             >
-              {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Share2 className="w-3.5 h-3.5" />}
+              {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Share2 className="w-3.5 h-3.5" />}
               <span>{copied ? fullArticleLabels.linkCopied[currentLang] : fullArticleLabels.share[currentLang]}</span>
             </button>
 
@@ -372,8 +372,8 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
                 title={isSaved ? "Remove from Saved" : "Save for later"}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded transition-all cursor-pointer ${
                   isSaved
-                    ? 'bg-rose-500/20 text-rose-300 border border-rose-500/40'
-                    : 'bg-white/[0.05] hover:bg-white/10 text-zinc-300 hover:text-white border border-white/[0.08]'
+                    ? 'bg-rose-500/20 text-rose-600 dark:text-rose-300 border border-rose-500/40'
+                    : 'bg-[var(--bg-card)] hover:bg-[var(--bg-card-hover)] text-[var(--text-body)] hover:text-[var(--text-main)] border border-[var(--border-line)]'
                 }`}
               >
                 <Bookmark className={`w-3.5 h-3.5 ${isSaved ? 'fill-current' : ''}`} />
@@ -387,24 +387,24 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
       {/* Main Full-Page Content Layout */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         {/* Article Masthead Header */}
-        <div className="max-w-4xl mx-auto space-y-6 pb-8 border-b border-white/[0.08]">
+        <div className="max-w-4xl mx-auto space-y-6 pb-8 border-b border-[var(--border-line)]">
           <div className="flex items-center gap-3 text-xs font-mono uppercase tracking-wider">
-            <span className="px-2 py-0.5 rounded bg-white/[0.08] text-[11px] font-mono text-zinc-200">
+            <span className="px-2 py-0.5 rounded bg-[var(--bg-subtle)] border border-[var(--border-line)] text-[11px] font-mono text-[var(--text-body)]">
               {article.region === 'world' ? '🌐 World' : '🇱🇰 Sri Lanka'}
             </span>
-            <span className="text-amber-400 font-bold">{article.category}</span>
-            <span className="text-zinc-600">/</span>
-            <span className="text-zinc-300 font-medium">{article.publisherName}</span>
-            <span className="text-zinc-600">•</span>
-            <span className="flex items-center gap-1 text-zinc-400 font-sans">
-              <Clock className="w-3.5 h-3.5 text-zinc-500" />
+            <span className="text-rose-600 dark:text-amber-400 font-bold">{article.category}</span>
+            <span className="text-[var(--text-faint)]">/</span>
+            <span className="text-[var(--text-main)] font-medium">{article.publisherName}</span>
+            <span className="text-[var(--text-faint)]">•</span>
+            <span className="flex items-center gap-1 text-[var(--text-muted)] font-sans">
+              <Clock className="w-3.5 h-3.5 text-[var(--text-faint)]" />
               {article.readTimeMinutes} min read
             </span>
           </div>
 
           {/* Grand Broadsheet Headline */}
           <h1
-            className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-[#eceef2] font-headline leading-[1.12] tracking-tight ${
+            className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-[var(--text-main)] font-headline leading-[1.12] tracking-tight ${
               isSinhala ? 'font-sinhala' : ''
             } ${isTamil ? 'font-tamil' : ''}`}
           >
@@ -412,10 +412,10 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
           </h1>
 
           {/* Byline and Timestamp */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs font-mono text-zinc-400 pt-3">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs font-mono text-[var(--text-muted)] pt-3">
             <div>
               <span>{fullArticleLabels.reportingBy[currentLang]}</span>
-              <span className="text-zinc-200 font-bold">{article.publisherName}</span>
+              <span className="text-[var(--text-main)] font-bold">{article.publisherName}</span>
             </div>
             <span suppressHydrationWarning>{formattedDate}</span>
           </div>
@@ -506,26 +506,26 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
           {/* Main Article Reading Column (8 Cols) */}
           <div className="lg:col-span-8 space-y-8">
             {/* Axios Smart Brevity Executive Dossier */}
-            <div className="p-6 sm:p-8 rounded-xl bg-gradient-to-b from-[#14161f] to-[#0f1016] border border-white/[0.1] shadow-2xl space-y-6">
+            <div className="p-6 sm:p-8 rounded-xl bg-[var(--bg-card)] dark:bg-gradient-to-b dark:from-[#14161f] dark:to-[#0f1016] border border-[var(--border-line)] shadow-xl space-y-6">
               {/* Dossier Institutional Header */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-white/[0.08]">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-[var(--border-line)]">
                 <div className="flex items-center gap-2">
-                  <span className="p-1.5 rounded-md bg-rose-500/10 text-rose-400 border border-rose-500/20">
+                  <span className="p-1.5 rounded-md bg-rose-500/10 text-rose-500 dark:text-rose-400 border border-rose-500/20">
                     <Sparkles className="w-4 h-4" />
                   </span>
-                  <h3 className={`text-sm font-mono font-bold uppercase tracking-wider text-white ${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
+                  <h3 className={`text-sm font-mono font-bold uppercase tracking-wider text-[var(--text-main)] ${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
                     {fullArticleLabels.smartBrevityTitle[currentLang]}
                   </h3>
                 </div>
                 <div className="flex items-center gap-1.5 text-[10px] font-mono">
                   {isLoadingBrief && !fetchedBrief && !article.brief?.[currentLang] ? (
-                    <span className="flex items-center gap-1.5 text-rose-400">
-                      <Loader2 className="w-3 h-3 text-rose-400 animate-spin" />
+                    <span className="flex items-center gap-1.5 text-rose-500">
+                      <Loader2 className="w-3 h-3 text-rose-500 animate-spin" />
                       <span>{fullArticleLabels.synthesizingBrief[currentLang]}</span>
                     </span>
                   ) : (
-                    <span className="flex items-center gap-1.5 text-zinc-400">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                    <span className="flex items-center gap-1.5 text-[var(--text-muted)]">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
                       <span>
                         {synthesisProvider === 'gemini' 
                           ? fullArticleLabels.synthesizedByGemini[currentLang] 
@@ -540,14 +540,14 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
               <div className="space-y-6">
                 {/* 1. The Scoop & Narrative Lead */}
                   <div className="space-y-3">
-                    <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-rose-400 font-semibold">
-                      <Zap className="w-3.5 h-3.5 text-rose-400" />
+                    <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-rose-600 dark:text-rose-400 font-semibold">
+                      <Zap className="w-3.5 h-3.5 text-rose-600 dark:text-rose-400" />
                       <span className={`${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
                         {fullArticleLabels.whatHappened[currentLang]}
                       </span>
                     </div>
                     <p
-                      className={`text-base sm:text-lg text-zinc-100 font-serif leading-relaxed prose-${fontSize} ${
+                      className={`text-base sm:text-lg text-[var(--text-main)] font-serif leading-relaxed prose-${fontSize} ${
                         isSinhala ? 'font-sinhala leading-loose' : ''
                       } ${isTamil ? 'font-tamil leading-relaxed' : ''}`}
                     >
@@ -556,14 +556,14 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
                   </div>
 
                   {/* 2. Key Facts & Findings */}
-                  <div className="p-5 sm:p-6 rounded-lg bg-[#181a24] border-l-4 border-rose-500 space-y-3">
-                    <h4 className={`text-xs font-mono font-bold uppercase tracking-widest text-zinc-200 ${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
+                  <div className="p-5 sm:p-6 rounded-lg bg-[var(--bg-subtle)] border-l-4 border-rose-600 space-y-3">
+                    <h4 className={`text-xs font-mono font-bold uppercase tracking-widest text-[var(--text-main)] ${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
                       {fullArticleLabels.keyFacts[currentLang]}
                     </h4>
                     <ul className="space-y-3">
                       {(brief?.keyDetails && brief.keyDetails.length > 0 ? brief.keyDetails : bullets).map((fact, idx) => (
-                        <li key={idx} className="flex items-start gap-3 text-sm sm:text-base text-zinc-200">
-                          <span className="text-rose-500 font-mono font-bold select-none text-base">—</span>
+                        <li key={idx} className="flex items-start gap-3 text-sm sm:text-base text-[var(--text-body)]">
+                          <span className="text-rose-600 font-mono font-bold select-none text-base">—</span>
                           <span className={`leading-relaxed ${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
                             {fact}
                           </span>
@@ -574,9 +574,9 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
 
                   {/* 3. Statements on Record (Direct Quotes) */}
                   {brief?.quotes && brief.quotes.length > 0 && (
-                    <div className="p-5 sm:p-6 rounded-lg bg-white/[0.02] border border-white/[0.08] space-y-3">
-                      <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-amber-400 font-semibold">
-                        <Quote className="w-3.5 h-3.5 text-amber-400" />
+                    <div className="p-5 sm:p-6 rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-line)] space-y-3">
+                      <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-amber-600 dark:text-amber-400 font-semibold">
+                        <Quote className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
                         <span className={`${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
                           {fullArticleLabels.onRecord[currentLang]}
                         </span>
@@ -585,7 +585,7 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
                         {brief.quotes.map((quoteText, idx) => (
                           <blockquote
                             key={idx}
-                            className={`pl-4 border-l-2 border-amber-500/60 text-sm sm:text-base italic text-zinc-300 font-serif leading-relaxed ${
+                            className={`pl-4 border-l-2 border-amber-500/60 text-sm sm:text-base italic text-[var(--text-body)] font-serif leading-relaxed ${
                               isSinhala ? 'font-sinhala' : ''
                             } ${isTamil ? 'font-tamil' : ''}`}
                           >
@@ -597,15 +597,15 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
                   )}
 
                   {/* 4. Why It Matters (Strategic / Macro Context) */}
-                  <div className="p-5 sm:p-6 rounded-lg bg-gradient-to-r from-blue-950/40 via-indigo-950/20 to-transparent border border-blue-500/20 space-y-2">
-                    <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-blue-400 font-semibold">
-                      <ShieldCheck className="w-3.5 h-3.5 text-blue-400" />
+                  <div className="p-5 sm:p-6 rounded-lg bg-blue-50/70 dark:bg-gradient-to-r dark:from-blue-950/40 dark:via-indigo-950/20 dark:to-transparent border border-blue-200 dark:border-blue-500/20 space-y-2">
+                    <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-blue-700 dark:text-blue-400 font-semibold">
+                      <ShieldCheck className="w-3.5 h-3.5 text-blue-700 dark:text-blue-400" />
                       <span className={`${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
                         {fullArticleLabels.whyItMatters[currentLang]}
                       </span>
                     </div>
                     <p
-                      className={`text-sm sm:text-base text-zinc-200 leading-relaxed ${
+                      className={`text-sm sm:text-base text-[var(--text-body)] leading-relaxed ${
                         isSinhala ? 'font-sinhala leading-loose' : ''
                       } ${isTamil ? 'font-tamil leading-relaxed' : ''}`}
                     >
@@ -614,13 +614,13 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
                   </div>
 
                   {/* 5. What to Watch For (Forward Milestone) */}
-                  <div className="p-4 sm:p-5 rounded-lg bg-white/[0.02] border border-white/[0.06] flex items-start gap-3">
-                    <Clock className="w-4 h-4 text-zinc-400 shrink-0 mt-1" />
+                  <div className="p-4 sm:p-5 rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-line)] flex items-start gap-3">
+                    <Clock className="w-4 h-4 text-[var(--text-muted)] shrink-0 mt-1" />
                     <div className="space-y-1">
-                      <div className={`text-[10px] font-mono uppercase tracking-widest text-zinc-400 font-semibold ${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
+                      <div className={`text-[10px] font-mono uppercase tracking-widest text-[var(--text-muted)] font-semibold ${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
                         {fullArticleLabels.whatsNext[currentLang]}
                       </div>
-                      <p className={`text-xs sm:text-sm text-zinc-300 leading-relaxed ${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
+                      <p className={`text-xs sm:text-sm text-[var(--text-body)] leading-relaxed ${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
                         {brief ? brief.whatsNext : 'Further official proceedings, regulatory filings, or judicial updates are monitored on the wire.'}
                       </p>
                     </div>
@@ -640,17 +640,17 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
             </div>
 
             {/* Outbound Canonical Publisher Action Card (Direct Traffic Driver) */}
-            <div className="p-6 sm:p-8 rounded-xl bg-gradient-to-br from-[#181a22] to-[#121319] border border-white/[0.1] shadow-2xl space-y-5">
+            <div className="p-6 sm:p-8 rounded-xl bg-[var(--bg-card)] dark:bg-gradient-to-br dark:from-[#181a22] dark:to-[#121319] border border-[var(--border-line)] shadow-xl space-y-5">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5">
                 <div className="space-y-1.5">
-                  <div className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-widest text-rose-400 font-semibold">
+                  <div className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-widest text-rose-600 dark:text-rose-400 font-semibold">
                     <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-ping" />
                     <span>{fullArticleLabels.originalWire[currentLang]}</span>
                   </div>
-                  <h4 className="text-xl sm:text-2xl font-bold text-white font-headline">
+                  <h4 className="text-xl sm:text-2xl font-bold text-[var(--text-main)] font-headline">
                     {article.publisherName}
                   </h4>
-                  <p className="text-xs text-zinc-400 max-w-xl leading-relaxed">
+                  <p className="text-xs text-[var(--text-muted)] max-w-xl leading-relaxed">
                     {fullArticleLabels.publisherNotice[currentLang]}
                   </p>
                 </div>
@@ -664,12 +664,12 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
                   <ExternalLink className="w-4 h-4" />
                 </a>
               </div>
-              <div className="pt-3.5 border-t border-white/[0.06] flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] font-mono text-zinc-500">
+              <div className="pt-3.5 border-t border-[var(--border-line)] flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-[11px] font-mono text-[var(--text-muted)]">
                 <span className="flex items-center gap-1.5">
-                  <span className="text-emerald-400">✓</span>
+                  <span className="text-emerald-500">✓</span>
                   <span>{fullArticleLabels.fairPracticeNotice[currentLang]}</span>
                 </span>
-                <span className="text-zinc-400 truncate max-w-[260px]">
+                <span className="text-[var(--text-muted)] truncate max-w-[260px]">
                   {(() => {
                     try {
                       return new URL(article.sourceUrl.startsWith('http') ? article.sourceUrl : 'https://lankadispatch.com').hostname;
@@ -683,21 +683,21 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
 
             {/* Cross-Publisher Verification Matrix */}
             {article.perspectives && article.perspectives.length > 0 && (
-              <div className="space-y-3 pt-6 border-t border-divider">
-                <h4 className="font-mono text-xs uppercase tracking-wider text-zinc-400">
+              <div className="space-y-3 pt-6 border-t border-[var(--border-line)]">
+                <h4 className="font-mono text-xs uppercase tracking-wider text-[var(--text-muted)]">
                   Cross-Publisher Reporting &amp; Perspectives ({article.perspectives.length})
                 </h4>
                 <div className="space-y-2">
                   {article.perspectives.map((p, idx) => (
                     <div
                       key={idx}
-                      className="p-3.5 rounded bg-white/[0.02] border border-white/[0.06]"
+                      className="p-3.5 rounded bg-[var(--bg-card)] border border-[var(--border-line)] shadow-xs"
                     >
-                      <div className="flex items-center justify-between text-[11px] font-mono text-zinc-400 mb-1">
-                        <span className="text-zinc-200 font-semibold">{p.publisherName}</span>
+                      <div className="flex items-center justify-between text-[11px] font-mono text-[var(--text-muted)] mb-1">
+                        <span className="text-[var(--text-main)] font-semibold">{p.publisherName}</span>
                         <span>{p.publishedAt}</span>
                       </div>
-                      <p className="text-xs text-zinc-300">
+                      <p className="text-xs text-[var(--text-body)]">
                         {p.headline}
                       </p>
                     </div>
@@ -716,7 +716,7 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
             </div>
 
             {/* Multiplex / Sponsored Recommendations Grid (High-RPM End-of-Article Unit) */}
-            <div className="pt-4 border-t border-divider">
+            <div className="pt-4 border-t border-[var(--border-line)]">
               <AdBanner
                 format="multiplex"
                 slotId="article-bottom-multiplex"
@@ -725,17 +725,17 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
             </div>
 
             {/* End of Article Source Citation & Return Button */}
-            <div className="pt-8 border-t border-divider flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <div className="text-xs font-mono text-zinc-500 space-y-1">
+            <div className="pt-8 border-t border-[var(--border-line)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+              <div className="text-xs font-mono text-[var(--text-muted)] space-y-1">
                 <p>
-                  Original wire: <span className="text-zinc-300 font-semibold">{article.publisherName}</span>. Formatted for continuous, uninterrupted reading on Lanka Dispatch.
+                  Original wire: <span className="text-[var(--text-main)] font-semibold">{article.publisherName}</span>. Formatted for continuous, uninterrupted reading on Lanka Dispatch.
                 </p>
                 {article.sourceUrl && article.sourceUrl !== '#' && (
                   <a
                     href={article.sourceUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="inline-flex items-center gap-1 text-zinc-400 hover:text-zinc-200 underline underline-offset-2 transition-colors"
+                    className="inline-flex items-center gap-1 text-[var(--text-muted)] hover:text-[var(--text-main)] underline underline-offset-2 transition-colors"
                   >
                     <span>View original source wire report</span>
                     <ExternalLink className="w-3 h-3" />
@@ -744,7 +744,7 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
               </div>
               <button
                 onClick={onBack}
-                className="inline-flex items-center gap-2 px-6 py-2.5 rounded bg-white text-zinc-950 font-semibold text-xs hover:bg-zinc-200 transition-colors cursor-pointer flex-shrink-0"
+                className="inline-flex items-center gap-2 px-6 py-2.5 rounded bg-[var(--bg-card)] hover:bg-[var(--bg-card-hover)] text-[var(--text-main)] border border-[var(--border-line)] font-semibold text-xs shadow-sm transition-colors cursor-pointer flex-shrink-0"
               >
                 <ArrowLeft className="w-3.5 h-3.5" />
                 <span className={`${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
@@ -764,15 +764,15 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
               />
 
               {/* The Colombo Wire: More Dispatches */}
-              <div className="p-5 rounded-lg bg-[#111216] border border-white/[0.06] space-y-4">
-                <div className="flex items-center justify-between pb-3 border-b border-white/[0.08]">
-                  <h4 className={`font-mono text-xs font-bold uppercase tracking-wider text-zinc-200 ${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
+              <div className="p-5 rounded-lg bg-[var(--bg-card)] border border-[var(--border-line)] space-y-4 shadow-sm">
+                <div className="flex items-center justify-between pb-3 border-b border-[var(--border-line)]">
+                  <h4 className={`font-mono text-xs font-bold uppercase tracking-wider text-[var(--text-main)] ${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
                     {fullArticleLabels.upNext[currentLang]}
                   </h4>
                   <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" />
                 </div>
 
-                <div className="divide-y divide-white/[0.06] space-y-3">
+                <div className="divide-y divide-[var(--border-line)] space-y-3">
                   {relatedStories.map((rel) => {
                     const relTitle = rel.title[currentLang] || rel.title.en || rel.title.si || rel.title.ta || '';
                     return (
@@ -781,11 +781,11 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
                         onClick={() => onSelectRelatedArticle(rel)}
                         className="pt-3 group cursor-pointer space-y-1"
                       >
-                        <div className="flex items-center justify-between text-[10px] font-mono text-zinc-500">
-                          <span className="font-medium text-zinc-300">{rel.publisherName}</span>
+                        <div className="flex items-center justify-between text-[10px] font-mono text-[var(--text-muted)]">
+                          <span className="font-medium text-[var(--text-body)]">{rel.publisherName}</span>
                           <span>{rel.category}</span>
                         </div>
-                        <h5 className="text-xs font-medium text-zinc-200 group-hover:text-white transition-colors line-clamp-2 leading-snug">
+                        <h5 className="text-xs font-medium text-[var(--text-main)] group-hover:text-rose-600 transition-colors line-clamp-2 leading-snug">
                           {relTitle}
                         </h5>
                       </div>

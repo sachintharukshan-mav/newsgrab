@@ -229,28 +229,28 @@ export const PredictionTracker: React.FC<PredictionTrackerProps> = ({ currentLan
   });
 
   return (
-    <div className="rounded-xl border border-white/[0.08] bg-[#0f1117] p-4 shadow-lg relative overflow-hidden">
+    <div className="rounded-xl border border-[var(--border-line)] bg-[var(--bg-card)] p-4 shadow-sm relative overflow-hidden">
       {/* Rare UI Subtle Ambient Glow */}
       <div className="absolute -top-10 -right-10 w-28 h-28 bg-rose-500/10 rounded-full blur-2xl pointer-events-none" />
 
       {/* Header */}
-      <div className="flex items-start justify-between pb-3 border-b border-white/[0.06] relative z-10">
+      <div className="flex items-start justify-between pb-3 border-b border-[var(--border-line)] relative z-10">
         <div>
           <div className="flex items-center gap-2">
             <span className="flex h-2 w-2 rounded-full bg-rose-500 animate-pulse" />
-            <h3 className="font-mono text-xs font-bold uppercase tracking-wider text-zinc-100 flex items-center gap-1.5">
+            <h3 className="font-mono text-xs font-bold uppercase tracking-wider text-[var(--text-main)] flex items-center gap-1.5">
               <span>🎯</span>
               {trackerUi.title[currentLang]}
             </h3>
           </div>
-          <p className="mt-0.5 text-[11px] text-zinc-400">
+          <p className="mt-0.5 text-[11px] text-[var(--text-muted)]">
             {trackerUi.tagline[currentLang]}
           </p>
         </div>
       </div>
 
       {/* Filter Tabs with Rare UI-style spring sliding pill */}
-      <div className="relative flex items-center gap-1 py-2.5 overflow-x-auto no-scrollbar border-b border-white/[0.04] z-10">
+      <div className="relative flex items-center gap-1 py-2.5 overflow-x-auto no-scrollbar border-b border-[var(--border-line)] z-10">
         {[
           { id: 'all', label: 'All' },
           { id: 'economy', label: '📊 Economy' },
@@ -262,16 +262,16 @@ export const PredictionTracker: React.FC<PredictionTrackerProps> = ({ currentLan
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id)}
-              className="relative px-2.5 py-1 text-[10px] font-mono whitespace-nowrap transition-colors cursor-pointer text-zinc-400 hover:text-zinc-200"
+              className="relative px-2.5 py-1 text-[10px] font-mono whitespace-nowrap transition-colors cursor-pointer text-[var(--text-muted)] hover:text-[var(--text-main)]"
             >
               {isActive && (
                 <motion.span
                   layoutId="activePredTabPill"
-                  className="absolute inset-0 rounded-md bg-rose-500/20 border border-rose-500/30 -z-10"
+                  className="absolute inset-0 rounded-md bg-rose-500/15 border border-rose-500/30 -z-10"
                   transition={{ type: 'spring', stiffness: 420, damping: 32 }}
                 />
               )}
-              <span className={isActive ? 'text-rose-300 font-semibold' : ''}>
+              <span className={isActive ? 'text-rose-600 dark:text-rose-300 font-semibold' : ''}>
                 {tab.label}
               </span>
             </button>
@@ -280,7 +280,7 @@ export const PredictionTracker: React.FC<PredictionTrackerProps> = ({ currentLan
       </div>
 
       {/* Prediction Cards */}
-      <div className="divide-y divide-white/[0.06] space-y-4 pt-3 relative z-10">
+      <div className="divide-y divide-[var(--border-line)] space-y-4 pt-3 relative z-10">
         {filteredPredictions.map((pred) => {
           const userChoiceId = userVotes[pred.id];
           const hasVoted = Boolean(userChoiceId);
@@ -302,18 +302,18 @@ export const PredictionTracker: React.FC<PredictionTrackerProps> = ({ currentLan
 
           return (
             <div key={pred.id} className="pt-3 space-y-2.5">
-              <div className="flex items-center justify-between text-[10px] font-mono text-zinc-400">
-                <span className="px-1.5 py-0.5 rounded bg-white/[0.05] text-zinc-300">
+              <div className="flex items-center justify-between text-[10px] font-mono text-[var(--text-muted)]">
+                <span className="px-1.5 py-0.5 rounded bg-[var(--bg-subtle)] border border-[var(--border-line)] text-[var(--text-body)]">
                   {pred.categoryLabel[currentLang] || pred.categoryLabel.en}
                 </span>
-                <span className="flex items-center gap-1 text-zinc-500">
+                <span className="flex items-center gap-1 text-[var(--text-muted)]">
                   <Clock className="w-3 h-3" />
                   {pred.resolutionDate[currentLang] || pred.resolutionDate.en}
                 </span>
               </div>
 
               {/* Question */}
-              <h4 className="text-xs font-semibold text-zinc-200 leading-snug">
+              <h4 className="text-xs font-semibold text-[var(--text-main)] leading-snug">
                 {pred.question[currentLang] || pred.question.en}
               </h4>
 
@@ -327,7 +327,7 @@ export const PredictionTracker: React.FC<PredictionTrackerProps> = ({ currentLan
                     <div key={opt.id} className="relative">
                       {hasVoted ? (
                         /* Voted State: Progress bar display with Rare UI AnimatedCounter & spring stretch */
-                        <div className="relative overflow-hidden rounded-lg border border-white/[0.06] bg-white/[0.02] p-2">
+                        <div className="relative overflow-hidden rounded-lg border border-[var(--border-line)] bg-[var(--bg-subtle)] p-2">
                           {/* Rare UI Elastic Spring Fill Bar */}
                           <motion.div
                             initial={{ width: 0 }}
@@ -336,26 +336,26 @@ export const PredictionTracker: React.FC<PredictionTrackerProps> = ({ currentLan
                             className={`absolute top-0 bottom-0 left-0 ${
                               isUserSelection
                                 ? 'bg-rose-500/25 border-r border-rose-500/40'
-                                : 'bg-white/[0.06]'
+                                : 'bg-black/5 dark:bg-white/[0.06]'
                             }`}
                           />
 
                           <div className="relative z-10 flex items-center justify-between text-xs">
-                            <span className="font-medium text-zinc-200 flex items-center gap-1.5 truncate">
+                            <span className="font-medium text-[var(--text-main)] flex items-center gap-1.5 truncate">
                               {isUserSelection && (
-                                <Check className="w-3.5 h-3.5 text-rose-400 flex-shrink-0" />
+                                <Check className="w-3.5 h-3.5 text-rose-500 flex-shrink-0" />
                               )}
-                              <span className={isUserSelection ? 'text-rose-200 font-semibold' : ''}>
+                              <span className={isUserSelection ? 'text-rose-600 dark:text-rose-300 font-semibold' : ''}>
                                 {opt.label[currentLang] || opt.label.en}
                               </span>
                             </span>
 
                             <div className="flex items-center gap-2 font-mono text-[11px] flex-shrink-0 ml-2">
                               {/* Rare UI Odometer Animated Counter */}
-                              <span className="text-zinc-400">
+                              <span className="text-[var(--text-muted)]">
                                 <AnimatedCounter value={opt.totalVotes} />
                               </span>
-                              <span className={`font-bold ${isUserSelection ? 'text-rose-300' : 'text-zinc-200'}`}>
+                              <span className={`font-bold ${isUserSelection ? 'text-rose-600 dark:text-rose-300' : 'text-[var(--text-main)]'}`}>
                                 <AnimatedCounter value={percent} suffix="%" />
                               </span>
                             </div>
@@ -365,12 +365,12 @@ export const PredictionTracker: React.FC<PredictionTrackerProps> = ({ currentLan
                         /* Not Voted State: Interactive Clickable Button */
                         <button
                           onClick={() => handleVote(pred.id, opt.id)}
-                          className="w-full text-left p-2 rounded-lg border border-white/[0.08] bg-white/[0.02] hover:bg-white/[0.06] hover:border-rose-500/40 text-xs font-medium text-zinc-200 transition-all group flex items-center justify-between cursor-pointer active:scale-[0.99]"
+                          className="w-full text-left p-2 rounded-lg border border-[var(--border-line)] bg-[var(--bg-subtle)] hover:bg-[var(--bg-card-hover)] hover:border-rose-500/40 text-xs font-medium text-[var(--text-main)] transition-all group flex items-center justify-between cursor-pointer active:scale-[0.99]"
                         >
-                          <span className="group-hover:text-white transition-colors">
+                          <span className="group-hover:text-rose-600 dark:group-hover:text-white transition-colors">
                             {opt.label[currentLang] || opt.label.en}
                           </span>
-                          <span className="text-[10px] font-mono text-zinc-400 group-hover:text-rose-300 transition-colors">
+                          <span className="text-[10px] font-mono text-[var(--text-muted)] group-hover:text-rose-500 transition-colors">
                             Vote &rarr;
                           </span>
                         </button>
@@ -386,21 +386,21 @@ export const PredictionTracker: React.FC<PredictionTrackerProps> = ({ currentLan
               </div>
 
               {/* Footer Meta & Viral WhatsApp Share */}
-              <div className="flex items-center justify-between pt-1 text-[10px] font-mono text-zinc-400">
+              <div className="flex items-center justify-between pt-1 text-[10px] font-mono text-[var(--text-muted)]">
                 <span className="flex items-center gap-1">
                   <AnimatedCounter value={totalVotesCount} /> {trackerUi.totalVotes[currentLang]}
                 </span>
 
                 <div className="flex items-center gap-2">
                   {hasVoted && leader && (
-                    <span className="text-rose-300/90 font-semibold flex items-center gap-1">
+                    <span className="text-rose-600 dark:text-rose-300 font-semibold flex items-center gap-1">
                       <AnimatedCounter value={leaderPercent} suffix="%" /> {leader.label[currentLang] || leader.label.en}
                     </span>
                   )}
 
                   <button
                     onClick={() => handleShare(pred)}
-                    className="flex items-center gap-1 text-zinc-400 hover:text-emerald-400 transition-colors cursor-pointer"
+                    className="flex items-center gap-1 text-[var(--text-muted)] hover:text-emerald-500 transition-colors cursor-pointer"
                     title="Share to WhatsApp"
                   >
                     <Share2 className="w-3 h-3" />

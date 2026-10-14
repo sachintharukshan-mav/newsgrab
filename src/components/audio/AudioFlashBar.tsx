@@ -424,7 +424,7 @@ export const AudioFlashBar: React.FC<AudioFlashBarProps> = ({
                 onClick={() => handleSelectStory(idx)}
                 title={`Story ${idx + 1}`}
                 className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
-                  activeStoryIdx === idx ? 'w-6 bg-rose-500' : 'w-2 bg-white/20 hover:bg-white/40'
+                  activeStoryIdx === idx ? 'w-6 bg-rose-500' : 'w-2 bg-stone-300 dark:bg-white/20 hover:bg-stone-400 dark:hover:bg-white/40'
                 }`}
               />
             ))}
@@ -434,7 +434,7 @@ export const AudioFlashBar: React.FC<AudioFlashBarProps> = ({
             <button
               onClick={handlePrev}
               disabled={activeStoryIdx === 0}
-              className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.04] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-[var(--bg-subtle)] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               title="Previous Story"
             >
               <SkipBack className="h-4 w-4" />
@@ -443,7 +443,7 @@ export const AudioFlashBar: React.FC<AudioFlashBarProps> = ({
             {isActive && (
               <button
                 onClick={stopAllPlayback}
-                className="p-1.5 rounded-lg text-zinc-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
+                className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-rose-500 hover:bg-rose-500/10 transition-colors"
                 title="Stop Audio"
               >
                 <Square className="h-3.5 w-3.5" />
@@ -453,7 +453,7 @@ export const AudioFlashBar: React.FC<AudioFlashBarProps> = ({
             <button
               onClick={handleNext}
               disabled={activeStoryIdx === briefStories.length - 1}
-              className="p-1.5 rounded-lg text-zinc-400 hover:text-zinc-200 hover:bg-white/[0.04] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+              className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-[var(--text-main)] hover:bg-[var(--bg-subtle)] disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               title="Next Story"
             >
               <SkipForward className="h-4 w-4" />
@@ -467,19 +467,19 @@ export const AudioFlashBar: React.FC<AudioFlashBarProps> = ({
                 e.stopPropagation();
                 setIsVoiceMenuOpen((prev) => !prev);
               }}
-              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white/[0.08] hover:bg-white/[0.14] active:bg-white/[0.18] border border-white/[0.15] text-xs font-medium text-zinc-200 hover:text-white transition-all cursor-pointer shadow-sm"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[var(--bg-card)] hover:bg-[var(--bg-card-hover)] active:bg-[var(--bg-subtle)] border border-[var(--border-line)] text-xs font-medium text-[var(--text-main)] transition-all cursor-pointer shadow-sm"
               title="Select Voice Persona"
               aria-label="Select Voice Persona"
               aria-expanded={isVoiceMenuOpen}
             >
-              <Volume2 className="w-3.5 h-3.5 text-rose-400 flex-shrink-0" />
-              <span className="text-[10px] text-zinc-400 uppercase tracking-wider font-mono mr-0.5">Voice:</span>
+              <Volume2 className="w-3.5 h-3.5 text-rose-500 flex-shrink-0" />
+              <span className="text-[10px] text-[var(--text-muted)] uppercase tracking-wider font-mono mr-0.5">Voice:</span>
               <span>{currentVoiceObj.flag}</span>
-              <span className="font-sans font-medium text-xs text-zinc-200">
+              <span className="font-sans font-medium text-xs text-[var(--text-main)]">
                 {currentVoiceObj.shortLabel}
               </span>
               <ChevronDown
-                className={`w-3.5 h-3.5 text-zinc-400 transition-transform duration-200 ${
+                className={`w-3.5 h-3.5 text-[var(--text-muted)] transition-transform duration-200 ${
                   isVoiceMenuOpen ? 'rotate-180' : ''
                 }`}
               />
@@ -487,12 +487,12 @@ export const AudioFlashBar: React.FC<AudioFlashBarProps> = ({
 
             {isVoiceMenuOpen && (
               <div
-                className="absolute right-0 top-full mt-2 w-64 rounded-xl border border-white/20 bg-[#161824] shadow-2xl p-2 z-50 backdrop-blur-2xl ring-1 ring-black/70 animate-in fade-in slide-in-from-top-1"
+                className="absolute right-0 top-full mt-2 w-64 rounded-xl border border-[var(--border-line)] bg-[var(--dropdown-bg)] shadow-2xl p-2 z-50 backdrop-blur-2xl animate-in fade-in slide-in-from-top-1"
                 style={{ minWidth: '240px' }}
               >
-                <div className="px-2.5 py-1.5 text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-400 border-b border-white/[0.08] mb-1.5 flex items-center justify-between">
+                <div className="px-2.5 py-1.5 text-[10px] font-mono font-bold uppercase tracking-wider text-[var(--text-muted)] border-b border-[var(--border-line)] mb-1.5 flex items-center justify-between">
                   <span>{flashLabels.voice[currentLang]}</span>
-                  <span className="text-[9px] text-rose-400 font-mono">Neural HD</span>
+                  <span className="text-[9px] text-rose-500 font-mono">Neural HD</span>
                 </div>
                 <div className="flex flex-col gap-1">
                   {VOICE_OPTIONS.map((v) => {
@@ -506,20 +506,20 @@ export const AudioFlashBar: React.FC<AudioFlashBarProps> = ({
                         }}
                         className={`w-full flex items-center justify-between px-2.5 py-2 rounded-lg text-xs transition-all cursor-pointer text-left ${
                           isSelected
-                            ? 'bg-rose-500/25 border border-rose-500/40 text-rose-200 font-semibold shadow-inner'
-                            : 'text-zinc-200 hover:bg-white/[0.08] hover:text-white border border-transparent'
+                            ? 'bg-rose-500/20 border border-rose-500/40 text-rose-600 dark:text-rose-200 font-semibold shadow-inner'
+                            : 'text-[var(--text-main)] hover:bg-[var(--bg-subtle)] border border-transparent'
                         }`}
                       >
                         <div className="flex items-center gap-2.5">
                           <span className="text-base">{v.flag}</span>
                           <div className="flex flex-col">
-                            <span className="font-medium text-xs leading-tight text-zinc-100">{v.label}</span>
-                            <span className="text-[10px] text-zinc-400 font-mono">
+                            <span className="font-medium text-xs leading-tight text-[var(--text-main)]">{v.label}</span>
+                            <span className="text-[10px] text-[var(--text-muted)] font-mono">
                               {v.langGroup === 'en' ? 'English' : v.langGroup === 'si' ? 'Sinhala' : 'Tamil'}
                             </span>
                           </div>
                         </div>
-                        {isSelected && <Check className="w-4 h-4 text-rose-400 flex-shrink-0 ml-2" />}
+                        {isSelected && <Check className="w-4 h-4 text-rose-500 flex-shrink-0 ml-2" />}
                       </button>
                     );
                   })}
@@ -531,7 +531,7 @@ export const AudioFlashBar: React.FC<AudioFlashBarProps> = ({
           {/* Speed Pill */}
           <button
             onClick={cycleSpeed}
-            className="px-2 py-1 rounded bg-white/[0.05] hover:bg-white/10 border border-white/[0.08] text-[11px] font-mono text-zinc-300 hover:text-white transition-all cursor-pointer"
+            className="px-2 py-1 rounded bg-[var(--bg-subtle)] hover:bg-[var(--bg-card-hover)] border border-[var(--border-line)] text-[11px] font-mono text-[var(--text-body)] hover:text-[var(--text-main)] transition-all cursor-pointer"
             title="Change Playback Speed"
           >
             {speed}x
@@ -544,7 +544,7 @@ export const AudioFlashBar: React.FC<AudioFlashBarProps> = ({
                 stopAllPlayback();
                 onOpenArticle(currentStory);
               }}
-              className="text-[11px] font-mono text-zinc-400 hover:text-rose-300 underline underline-offset-2 transition-colors cursor-pointer hidden lg:inline"
+              className="text-[11px] font-mono text-[var(--text-muted)] hover:text-[var(--accent-crimson)] underline underline-offset-2 transition-colors cursor-pointer hidden lg:inline"
             >
               View Dispatch &rarr;
             </button>

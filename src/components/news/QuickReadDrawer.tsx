@@ -173,12 +173,12 @@ export const QuickReadDrawer: React.FC<QuickReadDrawerProps> = ({
       />
 
       {/* Slide-out Full Article Reading Room */}
-      <div className="relative w-full max-w-3xl h-full bg-[#0d0e12] border-l border-white/10 shadow-2xl z-10 flex flex-col overflow-y-auto">
+      <div className="relative w-full max-w-3xl h-full bg-[var(--bg-page)] border-l border-[var(--border-line)] shadow-2xl z-10 flex flex-col overflow-y-auto">
         {/* Sticky Top Reader Bar */}
-        <div className="sticky top-0 z-20 flex items-center justify-between px-6 py-3.5 bg-[#0d0e12]/95 backdrop-blur-md border-b border-white/[0.08]">
+        <div className="sticky top-0 z-20 flex items-center justify-between px-6 py-3.5 bg-[var(--bg-page)]/95 backdrop-blur-md border-b border-[var(--border-line)]">
           <button
             onClick={onClose}
-            className="flex items-center gap-2 text-xs font-mono text-zinc-300 hover:text-white transition-colors cursor-pointer group"
+            className="flex items-center gap-2 text-xs font-mono text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors cursor-pointer group"
           >
             <ArrowLeft className="w-4 h-4 group-hover:-translate-x-0.5 transition-transform" />
             <span className={`${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
@@ -190,14 +190,14 @@ export const QuickReadDrawer: React.FC<QuickReadDrawerProps> = ({
             <button
               onClick={handleShare}
               title="Share dispatch"
-              className="p-1.5 text-zinc-400 hover:text-white rounded transition-colors cursor-pointer"
+              className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-main)] rounded transition-colors cursor-pointer"
             >
-              {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Share2 className="w-4 h-4" />}
+              {copied ? <Check className="w-4 h-4 text-emerald-500" /> : <Share2 className="w-4 h-4" />}
             </button>
             <button
               onClick={onClose}
               title="Close (Esc)"
-              className="p-1.5 text-zinc-400 hover:text-white rounded transition-colors cursor-pointer"
+              className="p-1.5 text-[var(--text-muted)] hover:text-[var(--text-main)] rounded transition-colors cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -208,20 +208,20 @@ export const QuickReadDrawer: React.FC<QuickReadDrawerProps> = ({
         <div className="p-6 sm:p-10 space-y-8 flex-1 max-w-2xl mx-auto w-full">
           {/* Article Header Metadata */}
           <div className="space-y-4">
-            <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-zinc-400">
-              <span className="text-rose-500 font-bold">{article.category}</span>
-              <span className="text-zinc-600">/</span>
-              <span className="text-zinc-300 font-medium">{article.publisherName}</span>
-              <span className="text-zinc-600">•</span>
+            <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-[var(--text-muted)]">
+              <span className="text-rose-600 dark:text-amber-400 font-bold">{article.category}</span>
+              <span className="text-[var(--text-faint)]">/</span>
+              <span className="text-[var(--text-main)] font-medium">{article.publisherName}</span>
+              <span className="text-[var(--text-faint)]">•</span>
               <span className="flex items-center gap-1 font-sans">
-                <Clock className="w-3 h-3 text-zinc-500" />
+                <Clock className="w-3 h-3 text-[var(--text-faint)]" />
                 {article.readTimeMinutes} {drawerLabels.minRead[currentLang]}
               </span>
             </div>
 
             {/* Headline */}
             <h1
-              className={`text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white font-headline leading-[1.2] ${
+              className={`text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[var(--text-main)] font-headline leading-[1.2] ${
                 isSinhala ? 'font-sinhala leading-[1.3]' : ''
               } ${isTamil ? 'font-tamil leading-[1.28]' : ''}`}
             >
@@ -229,10 +229,10 @@ export const QuickReadDrawer: React.FC<QuickReadDrawerProps> = ({
             </h1>
 
             {/* Byline & Date */}
-            <div className="flex items-center justify-between text-xs font-mono text-zinc-400 pt-2 pb-4 border-b border-divider">
+            <div className="flex items-center justify-between text-xs font-mono text-[var(--text-muted)] pt-2 pb-4 border-b border-[var(--border-line)]">
               <div>
                 <span>{drawerLabels.reportedBy[currentLang]}</span>
-                <span className="text-zinc-200 font-semibold">{article.publisherName}</span>
+                <span className="text-[var(--text-main)] font-semibold">{article.publisherName}</span>
               </div>
               <span suppressHydrationWarning>{formattedDate}</span>
             </div>
@@ -305,23 +305,23 @@ export const QuickReadDrawer: React.FC<QuickReadDrawerProps> = ({
           )}
 
           {/* Axios Smart Brevity Executive Dossier */}
-          <div className="p-5 rounded-lg bg-gradient-to-b from-[#14161f] to-[#0f1016] border border-white/[0.08] shadow-lg space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-white/[0.06]">
+          <div className="p-5 rounded-lg bg-[var(--bg-card)] dark:bg-gradient-to-b dark:from-[#14161f] dark:to-[#0f1016] border border-[var(--border-line)] shadow-lg space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-[var(--border-line)]">
               <div className="flex items-center gap-1.5">
-                <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-                <span className={`text-xs font-mono font-bold uppercase tracking-wider text-white ${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
+                <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                <span className={`text-xs font-mono font-bold uppercase tracking-wider text-[var(--text-main)] ${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
                   {drawerLabels.smartBrevityTitle[currentLang]}
                 </span>
               </div>
               <div className="flex items-center gap-1 text-[9px] font-mono">
                 {isLoadingBrief && !fetchedBrief && !article?.brief?.[currentLang] ? (
-                  <span className="flex items-center gap-1 text-rose-400">
-                    <Loader2 className="w-2.5 h-2.5 text-rose-400 animate-spin" />
+                  <span className="flex items-center gap-1 text-rose-500">
+                    <Loader2 className="w-2.5 h-2.5 text-rose-500 animate-spin" />
                     <span>{drawerLabels.synthesizing[currentLang]}</span>
                   </span>
                 ) : (
-                  <span className="flex items-center gap-1 text-zinc-400">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="flex items-center gap-1 text-[var(--text-muted)]">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
                     <span>
                       {synthesisProvider === 'gemini' 
                         ? drawerLabels.synthesizedByGemini[currentLang] 
@@ -336,24 +336,24 @@ export const QuickReadDrawer: React.FC<QuickReadDrawerProps> = ({
             <div className="space-y-4">
               {/* 1. What Happened */}
                 <div className="space-y-1.5">
-                  <div className="flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-rose-400 font-semibold">
-                    <Zap className="w-3 h-3 text-rose-400" />
+                  <div className="flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-rose-600 dark:text-rose-400 font-semibold">
+                    <Zap className="w-3 h-3 text-rose-600 dark:text-rose-400" />
                     <span>{drawerLabels.whatHappened[currentLang]}</span>
                   </div>
-                  <p className={`text-sm sm:text-base text-zinc-100 font-serif leading-relaxed ${isSinhala ? 'font-sinhala leading-loose' : ''} ${isTamil ? 'font-tamil leading-relaxed' : ''}`}>
+                  <p className={`text-sm sm:text-base text-[var(--text-main)] font-serif leading-relaxed ${isSinhala ? 'font-sinhala leading-loose' : ''} ${isTamil ? 'font-tamil leading-relaxed' : ''}`}>
                     {brief ? brief.whatHappened : (article.summary[currentLang] || article.summary.en || '')}
                   </p>
                 </div>
 
                 {/* 2. Key Facts */}
-                <div className="p-4 rounded-md bg-[#181a24] border-l-2 border-rose-500 space-y-2">
-                  <h4 className={`text-[11px] font-mono font-bold uppercase tracking-wider text-zinc-300 ${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
+                <div className="p-4 rounded-md bg-[var(--bg-subtle)] border-l-2 border-rose-600 space-y-2">
+                  <h4 className={`text-[11px] font-mono font-bold uppercase tracking-wider text-[var(--text-main)] ${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
                     {drawerLabels.keyFacts[currentLang]}
                   </h4>
                   <ul className="space-y-2">
                     {(brief?.keyDetails && brief.keyDetails.length > 0 ? brief.keyDetails : bullets).map((bullet, idx) => (
-                      <li key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm text-zinc-200">
-                        <span className="text-rose-400 font-mono select-none">—</span>
+                      <li key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm text-[var(--text-body)]">
+                        <span className="text-rose-600 font-mono select-none">—</span>
                         <span className={`leading-relaxed ${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
                           {bullet}
                         </span>
@@ -364,13 +364,13 @@ export const QuickReadDrawer: React.FC<QuickReadDrawerProps> = ({
 
                 {/* 3. Quotes on Record */}
                 {brief?.quotes && brief.quotes.length > 0 && (
-                  <div className="p-4 rounded-md bg-white/[0.02] border border-white/[0.06] space-y-2">
-                    <div className="flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-amber-400 font-semibold">
-                      <Quote className="w-3 h-3 text-amber-400" />
+                  <div className="p-4 rounded-md bg-[var(--bg-subtle)] border border-[var(--border-line)] space-y-2">
+                    <div className="flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-amber-600 dark:text-amber-400 font-semibold">
+                      <Quote className="w-3 h-3 text-amber-600 dark:text-amber-400" />
                       <span>{drawerLabels.onRecord[currentLang]}</span>
                     </div>
                     {brief.quotes.map((q, idx) => (
-                      <blockquote key={idx} className="pl-3 border-l-2 border-amber-500/60 text-xs sm:text-sm italic text-zinc-300 font-serif">
+                      <blockquote key={idx} className="pl-3 border-l-2 border-amber-500/60 text-xs sm:text-sm italic text-[var(--text-body)] font-serif">
                         &ldquo;{q}&rdquo;
                       </blockquote>
                     ))}
@@ -378,24 +378,24 @@ export const QuickReadDrawer: React.FC<QuickReadDrawerProps> = ({
                 )}
 
                 {/* 4. Why It Matters */}
-                <div className="p-3.5 rounded-md bg-blue-950/30 border border-blue-500/20 space-y-1">
-                  <div className="flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-blue-400 font-semibold">
-                    <ShieldCheck className="w-3 h-3 text-blue-400" />
+                <div className="p-3.5 rounded-md bg-blue-50/70 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-500/20 space-y-1">
+                  <div className="flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-blue-700 dark:text-blue-400 font-semibold">
+                    <ShieldCheck className="w-3 h-3 text-blue-700 dark:text-blue-400" />
                     <span>{drawerLabels.whyItMatters[currentLang]}</span>
                   </div>
-                  <p className={`text-xs sm:text-sm text-zinc-200 leading-relaxed ${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
+                  <p className={`text-xs sm:text-sm text-[var(--text-body)] leading-relaxed ${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
                     {brief ? brief.whyItMatters : 'This development carries direct implications for Sri Lanka.'}
                   </p>
                 </div>
 
                 {/* 5. What to Watch For */}
-                <div className="p-3 rounded-md bg-white/[0.02] border border-white/[0.06] flex items-start gap-2.5">
-                  <Clock className="w-3.5 h-3.5 text-zinc-400 shrink-0 mt-0.5" />
+                <div className="p-3 rounded-md bg-[var(--bg-subtle)] border border-[var(--border-line)] flex items-start gap-2.5">
+                  <Clock className="w-3.5 h-3.5 text-[var(--text-muted)] shrink-0 mt-0.5" />
                   <div className="space-y-0.5">
-                    <div className="text-[9px] font-mono uppercase tracking-widest text-zinc-400 font-semibold">
+                    <div className="text-[9px] font-mono uppercase tracking-widest text-[var(--text-muted)] font-semibold">
                       {drawerLabels.whatsNext[currentLang]}
                     </div>
-                    <p className={`text-xs text-zinc-300 ${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
+                    <p className={`text-xs text-[var(--text-body)] ${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
                       {brief ? brief.whatsNext : 'Monitoring further official statements.'}
                     </p>
                   </div>
@@ -404,15 +404,15 @@ export const QuickReadDrawer: React.FC<QuickReadDrawerProps> = ({
             </div>
 
           {/* Outbound Canonical Publisher Action Card (Direct Traffic Driver) */}
-          <div className="p-5 sm:p-6 rounded-lg bg-gradient-to-br from-[#181a22] to-[#121319] border border-white/[0.1] shadow-xl space-y-4">
+          <div className="p-5 sm:p-6 rounded-lg bg-[var(--bg-card)] dark:bg-gradient-to-br dark:from-[#181a22] dark:to-[#121319] border border-[var(--border-line)] shadow-lg space-y-4">
             <div className="space-y-1">
-              <div className="text-[10px] font-mono uppercase tracking-widest text-rose-400 font-semibold">
+              <div className="text-[10px] font-mono uppercase tracking-widest text-rose-600 dark:text-rose-400 font-semibold">
                 {drawerLabels.originalWire[currentLang]}
               </div>
-              <h4 className="text-base sm:text-lg font-bold text-white font-headline">
+              <h4 className="text-base sm:text-lg font-bold text-[var(--text-main)] font-headline">
                 {article.publisherName}
               </h4>
-              <p className="text-xs text-zinc-400 leading-relaxed">
+              <p className="text-xs text-[var(--text-muted)] leading-relaxed">
                 {drawerLabels.publisherNotice[currentLang]}
               </p>
             </div>
@@ -425,7 +425,7 @@ export const QuickReadDrawer: React.FC<QuickReadDrawerProps> = ({
               <span>{drawerLabels.readOnPublisher[currentLang]} {article.publisherName}</span>
               <ExternalLink className="w-3.5 h-3.5" />
             </a>
-            <div className="pt-2 border-t border-white/[0.06] flex items-center justify-between text-[10px] font-mono text-zinc-500">
+            <div className="pt-2 border-t border-[var(--border-line)] flex items-center justify-between text-[10px] font-mono text-[var(--text-muted)]">
               <span>{drawerLabels.fairPracticeNotice[currentLang]}</span>
               <span className="truncate max-w-[180px]">
                 {(() => {
@@ -442,21 +442,21 @@ export const QuickReadDrawer: React.FC<QuickReadDrawerProps> = ({
 
           {/* Cross-Publisher Perspectives (Deduplication) */}
           {article.perspectives && article.perspectives.length > 0 && (
-            <div className="space-y-3 pt-4 border-t border-divider">
-              <h4 className="font-mono text-xs uppercase tracking-wider text-zinc-400">
+            <div className="space-y-3 pt-4 border-t border-[var(--border-line)]">
+              <h4 className="font-mono text-xs uppercase tracking-wider text-[var(--text-muted)]">
                 Cross-Publisher Verification ({article.perspectives.length})
               </h4>
               <div className="space-y-2">
                 {article.perspectives.map((p, idx) => (
                   <div
                     key={idx}
-                    className="block p-3 rounded bg-white/[0.02] border border-white/[0.06]"
+                    className="block p-3 rounded bg-[var(--bg-card)] border border-[var(--border-line)] shadow-xs"
                   >
-                    <div className="flex items-center justify-between text-[11px] font-mono text-zinc-400 mb-1">
-                      <span className="text-zinc-300 font-semibold">{p.publisherName}</span>
+                    <div className="flex items-center justify-between text-[11px] font-mono text-[var(--text-muted)] mb-1">
+                      <span className="text-[var(--text-main)] font-semibold">{p.publisherName}</span>
                       <span>{p.publishedAt}</span>
                     </div>
-                    <p className="text-xs text-zinc-200">
+                    <p className="text-xs text-[var(--text-body)]">
                       {p.headline}
                     </p>
                   </div>

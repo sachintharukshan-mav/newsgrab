@@ -263,37 +263,37 @@ export const DiscussionSection: React.FC<DiscussionSectionProps> = ({
   return (
     <section
       id="wire-discussion"
-      className="p-6 sm:p-8 rounded-lg bg-[#111216] border border-white/[0.08] space-y-6"
+      className="p-6 sm:p-8 rounded-lg bg-[var(--bg-card)] border border-[var(--border-line)] shadow-sm space-y-6"
     >
       {/* Header with Title and Guidelines Badge */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-white/[0.08]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-[var(--border-line)]">
         <div className="space-y-1">
           <div className="flex items-center gap-2">
             <MessageSquare className="w-4 h-4 text-rose-500" />
             <h3
-              className={`text-base sm:text-lg font-bold text-white font-headline tracking-tight ${
+              className={`text-base sm:text-lg font-bold text-[var(--text-main)] font-headline tracking-tight ${
                 isSinhala ? 'font-sinhala' : ''
               } ${isTamil ? 'font-tamil' : ''}`}
             >
               {discussionTranslations.title[currentLang]}
             </h3>
-            <span className="px-2 py-0.5 rounded-full bg-white/[0.06] text-[11px] font-mono text-zinc-400">
+            <span className="px-2 py-0.5 rounded-full bg-[var(--bg-subtle)] border border-[var(--border-line)] text-[11px] font-mono text-[var(--text-muted)]">
               {comments.length}
             </span>
           </div>
-          <p className="text-xs text-zinc-400">
+          <p className="text-xs text-[var(--text-muted)]">
             {discussionTranslations.subtitle[currentLang]}
           </p>
         </div>
 
         {/* Sort Controls */}
-        <div className="flex items-center bg-white/[0.03] p-0.5 rounded border border-white/[0.06] text-[11px] font-mono">
+        <div className="flex items-center bg-[var(--bg-subtle)] p-0.5 rounded border border-[var(--border-line)] text-[11px] font-mono">
           <button
             onClick={() => setSortBy('latest')}
             className={`px-2.5 py-1 rounded transition-colors cursor-pointer ${
               sortBy === 'latest'
-                ? 'bg-white/10 text-white font-semibold'
-                : 'text-zinc-400 hover:text-zinc-200'
+                ? 'bg-[var(--bg-card)] text-[var(--text-main)] font-semibold shadow-xs'
+                : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'
             }`}
           >
             {discussionTranslations.sortLatest[currentLang]}
@@ -302,8 +302,8 @@ export const DiscussionSection: React.FC<DiscussionSectionProps> = ({
             onClick={() => setSortBy('top')}
             className={`px-2.5 py-1 rounded transition-colors cursor-pointer ${
               sortBy === 'top'
-                ? 'bg-white/10 text-white font-semibold'
-                : 'text-zinc-400 hover:text-zinc-200'
+                ? 'bg-[var(--bg-card)] text-[var(--text-main)] font-semibold shadow-xs'
+                : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'
             }`}
           >
             {discussionTranslations.sortTop[currentLang]}
@@ -312,8 +312,8 @@ export const DiscussionSection: React.FC<DiscussionSectionProps> = ({
       </div>
 
       {/* Community Guidelines Banner */}
-      <div className="flex items-start gap-2.5 p-3 rounded bg-white/[0.02] border border-white/[0.05] text-[11px] text-zinc-400">
-        <ShieldCheck className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
+      <div className="flex items-start gap-2.5 p-3 rounded bg-[var(--bg-subtle)] border border-[var(--border-line)] text-[11px] text-[var(--text-muted)]">
+        <ShieldCheck className="w-4 h-4 text-emerald-500 flex-shrink-0 mt-0.5" />
         <p className="leading-relaxed">
           {discussionTranslations.guidelinesNotice[currentLang]}
         </p>
@@ -356,7 +356,7 @@ export const DiscussionSection: React.FC<DiscussionSectionProps> = ({
               onChange={(e) => setAuthorName(e.target.value)}
               placeholder={discussionTranslations.namePlaceholder[currentLang]}
               maxLength={40}
-              className="w-full px-3.5 py-2 bg-white/[0.03] border border-white/[0.08] rounded text-xs text-zinc-200 placeholder:text-zinc-500 focus:outline-none focus:border-rose-500/50 transition-colors"
+              className="w-full px-3.5 py-2 bg-[var(--bg-page)] border border-[var(--border-line)] rounded text-xs text-[var(--text-main)] placeholder:text-[var(--text-faint)] focus:outline-none focus:border-rose-500/50 transition-colors"
             />
           </div>
           <div>
@@ -366,7 +366,7 @@ export const DiscussionSection: React.FC<DiscussionSectionProps> = ({
               onChange={(e) => setAuthorLocation(e.target.value)}
               placeholder={discussionTranslations.locationPlaceholder[currentLang]}
               maxLength={35}
-              className="w-full px-3.5 py-2 bg-white/[0.03] border border-white/[0.08] rounded text-xs text-zinc-200 placeholder:text-zinc-500 focus:outline-none focus:border-rose-500/50 transition-colors"
+              className="w-full px-3.5 py-2 bg-[var(--bg-page)] border border-[var(--border-line)] rounded text-xs text-[var(--text-main)] placeholder:text-[var(--text-faint)] focus:outline-none focus:border-rose-500/50 transition-colors"
             />
           </div>
         </div>
@@ -378,11 +378,11 @@ export const DiscussionSection: React.FC<DiscussionSectionProps> = ({
             placeholder={discussionTranslations.commentPlaceholder[currentLang]}
             rows={3}
             maxLength={500}
-            className={`w-full px-3.5 py-2.5 bg-white/[0.03] border border-white/[0.08] rounded text-xs text-zinc-200 placeholder:text-zinc-500 focus:outline-none focus:border-rose-500/50 transition-colors resize-y leading-relaxed ${
+            className={`w-full px-3.5 py-2.5 bg-[var(--bg-page)] border border-[var(--border-line)] rounded text-xs text-[var(--text-main)] placeholder:text-[var(--text-faint)] focus:outline-none focus:border-rose-500/50 transition-colors resize-y leading-relaxed ${
               isSinhala ? 'font-sinhala' : ''
             } ${isTamil ? 'font-tamil' : ''}`}
           />
-          <div className="flex items-center justify-between text-[10px] font-mono text-zinc-500 pt-1">
+          <div className="flex items-center justify-between text-[10px] font-mono text-[var(--text-muted)] pt-1">
             <span>{commentText.length} / 500 characters</span>
             <span>Trilingual civil moderation active</span>
           </div>
@@ -405,14 +405,14 @@ export const DiscussionSection: React.FC<DiscussionSectionProps> = ({
       </form>
 
       {/* Comments List */}
-      <div className="space-y-4 pt-4 border-t border-white/[0.06]">
+      <div className="space-y-4 pt-4 border-t border-[var(--border-line)]">
         {loading ? (
           <div className="space-y-3 py-4">
-            <div className="h-16 bg-white/[0.03] rounded animate-pulse w-full" />
-            <div className="h-16 bg-white/[0.03] rounded animate-pulse w-full" />
+            <div className="h-16 bg-[var(--bg-subtle)] rounded animate-pulse w-full" />
+            <div className="h-16 bg-[var(--bg-subtle)] rounded animate-pulse w-full" />
           </div>
         ) : sortedComments.length === 0 ? (
-          <div className="py-8 text-center text-xs text-zinc-500 font-mono">
+          <div className="py-8 text-center text-xs text-[var(--text-muted)] font-mono">
             {discussionTranslations.empty[currentLang]}
           </div>
         ) : (
@@ -429,20 +429,20 @@ export const DiscussionSection: React.FC<DiscussionSectionProps> = ({
             return (
               <div
                 key={comment.id}
-                className="p-4 rounded-lg bg-white/[0.02] border border-white/[0.05] space-y-2.5 transition-colors hover:border-white/[0.09]"
+                className="p-4 rounded-lg bg-[var(--bg-subtle)] border border-[var(--border-line)] space-y-2.5 transition-colors"
               >
                 {/* Author Metadata Header */}
                 <div className="flex items-center justify-between gap-3 text-xs">
                   <div className="flex items-center gap-2.5">
-                    <div className="w-7 h-7 rounded bg-rose-500/10 border border-rose-500/20 text-rose-400 font-mono font-bold text-[11px] flex items-center justify-center flex-shrink-0 select-none">
+                    <div className="w-7 h-7 rounded bg-rose-500/10 border border-rose-500/20 text-rose-500 dark:text-rose-400 font-mono font-bold text-[11px] flex items-center justify-center flex-shrink-0 select-none">
                       {initials || 'NR'}
                     </div>
                     <div>
                       <div className="flex items-center gap-1.5">
-                        <span className="font-semibold text-zinc-200">{comment.authorName}</span>
+                        <span className="font-semibold text-[var(--text-main)]">{comment.authorName}</span>
                         {comment.authorLocation && (
-                          <span className="inline-flex items-center gap-0.5 text-[10px] font-mono text-zinc-500">
-                            <MapPin className="w-2.5 h-2.5 text-zinc-600" />
+                          <span className="inline-flex items-center gap-0.5 text-[10px] font-mono text-[var(--text-muted)]">
+                            <MapPin className="w-2.5 h-2.5 text-[var(--text-faint)]" />
                             {comment.authorLocation}
                           </span>
                         )}
@@ -450,14 +450,14 @@ export const DiscussionSection: React.FC<DiscussionSectionProps> = ({
                     </div>
                   </div>
 
-                  <span className="font-mono text-[11px] text-zinc-500" suppressHydrationWarning>
+                  <span className="font-mono text-[11px] text-[var(--text-muted)]" suppressHydrationWarning>
                     {timeAgo}
                   </span>
                 </div>
 
                 {/* Comment Content */}
                 <p
-                  className={`text-xs sm:text-sm text-zinc-300 leading-relaxed pl-9 ${
+                  className={`text-xs sm:text-sm text-[var(--text-body)] leading-relaxed pl-9 ${
                     isSinhala ? 'font-sinhala' : ''
                   } ${isTamil ? 'font-tamil' : ''}`}
                 >
@@ -465,13 +465,13 @@ export const DiscussionSection: React.FC<DiscussionSectionProps> = ({
                 </p>
 
                 {/* Footer Controls: Upvote & Report */}
-                <div className="flex items-center justify-between pl-9 pt-1 text-[11px] font-mono text-zinc-500">
+                <div className="flex items-center justify-between pl-9 pt-1 text-[11px] font-mono text-[var(--text-muted)]">
                   <button
                     onClick={() => handleUpvote(comment.id)}
                     className={`flex items-center gap-1 px-2 py-0.5 rounded transition-colors cursor-pointer ${
                       hasUpvoted
-                        ? 'bg-rose-500/10 text-rose-400 font-bold border border-rose-500/20'
-                        : 'hover:bg-white/[0.04] text-zinc-400 hover:text-zinc-200'
+                        ? 'bg-rose-500/10 text-rose-600 dark:text-rose-400 font-bold border border-rose-500/20'
+                        : 'hover:bg-[var(--bg-card)] text-[var(--text-muted)] hover:text-[var(--text-main)]'
                     }`}
                     title="Helpful insight / Agree"
                   >
@@ -481,7 +481,7 @@ export const DiscussionSection: React.FC<DiscussionSectionProps> = ({
 
                   <button
                     onClick={() => handleReport(comment.id)}
-                    className="flex items-center gap-1 text-[10px] text-zinc-600 hover:text-zinc-400 transition-colors cursor-pointer"
+                    className="flex items-center gap-1 text-[10px] text-[var(--text-faint)] hover:text-rose-500 transition-colors cursor-pointer"
                     title="Report comment to newsdesk"
                   >
                     <Flag className="w-2.5 h-2.5" />

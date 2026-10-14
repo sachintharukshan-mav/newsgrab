@@ -197,17 +197,17 @@ export const HeadlineSlider: React.FC<HeadlineSliderProps> = ({
                       {/* Meta Pills & Bookmark */}
                       <div className="flex items-center justify-between gap-2">
                         <div className="flex flex-wrap items-center gap-2 text-[11px] uppercase tracking-wider font-mono">
-                          <span className="px-2 py-0.5 rounded-full bg-rose-500/15 border border-rose-500/30 text-rose-400 font-bold flex items-center gap-1.5">
+                          <span className="px-2 py-0.5 rounded-full bg-rose-500/15 border border-rose-500/30 text-rose-600 dark:text-rose-400 font-bold flex items-center gap-1.5">
                             <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
                             {article.isBreaking ? sliderLabels.urgent[currentLang] : sliderLabels.topHeadline[currentLang]}
                           </span>
-                          <span className="px-1.5 py-0.5 rounded bg-white/[0.08] text-[10px] text-zinc-300">
+                          <span className="px-1.5 py-0.5 rounded bg-[var(--bg-subtle)] border border-[var(--border-line)] text-[10px] text-[var(--text-muted)]">
                             {article.region === 'world' ? '🌐 World' : '🇱🇰 Sri Lanka'}
                           </span>
-                          <span className="text-zinc-600">/</span>
-                          <span className="text-zinc-300 font-medium">{article.publisherName}</span>
-                          <span className="text-zinc-600">•</span>
-                          <span className="text-zinc-400 font-sans" suppressHydrationWarning>
+                          <span className="text-[var(--text-faint)]">/</span>
+                          <span className="text-[var(--text-main)] font-medium">{article.publisherName}</span>
+                          <span className="text-[var(--text-faint)]">•</span>
+                          <span className="text-[var(--text-muted)] font-sans" suppressHydrationWarning>
                             {formatRelativeTime(article.publishedAt, currentLang)}
                           </span>
                         </div>
@@ -220,8 +220,8 @@ export const HeadlineSlider: React.FC<HeadlineSliderProps> = ({
                             }}
                             className={`p-1.5 rounded-full transition-colors cursor-pointer flex-shrink-0 ${
                               savedArticleIds.includes(article.id)
-                                ? 'bg-rose-500/20 text-rose-400 border border-rose-500/40'
-                                : 'bg-white/[0.06] text-zinc-400 hover:text-white hover:bg-white/10'
+                                ? 'bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/40'
+                                : 'bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:text-[var(--text-main)] border border-[var(--border-line)]'
                             }`}
                             title={savedArticleIds.includes(article.id) ? 'Remove bookmark' : 'Bookmark for later'}
                             aria-label="Bookmark article"
@@ -234,7 +234,7 @@ export const HeadlineSlider: React.FC<HeadlineSliderProps> = ({
                       {/* Headline Title */}
                       <h2
                         onClick={() => onOpenQuickRead(article)}
-                        className={`text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white font-headline leading-[1.2] hover:text-rose-300 transition-colors cursor-pointer ${
+                        className={`text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[var(--text-main)] font-headline leading-[1.2] hover:text-rose-600 transition-colors cursor-pointer ${
                           isSinhala ? 'font-sinhala leading-[1.4]' : ''
                         } ${isTamil ? 'font-tamil leading-[1.35]' : ''}`}
                       >
@@ -243,7 +243,7 @@ export const HeadlineSlider: React.FC<HeadlineSliderProps> = ({
 
                       {/* Summary Excerpt */}
                       <p
-                        className={`text-sm sm:text-base text-zinc-300 leading-relaxed line-clamp-3 ${
+                        className={`text-sm sm:text-base text-[var(--text-body)] leading-relaxed line-clamp-3 ${
                           isSinhala ? 'font-sinhala leading-loose' : ''
                         } ${isTamil ? 'font-tamil leading-relaxed' : ''}`}
                       >
@@ -255,10 +255,10 @@ export const HeadlineSlider: React.FC<HeadlineSliderProps> = ({
                     </div>
 
                     {/* Footer Row: Cluster count & CTA button */}
-                    <div className="pt-4 border-t border-white/[0.06] flex items-center justify-between gap-4">
-                      <div className="text-zinc-400 font-mono text-[11px]">
+                    <div className="pt-4 border-t border-[var(--border-line)] flex items-center justify-between gap-4">
+                      <div className="text-[var(--text-muted)] font-mono text-[11px]">
                         {article.clusterCount && article.clusterCount > 1 ? (
-                          <span className="text-zinc-300 font-medium">
+                          <span className="text-[var(--text-body)] font-medium">
                             {sliderLabels.coveredBy[currentLang]} {article.clusterCount} · {sliderLabels.compare[currentLang]}
                           </span>
                         ) : (
@@ -356,26 +356,26 @@ export const HeadlineSlider: React.FC<HeadlineSliderProps> = ({
                   onClick={() => setCurrentIndex(idx)}
                   className={`flex-1 min-w-[50px] sm:min-w-[120px] text-left p-1.5 sm:p-2 rounded transition-all cursor-pointer border ${
                     isActive
-                      ? 'bg-white/[0.08] border-rose-500/50 shadow-sm'
-                      : 'bg-transparent border-transparent hover:bg-white/[0.03] opacity-60 hover:opacity-90'
+                      ? 'bg-[var(--bg-card)] border-rose-500/50 shadow-sm'
+                      : 'bg-transparent border-transparent hover:bg-[var(--bg-card-hover)] opacity-70 hover:opacity-100'
                   }`}
                   aria-label={`Go to slide ${idx + 1}: ${artTitle}`}
                 >
                   <div className="flex items-center gap-1.5 mb-1">
                     <span
                       className={`w-1.5 h-1.5 rounded-full ${
-                        isActive ? 'bg-rose-500' : 'bg-zinc-600'
+                        isActive ? 'bg-rose-500' : 'bg-[var(--text-faint)]'
                       }`}
                     />
-                    <span className="text-[10px] font-mono uppercase text-zinc-400 font-semibold truncate">
+                    <span className="text-[10px] font-mono uppercase text-[var(--text-muted)] font-semibold truncate">
                       {art.publisherName}
                     </span>
                   </div>
-                  <p className="text-[11px] text-zinc-300 font-medium truncate hidden sm:block">
+                  <p className="text-[11px] text-[var(--text-main)] font-medium truncate hidden sm:block">
                     {artTitle}
                   </p>
                   {/* Subtle active progress track */}
-                  <div className="w-full h-0.5 bg-white/[0.06] rounded-full overflow-hidden mt-1">
+                  <div className="w-full h-0.5 bg-black/10 dark:bg-white/[0.06] rounded-full overflow-hidden mt-1">
                     <div
                       className={`h-full transition-all duration-300 ${
                         isActive ? 'w-full bg-rose-500' : 'w-0'

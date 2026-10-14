@@ -123,10 +123,10 @@ export const NewsCard: React.FC<NewsCardProps> = ({
           </div>
 
           {/* Perspective & Byline Footer */}
-          <div className="pt-4 border-t border-white/[0.06] flex items-center justify-between text-xs">
-            <div className="flex items-center gap-2 text-zinc-400 font-mono text-[11px]">
+          <div className="pt-4 border-t border-[var(--border-line)] flex items-center justify-between text-xs">
+            <div className="flex items-center gap-2 text-[var(--text-muted)] font-mono text-[11px]">
               {article.clusterCount && article.clusterCount > 1 ? (
-                <span className="text-zinc-300 font-medium">
+                <span className="text-[var(--text-body)] font-medium">
                   {cardLabels.coveredBy[currentLang]} {article.clusterCount} · {cardLabels.compare[currentLang]}
                 </span>
               ) : (
@@ -134,7 +134,7 @@ export const NewsCard: React.FC<NewsCardProps> = ({
               )}
             </div>
 
-            <span className="inline-flex items-center gap-1 text-zinc-400 group-hover:text-white font-medium text-xs transition-colors">
+            <span className="inline-flex items-center gap-1 text-[var(--text-muted)] group-hover:text-[var(--text-main)] font-medium text-xs transition-colors">
               <span>{cardLabels.readBriefing[currentLang]}</span>
               <ArrowUpRight className="w-3.5 h-3.5" />
             </span>
@@ -238,17 +238,17 @@ export const NewsCard: React.FC<NewsCardProps> = ({
         {/* Metadata */}
         <div className="flex items-center justify-between text-[11px] font-mono text-zinc-400">
           <div className="flex items-center gap-1.5">
-            <span className="px-1.5 py-0.5 rounded bg-white/[0.06] text-[10px] text-zinc-300">
+            <span className="px-1.5 py-0.5 rounded bg-[var(--bg-subtle)] border border-[var(--border-line)] text-[10px] text-[var(--text-muted)]">
               {article.region === 'world' ? '🌐 World' : '🇱🇰 Sri Lanka'}
             </span>
-            <span className="text-zinc-300 font-medium">{article.publisherName}</span>
+            <span className="text-[var(--text-main)] font-medium">{article.publisherName}</span>
           </div>
-          <span suppressHydrationWarning>{relativeTime}</span>
+          <span className="text-[var(--text-muted)] font-sans" suppressHydrationWarning>{relativeTime}</span>
         </div>
 
         {/* Headline */}
         <h3
-          className={`text-base sm:text-lg font-bold text-[#eceef2] font-headline leading-snug group-hover:text-white transition-colors line-clamp-3 ${
+          className={`text-base sm:text-lg font-bold text-[var(--text-main)] font-headline leading-snug group-hover:text-rose-600 transition-colors line-clamp-3 ${
             isSinhala ? 'font-sinhala leading-[1.3]' : ''
           } ${isTamil ? 'font-tamil leading-[1.28]' : ''}`}
         >
@@ -257,7 +257,7 @@ export const NewsCard: React.FC<NewsCardProps> = ({
 
         {/* Summary Snippet */}
         <p
-          className={`text-xs text-[#bcc1cd] line-clamp-2 leading-relaxed ${
+          className={`text-xs text-[var(--text-body)] line-clamp-2 leading-relaxed ${
             isSinhala ? 'font-sinhala leading-normal' : ''
           } ${isTamil ? 'font-tamil leading-normal' : ''}`}
         >
@@ -271,9 +271,9 @@ export const NewsCard: React.FC<NewsCardProps> = ({
       </div>
 
       {/* Card Footer */}
-      <div className="pt-3 mt-4 border-t border-white/[0.06] flex items-center justify-between text-[11px] font-mono text-zinc-400">
+      <div className="pt-3 mt-4 border-t border-[var(--border-line)] flex items-center justify-between text-[11px] font-mono text-[var(--text-muted)]">
         <span className="capitalize">{article.category}</span>
-        <span className="group-hover:text-white transition-colors flex items-center gap-0.5">
+        <span className="group-hover:text-[var(--text-main)] transition-colors flex items-center gap-0.5">
           <span>{cardLabels.brief[currentLang]}</span>
           <ArrowUpRight className="w-3 h-3" />
         </span>

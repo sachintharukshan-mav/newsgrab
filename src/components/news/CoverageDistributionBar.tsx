@@ -172,10 +172,10 @@ export const CoverageDistributionBar: React.FC<CoverageDistributionBarProps> = (
   // COMPACT VARIANT (Used on News Cards & Hero Story)
   if (variant === 'compact') {
     return (
-      <div className="w-full mt-2.5 pt-2.5 border-t border-white/[0.06] text-[11px] font-mono">
+      <div className="w-full mt-2.5 pt-2.5 border-t border-[var(--border-line)] text-[11px] font-mono">
         <div className="flex items-center justify-between gap-2 mb-1.5">
-          <div className="flex items-center gap-1.5 text-zinc-300">
-            <Scale className="w-3 h-3 text-emerald-400" />
+          <div className="flex items-center gap-1.5 text-[var(--text-body)]">
+            <Scale className="w-3 h-3 text-emerald-500" />
             <span className="font-semibold text-[10px] uppercase tracking-wider">
               {isMultiSource
                 ? `${translations.verifiedBy[currentLang]} ${totalSources} ${translations.newsrooms[currentLang]}`
@@ -183,14 +183,14 @@ export const CoverageDistributionBar: React.FC<CoverageDistributionBarProps> = (
             </span>
           </div>
           {isMultiSource && (
-            <span className="text-[9px] text-zinc-500 font-semibold">
+            <span className="text-[9px] text-[var(--text-muted)] font-semibold">
               Ground News™ Matrix
             </span>
           )}
         </div>
 
         {/* Segmented Distribution Spectrum Bar */}
-        <div className="w-full h-1.5 rounded-full bg-white/[0.06] overflow-hidden flex">
+        <div className="w-full h-1.5 rounded-full bg-black/10 dark:bg-white/[0.06] overflow-hidden flex">
           {broadcastPct > 0 && (
             <div
               style={{ width: `${broadcastPct}%` }}
@@ -216,7 +216,7 @@ export const CoverageDistributionBar: React.FC<CoverageDistributionBarProps> = (
 
         {/* Legend Pills */}
         {isMultiSource && (
-          <div className="flex items-center gap-3 mt-1.5 text-[9px] text-zinc-400">
+          <div className="flex items-center gap-3 mt-1.5 text-[9px] text-[var(--text-muted)]">
             {categoryCounts.broadcast > 0 && (
               <span className="flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-sky-500" />
@@ -253,11 +253,11 @@ export const CoverageDistributionBar: React.FC<CoverageDistributionBarProps> = (
             <h4 className="text-sm font-bold text-[var(--text-main)] uppercase tracking-wider font-mono">
               {translations.coverageSpectrum[currentLang]}
             </h4>
-            <span className="px-1.5 py-0.5 rounded bg-white/[0.06] text-[9px] font-mono text-zinc-400 uppercase">
+            <span className="px-1.5 py-0.5 rounded bg-[var(--bg-card)] border border-[var(--border-line)] text-[9px] font-mono text-[var(--text-muted)] uppercase">
               Ground News Style
             </span>
           </div>
-          <p className="text-xs text-zinc-400 font-sans">
+          <p className="text-xs text-[var(--text-muted)] font-sans">
             {isMultiSource
               ? `${translations.verifiedBy[currentLang]} ${totalSources} ${translations.newsrooms[currentLang]} across print, broadcast, and international agencies.`
               : translations.singleSource[currentLang]}
@@ -265,7 +265,7 @@ export const CoverageDistributionBar: React.FC<CoverageDistributionBarProps> = (
         </div>
 
         <div className="flex items-center gap-2">
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-mono font-medium">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs font-mono font-medium">
             <ShieldCheck className="w-3.5 h-3.5" />
             <span>{totalSources >= 3 ? 'High Corroboration' : 'Standard Corroboration'}</span>
           </span>
@@ -274,12 +274,12 @@ export const CoverageDistributionBar: React.FC<CoverageDistributionBarProps> = (
 
       {/* Visual Spectrum Bar */}
       <div className="py-4 space-y-2">
-        <div className="flex items-center justify-between text-[11px] font-mono text-zinc-400">
+        <div className="flex items-center justify-between text-[11px] font-mono text-[var(--text-muted)]">
           <span>{translations.coverageBias[currentLang]}</span>
-          <span className="text-zinc-300 font-semibold">{totalSources} Outlets Tracking</span>
+          <span className="text-[var(--text-main)] font-semibold">{totalSources} Outlets Tracking</span>
         </div>
 
-        <div className="w-full h-2.5 rounded-full bg-white/[0.06] overflow-hidden flex shadow-inner">
+        <div className="w-full h-2.5 rounded-full bg-black/10 dark:bg-white/[0.06] overflow-hidden flex shadow-inner">
           {broadcastPct > 0 && (
             <div
               style={{ width: `${broadcastPct}%` }}
@@ -308,25 +308,25 @@ export const CoverageDistributionBar: React.FC<CoverageDistributionBarProps> = (
           <div className="p-2.5 rounded-lg bg-sky-500/[0.04] border border-sky-500/20 flex items-center justify-between text-xs font-mono">
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-sky-500" />
-              <span className="text-zinc-300">National Broadcasters</span>
+              <span className="text-[var(--text-body)]">National Broadcasters</span>
             </div>
-            <span className="font-bold text-sky-400">{categoryCounts.broadcast}</span>
+            <span className="font-bold text-sky-500 dark:text-sky-400">{categoryCounts.broadcast}</span>
           </div>
 
           <div className="p-2.5 rounded-lg bg-emerald-500/[0.04] border border-emerald-500/20 flex items-center justify-between text-xs font-mono">
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-emerald-500" />
-              <span className="text-zinc-300">Independent Print</span>
+              <span className="text-[var(--text-body)]">Independent Print</span>
             </div>
-            <span className="font-bold text-emerald-400">{categoryCounts.print}</span>
+            <span className="font-bold text-emerald-600 dark:text-emerald-400">{categoryCounts.print}</span>
           </div>
 
           <div className="p-2.5 rounded-lg bg-amber-500/[0.04] border border-amber-500/20 flex items-center justify-between text-xs font-mono">
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-amber-500" />
-              <span className="text-zinc-300">Wires & Financial</span>
+              <span className="text-[var(--text-body)]">Wires & Financial</span>
             </div>
-            <span className="font-bold text-amber-400">{categoryCounts.wire}</span>
+            <span className="font-bold text-amber-600 dark:text-amber-400">{categoryCounts.wire}</span>
           </div>
         </div>
       </div>
@@ -336,15 +336,15 @@ export const CoverageDistributionBar: React.FC<CoverageDistributionBarProps> = (
         <div className="pt-2">
           <button
             onClick={() => setIsExpanded(!isExpanded)}
-            className="w-full py-2.5 px-3 rounded-lg bg-white/[0.03] hover:bg-white/[0.06] border border-white/[0.06] flex items-center justify-between text-xs font-mono text-zinc-300 transition-colors cursor-pointer"
+            className="w-full py-2.5 px-3 rounded-lg bg-[var(--bg-card)] hover:bg-[var(--bg-card-hover)] border border-[var(--border-line)] flex items-center justify-between text-xs font-mono text-[var(--text-main)] transition-colors cursor-pointer"
           >
             <span className="flex items-center gap-2">
               <span>{isExpanded ? translations.hideHeadlines[currentLang] : translations.compareHeadlines[currentLang]}</span>
-              <span className="px-1.5 py-0.2 rounded bg-white/10 text-[10px] text-white">
+              <span className="px-1.5 py-0.2 rounded bg-[var(--bg-subtle)] border border-[var(--border-line)] text-[10px] text-[var(--text-main)]">
                 {participatingPublishers.length} perspectives
               </span>
             </span>
-            {isExpanded ? <ChevronUp className="w-4 h-4 text-zinc-400" /> : <ChevronDown className="w-4 h-4 text-zinc-400" />}
+            {isExpanded ? <ChevronUp className="w-4 h-4 text-[var(--text-muted)]" /> : <ChevronDown className="w-4 h-4 text-[var(--text-muted)]" />}
           </button>
 
           {isExpanded && (
@@ -355,7 +355,7 @@ export const CoverageDistributionBar: React.FC<CoverageDistributionBarProps> = (
                 return (
                   <div
                     key={idx}
-                    className="p-3 rounded-lg bg-black/40 border border-white/[0.06] flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:border-white/20 transition-colors"
+                    className="p-3 rounded-lg bg-[var(--bg-card)] border border-[var(--border-line)] flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-xs hover:border-[var(--border-strong)] transition-colors"
                   >
                     <div className="space-y-1">
                       <div className="flex items-center gap-2 text-[10px] font-mono">
@@ -363,10 +363,10 @@ export const CoverageDistributionBar: React.FC<CoverageDistributionBarProps> = (
                           <Icon className="w-3 h-3" />
                           <span>{pub.name}</span>
                         </span>
-                        <span className="text-zinc-600">·</span>
-                        <span className="text-zinc-400">{meta.label[currentLang]}</span>
+                        <span className="text-[var(--text-faint)]">·</span>
+                        <span className="text-[var(--text-muted)]">{meta.label[currentLang]}</span>
                       </div>
-                      <p className="text-xs text-zinc-200 font-medium leading-snug">
+                      <p className="text-xs text-[var(--text-main)] font-medium leading-snug">
                         {pub.headline || article.title[currentLang] || article.title.en}
                       </p>
                     </div>
@@ -376,7 +376,7 @@ export const CoverageDistributionBar: React.FC<CoverageDistributionBarProps> = (
                         href={pub.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1 text-[11px] font-mono text-zinc-400 hover:text-white flex-shrink-0 transition-colors"
+                        className="inline-flex items-center gap-1 text-[11px] font-mono text-[var(--text-muted)] hover:text-[var(--text-main)] flex-shrink-0 transition-colors"
                       >
                         <span>Original Source</span>
                         <ExternalLink className="w-3 h-3" />
