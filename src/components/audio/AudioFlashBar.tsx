@@ -47,7 +47,7 @@ const flashLabels = {
   story: {
     en: 'Story',
     si: 'පුවත',
-    ta: 'செய்தி'
+    ta: 'செய்தි'
   },
   speed: {
     en: 'Speed',
@@ -66,14 +66,16 @@ const flashLabels = {
   }
 };
 
+type PlaybackState = 'idle' | 'loading' | 'playing' | 'paused';
+type PlaybackMode = 'audio' | 'speech' | null;
+
 export const AudioFlashBar: React.FC<AudioFlashBarProps> = ({
   articles,
   currentLang,
   onOpenArticle
 }) => {
-  const [isPlaying, setIsPlaying] = useState<boolean>(false);
-  const [isPaused, setIsPaused] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [playbackState, setPlaybackState] = useState<PlaybackState>('idle');
+  const [playbackMode, setPlaybackMode] = useState<PlaybackMode>(null);
   const [activeStoryIdx, setActiveStoryIdx] = useState<number>(0);
   const [speed, setSpeed] = useState<number>(1);
   const [isClient, setIsClient] = useState<boolean>(false);
@@ -87,25 +89,33 @@ export const AudioFlashBar: React.FC<AudioFlashBarProps> = ({
   });
 
   const audioRef = useRef<HTMLAudioElement | null>(null);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
   const playStoryRef = useRef<(index: number, voiceKey?: VoiceKey) => void>(() => {});
   const voiceMenuRef = useRef<HTMLDivElement | null>(null);
 
   // Top 3 stories for the brief
   const briefStories = articles.slice(0, 3);
 
-  // Stop playback cleanly
-  const handleStop = useCallback(() => {
+  // Stop playback cleanly without triggering error events or speech cascades
+  const stopAllPlayback = useCallback(() => {
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+      timerRef.current = null;
+    }
     if (audioRef.current) {
-      audioRef.current.pause();
-      audioRef.current.removeAttribute('src');
-      audioRef.current.load();
+      const el = audioRef.current;
+      el.oncanplay = null;
+      el.onended = null;
+      el.onerror = null;
+      el.pause();
+      el.src = '';
+      audioRef.current = null;
     }
     if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
       window.speechSynthesis.cancel();
     }
-    setIsPlaying(false);
-    setIsPaused(false);
-    setIsLoading(false);
+    setPlaybackState('idle');
+    setPlaybackMode(null);
   }, []);
 
   // Initialize client and handle outside clicks for voice dropdown
@@ -125,11 +135,11 @@ export const AudioFlashBar: React.FC<AudioFlashBarProps> = ({
     return () => {
       cancelAnimationFrame(frameId);
       document.removeEventListener('mousedown', handleClickOutside);
-      handleStop();
+      stopAllPlayback();
     };
-  }, [handleStop]);
+  }, [stopAllPlayback]);
 
-  // Synchronize voice when user switches primary language tab
+  // Synchronize voice and cleanly reset when user switches primary language tab
   useEffect(() => {
     let targetVoice: VoiceKey = 'en-us';
     if (currentLang === 'si') {
@@ -137,15 +147,13 @@ export const AudioFlashBar: React.FC<AudioFlashBarProps> = ({
     } else if (currentLang === 'ta') {
       targetVoice = 'ta';
     } else {
-      // If currently Sinhala or Tamil voice, default back to en-us, otherwise keep chosen English voice
       targetVoice = selectedVoice === 'si' || selectedVoice === 'ta' ? 'en-us' : selectedVoice;
     }
     setSelectedVoice(targetVoice);
 
-    if (isPlaying) {
-      handleStop();
-    }
-  }, [currentLang]); // eslint-disable-line react-hooks/exhaustive-deps
+    stopAllPlayback();
+    setActiveStoryIdx(0);
+  }, [currentLang, stopAllPlayback]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Generate clean broadcast spoken text for a story
   const getStorySpokenText = useCallback((story: Article, index: number, total: number, lang: Language) => {
@@ -178,17 +186,11 @@ export const AudioFlashBar: React.FC<AudioFlashBarProps> = ({
     const story = briefStories[safeIndex];
     const spokenText = getStorySpokenText(story, safeIndex, briefStories.length, currentLang);
 
-    // Stop current audio if playing
-    if (audioRef.current) {
-      audioRef.current.pause();
-    }
-    if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-    }
+    // Stop current audio cleanly
+    stopAllPlayback();
 
-    setIsLoading(true);
-    setIsPlaying(true);
-    setIsPaused(false);
+    setPlaybackState('loading');
+    setPlaybackMode('audio');
 
     const audioUrl = `/api/tts?text=${encodeURIComponent(spokenText)}&voice=${encodeURIComponent(
       voiceToUse
@@ -199,87 +201,123 @@ export const AudioFlashBar: React.FC<AudioFlashBarProps> = ({
     audioRef.current = audio;
 
     audio.oncanplay = () => {
-      setIsLoading(false);
+      setPlaybackState('playing');
     };
 
     audio.onended = () => {
       if (safeIndex < briefStories.length - 1) {
-        setTimeout(() => {
+        setActiveStoryIdx(safeIndex + 1);
+        timerRef.current = setTimeout(() => {
           playStoryRef.current(safeIndex + 1, voiceToUse);
-        }, 500);
+        }, 400);
       } else {
-        setIsPlaying(false);
-        setIsPaused(false);
+        stopAllPlayback();
         setActiveStoryIdx(0);
       }
     };
 
-    audio.onerror = (e) => {
-      console.warn('Neural TTS streaming note:', e);
-      setIsLoading(false);
+    audio.onerror = () => {
+      // Clean up audio element handlers
+      if (audioRef.current === audio) {
+        audio.oncanplay = null;
+        audio.onended = null;
+        audio.onerror = null;
+        audioRef.current = null;
+      }
 
       // Fallback to browser SpeechSynthesis if network or stream has issue
       if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        setPlaybackMode('speech');
+        setPlaybackState('playing');
+
         const utterance = new SpeechSynthesisUtterance(spokenText);
         utterance.rate = speed;
         utterance.onend = () => {
           if (safeIndex < briefStories.length - 1) {
-            playStoryRef.current(safeIndex + 1, voiceToUse);
+            setActiveStoryIdx(safeIndex + 1);
+            timerRef.current = setTimeout(() => {
+              playStoryRef.current(safeIndex + 1, voiceToUse);
+            }, 400);
           } else {
-            setIsPlaying(false);
-            setIsPaused(false);
+            stopAllPlayback();
             setActiveStoryIdx(0);
           }
         };
+        utterance.onerror = () => {
+          stopAllPlayback();
+        };
+
+        window.speechSynthesis.cancel();
         window.speechSynthesis.speak(utterance);
       } else {
-        setIsPlaying(false);
-        setIsPaused(false);
+        stopAllPlayback();
       }
     };
 
     audio.play().catch((err) => {
       console.warn('Playback error (e.g. autoplay restriction):', err);
-      setIsLoading(false);
-      setIsPlaying(false);
+      // Trigger fallback safely
+      audio.onerror?.(new Event('error'));
     });
-  }, [briefStories, currentLang, speed, selectedVoice, getStorySpokenText]);
+  }, [briefStories, currentLang, speed, selectedVoice, getStorySpokenText, stopAllPlayback]);
 
   useEffect(() => {
     playStoryRef.current = playStory;
   }, [playStory]);
 
   const handlePlayToggle = () => {
-    if (isPlaying) {
-      if (isPaused) {
-        if (audioRef.current) {
-          audioRef.current.play().catch(console.warn);
-        } else if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-          window.speechSynthesis.resume();
-        }
-        setIsPaused(false);
-      } else {
-        if (audioRef.current) {
-          audioRef.current.pause();
-        } else if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-          window.speechSynthesis.pause();
-        }
-        setIsPaused(true);
+    if (playbackState === 'playing') {
+      // Pause active stream
+      if (playbackMode === 'audio' && audioRef.current) {
+        audioRef.current.pause();
+      } else if (playbackMode === 'speech' && typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.pause();
       }
+      setPlaybackState('paused');
+    } else if (playbackState === 'paused') {
+      // Resume active stream
+      if (playbackMode === 'audio' && audioRef.current) {
+        audioRef.current.play().catch(() => playStory(activeStoryIdx));
+      } else if (playbackMode === 'speech' && typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        window.speechSynthesis.resume();
+      }
+      setPlaybackState('playing');
     } else {
+      // Start playback from current active story
       playStory(activeStoryIdx);
     }
   };
 
   const handleNext = () => {
     if (activeStoryIdx < briefStories.length - 1) {
-      playStory(activeStoryIdx + 1);
+      const nextIdx = activeStoryIdx + 1;
+      if (playbackState === 'playing' || playbackState === 'loading') {
+        playStory(nextIdx);
+      } else {
+        stopAllPlayback();
+        setActiveStoryIdx(nextIdx);
+      }
     }
   };
 
   const handlePrev = () => {
     if (activeStoryIdx > 0) {
-      playStory(activeStoryIdx - 1);
+      const prevIdx = activeStoryIdx - 1;
+      if (playbackState === 'playing' || playbackState === 'loading') {
+        playStory(prevIdx);
+      } else {
+        stopAllPlayback();
+        setActiveStoryIdx(prevIdx);
+      }
+    }
+  };
+
+  const handleSelectStory = (idx: number) => {
+    if (playbackState === 'playing' || playbackState === 'loading') {
+      playStory(idx);
+    } else {
+      stopAllPlayback();
+      setActiveStoryIdx(idx);
     }
   };
 
@@ -295,8 +333,8 @@ export const AudioFlashBar: React.FC<AudioFlashBarProps> = ({
     setSelectedVoice(voiceKey);
     setIsVoiceMenuOpen(false);
 
-    // If currently playing, restart active story with new voice
-    if (isPlaying) {
+    // If currently playing, restart active story with new voice persona
+    if (playbackState === 'playing' || playbackState === 'loading') {
       playStory(activeStoryIdx, voiceKey);
     }
   };
@@ -306,6 +344,11 @@ export const AudioFlashBar: React.FC<AudioFlashBarProps> = ({
   const currentStory = briefStories[activeStoryIdx] || briefStories[0];
   const activeTitle = currentStory.title[currentLang] || currentStory.title.en || '';
   const currentVoiceObj = VOICE_OPTIONS.find((v) => v.id === selectedVoice) || VOICE_OPTIONS[0];
+
+  const isLoading = playbackState === 'loading';
+  const isPlaying = playbackState === 'playing';
+  const isPaused = playbackState === 'paused';
+  const isActive = isPlaying || isPaused || isLoading;
 
   return (
     <div className="relative mb-5 rounded-xl border border-white/[0.08] bg-gradient-to-r from-[#12141c] via-[#101217] to-[#151722] p-3 sm:p-4 shadow-xl transition-all z-20">
@@ -320,17 +363,17 @@ export const AudioFlashBar: React.FC<AudioFlashBarProps> = ({
         <div className="flex items-start sm:items-center gap-3">
           <button
             onClick={handlePlayToggle}
-            aria-label={isPlaying && !isPaused ? 'Pause 60s brief' : 'Play 60s brief'}
+            aria-label={isPlaying ? 'Pause 60s brief' : 'Play 60s brief'}
             className="group relative flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-full bg-rose-600 text-white shadow-lg shadow-rose-600/30 transition-transform duration-200 hover:scale-105 active:scale-95 cursor-pointer"
           >
             {isLoading ? (
               <Loader2 className="h-5 w-5 animate-spin text-white" />
-            ) : isPlaying && !isPaused ? (
+            ) : isPlaying ? (
               <Pause className="h-5 w-5 fill-white" />
             ) : (
               <Play className="h-5 w-5 fill-white ml-0.5" />
             )}
-            {isPlaying && !isPaused && !isLoading && (
+            {isPlaying && (
               <span className="absolute inset-0 rounded-full border border-rose-400 animate-ping opacity-75" />
             )}
           </button>
@@ -347,7 +390,7 @@ export const AudioFlashBar: React.FC<AudioFlashBarProps> = ({
                 {flashLabels.neural[currentLang]}
               </span>
 
-              {isPlaying && !isPaused && !isLoading && (
+              {isPlaying && (
                 <div className="flex items-center gap-0.5 h-3">
                   <span className="w-0.5 bg-rose-400 h-full animate-[pulse_0.6s_ease-in-out_infinite]" />
                   <span className="w-0.5 bg-rose-400 h-2/3 animate-[pulse_0.4s_ease-in-out_infinite]" />
@@ -359,7 +402,7 @@ export const AudioFlashBar: React.FC<AudioFlashBarProps> = ({
 
             <div className="mt-1 flex items-center gap-2">
               <p className="text-xs sm:text-sm font-semibold text-zinc-200 truncate">
-                {isPlaying ? (
+                {isActive ? (
                   <span className="text-rose-200">
                     [{flashLabels.story[currentLang]} {activeStoryIdx + 1}/{briefStories.length}] {activeTitle}
                   </span>
@@ -378,8 +421,8 @@ export const AudioFlashBar: React.FC<AudioFlashBarProps> = ({
             {briefStories.map((s, idx) => (
               <button
                 key={s.id}
-                onClick={() => playStory(idx)}
-                title={`Play story ${idx + 1}`}
+                onClick={() => handleSelectStory(idx)}
+                title={`Story ${idx + 1}`}
                 className={`h-2 rounded-full transition-all duration-300 cursor-pointer ${
                   activeStoryIdx === idx ? 'w-6 bg-rose-500' : 'w-2 bg-white/20 hover:bg-white/40'
                 }`}
@@ -397,9 +440,9 @@ export const AudioFlashBar: React.FC<AudioFlashBarProps> = ({
               <SkipBack className="h-4 w-4" />
             </button>
 
-            {isPlaying && (
+            {isActive && (
               <button
-                onClick={handleStop}
+                onClick={stopAllPlayback}
                 className="p-1.5 rounded-lg text-zinc-400 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
                 title="Stop Audio"
               >
@@ -494,10 +537,13 @@ export const AudioFlashBar: React.FC<AudioFlashBarProps> = ({
             {speed}x
           </button>
 
-          {/* Open current story link if playing */}
-          {isPlaying && onOpenArticle && (
+          {/* Open current story link if active */}
+          {isActive && onOpenArticle && (
             <button
-              onClick={() => onOpenArticle(currentStory)}
+              onClick={() => {
+                stopAllPlayback();
+                onOpenArticle(currentStory);
+              }}
               className="text-[11px] font-mono text-zinc-400 hover:text-rose-300 underline underline-offset-2 transition-colors cursor-pointer hidden lg:inline"
             >
               View Dispatch &rarr;
