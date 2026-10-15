@@ -28,6 +28,58 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
   const [copied, setCopied] = useState(false);
   const [readingProgress, setReadingProgress] = useState<number>(0);
   const [fontSize, setFontSize] = useState<'normal' | 'large' | 'xl'>('normal');
+
+  // Load persisted font size preference from localStorage
+  useEffect(() => {
+    try {
+      const savedFontSize = localStorage.getItem('ld_article_font_size') as 'normal' | 'large' | 'xl' | null;
+      if (savedFontSize === 'normal' || savedFontSize === 'large' || savedFontSize === 'xl') {
+        setFontSize(savedFontSize);
+      }
+    } catch {
+      // Ignore localStorage read issues
+    }
+  }, []);
+
+  const handleFontSizeChange = (size: 'normal' | 'large' | 'xl') => {
+    setFontSize(size);
+    try {
+      localStorage.setItem('ld_article_font_size', size);
+    } catch {
+      // Ignore localStorage write issues
+    }
+  };
+
+  // Scalable broadsheet reading typography configuration based on active fontSize
+  const textScale = useMemo(() => {
+    switch (fontSize) {
+      case 'large':
+        return {
+          bannerQuote: 'text-lg sm:text-xl',
+          lead: 'text-lg sm:text-xl',
+          body: 'text-base sm:text-lg',
+          quote: 'text-base sm:text-lg',
+          detail: 'text-sm sm:text-base',
+        };
+      case 'xl':
+        return {
+          bannerQuote: 'text-xl sm:text-2xl',
+          lead: 'text-xl sm:text-2xl',
+          body: 'text-lg sm:text-xl',
+          quote: 'text-lg sm:text-xl',
+          detail: 'text-base sm:text-lg',
+        };
+      case 'normal':
+      default:
+        return {
+          bannerQuote: 'text-base sm:text-lg',
+          lead: 'text-base sm:text-lg',
+          body: 'text-sm sm:text-base',
+          quote: 'text-sm sm:text-base',
+          detail: 'text-xs sm:text-sm',
+        };
+    }
+  }, [fontSize]);
   const [fetchedBrief, setFetchedBrief] = useState<ExecutiveBrief | null>(null);
   const [isLoadingBrief, setIsLoadingBrief] = useState<boolean>(false);
   const [synthesisProvider, setSynthesisProvider] = useState<'gemini' | 'algorithmic'>('gemini');
@@ -282,10 +334,13 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
 
           <div className="flex items-center gap-3 text-xs font-mono text-[var(--text-muted)]">
             {/* Font Size Adjuster */}
-            <div className="hidden sm:flex items-center bg-[var(--bg-subtle)] p-0.5 rounded border border-[var(--border-line)]">
+            <div className="flex items-center bg-[var(--bg-subtle)] p-0.5 rounded border border-[var(--border-line)]" role="group" aria-label="Adjust font size">
               <button
-                onClick={() => setFontSize('normal')}
-                title="Default text size"
+                type="button"
+                onClick={() => handleFontSizeChange('normal')}
+                title="Default text size (A)"
+                aria-label="Default text size"
+                aria-pressed={fontSize === 'normal'}
                 className={`px-2 py-0.5 text-[11px] rounded transition-colors cursor-pointer ${
                   fontSize === 'normal' ? 'bg-[var(--bg-card)] text-[var(--text-main)] font-bold shadow-xs' : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'
                 }`}
@@ -293,8 +348,11 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
                 A
               </button>
               <button
-                onClick={() => setFontSize('large')}
-                title="Larger text size"
+                type="button"
+                onClick={() => handleFontSizeChange('large')}
+                title="Larger text size (A+)"
+                aria-label="Larger text size"
+                aria-pressed={fontSize === 'large'}
                 className={`px-2 py-0.5 text-xs rounded transition-colors cursor-pointer ${
                   fontSize === 'large' ? 'bg-[var(--bg-card)] text-[var(--text-main)] font-bold shadow-xs' : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'
                 }`}
@@ -302,8 +360,11 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
                 A+
               </button>
               <button
-                onClick={() => setFontSize('xl')}
-                title="Extra large text size"
+                type="button"
+                onClick={() => handleFontSizeChange('xl')}
+                title="Extra large text size (A++)"
+                aria-label="Extra large text size"
+                aria-pressed={fontSize === 'xl'}
                 className={`px-2 py-0.5 text-sm rounded transition-colors cursor-pointer ${
                   fontSize === 'xl' ? 'bg-[var(--bg-card)] text-[var(--text-main)] font-bold shadow-xs' : 'text-[var(--text-muted)] hover:text-[var(--text-main)]'
                 }`}
@@ -340,7 +401,7 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
               ) : (
                 <Volume2 className="w-3.5 h-3.5 text-[var(--text-body)]" />
               )}
-              <span className="text-xs font-medium">
+              <span className="text-xs font-medium hidden sm:inline">
                 {isSpeaking ? fullArticleLabels.stopAudio[currentLang] : fullArticleLabels.listen[currentLang]}
               </span>
             </button>
@@ -362,7 +423,7 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
               className="flex items-center gap-1.5 px-3 py-1.5 rounded bg-[var(--bg-card)] hover:bg-[var(--bg-card-hover)] text-[var(--text-body)] hover:text-[var(--text-main)] border border-[var(--border-line)] transition-colors cursor-pointer"
             >
               {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Share2 className="w-3.5 h-3.5" />}
-              <span>{copied ? fullArticleLabels.linkCopied[currentLang] : fullArticleLabels.share[currentLang]}</span>
+              <span className="hidden sm:inline">{copied ? fullArticleLabels.linkCopied[currentLang] : fullArticleLabels.share[currentLang]}</span>
             </button>
 
             {/* Bookmark Action Button */}
@@ -493,7 +554,7 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
               </div>
               <div className="relative z-10 space-y-2">
                 <Quote className="w-7 h-7 text-rose-400/30" />
-                <p className={`text-base sm:text-lg text-zinc-200 font-serif italic leading-relaxed ${isSinhala ? 'font-sinhala leading-loose not-italic' : ''} ${isTamil ? 'font-tamil leading-relaxed not-italic' : ''}`}>
+                <p className={`${textScale.bannerQuote} text-zinc-200 font-serif italic leading-relaxed transition-all duration-150 ${isSinhala ? 'font-sinhala leading-loose not-italic' : ''} ${isTamil ? 'font-tamil leading-relaxed not-italic' : ''}`}>
                   &ldquo;{article.summary[currentLang] || article.summary.en || title}&rdquo;
                 </p>
               </div>
@@ -547,7 +608,7 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
                       </span>
                     </div>
                     <p
-                      className={`text-base sm:text-lg text-[var(--text-main)] font-serif leading-relaxed prose-${fontSize} ${
+                      className={`${textScale.lead} text-[var(--text-main)] font-serif leading-relaxed transition-all duration-150 ${
                         isSinhala ? 'font-sinhala leading-loose' : ''
                       } ${isTamil ? 'font-tamil leading-relaxed' : ''}`}
                     >
@@ -562,7 +623,7 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
                     </h4>
                     <ul className="space-y-3">
                       {(brief?.keyDetails && brief.keyDetails.length > 0 ? brief.keyDetails : bullets).map((fact, idx) => (
-                        <li key={idx} className="flex items-start gap-3 text-sm sm:text-base text-[var(--text-body)]">
+                        <li key={idx} className={`flex items-start gap-3 ${textScale.body} text-[var(--text-body)] transition-all duration-150`}>
                           <span className="text-rose-600 font-mono font-bold select-none text-base">—</span>
                           <span className={`leading-relaxed ${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
                             {fact}
@@ -585,7 +646,7 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
                         {brief.quotes.map((quoteText, idx) => (
                           <blockquote
                             key={idx}
-                            className={`pl-4 border-l-2 border-amber-500/60 text-sm sm:text-base italic text-[var(--text-body)] font-serif leading-relaxed ${
+                            className={`pl-4 border-l-2 border-amber-500/60 ${textScale.quote} italic text-[var(--text-body)] font-serif leading-relaxed transition-all duration-150 ${
                               isSinhala ? 'font-sinhala' : ''
                             } ${isTamil ? 'font-tamil' : ''}`}
                           >
@@ -605,7 +666,7 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
                       </span>
                     </div>
                     <p
-                      className={`text-sm sm:text-base text-[var(--text-body)] leading-relaxed ${
+                      className={`${textScale.body} text-[var(--text-body)] leading-relaxed transition-all duration-150 ${
                         isSinhala ? 'font-sinhala leading-loose' : ''
                       } ${isTamil ? 'font-tamil leading-relaxed' : ''}`}
                     >
@@ -620,7 +681,7 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
                       <div className={`text-[10px] font-mono uppercase tracking-widest text-[var(--text-muted)] font-semibold ${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
                         {fullArticleLabels.whatsNext[currentLang]}
                       </div>
-                      <p className={`text-xs sm:text-sm text-[var(--text-body)] leading-relaxed ${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
+                      <p className={`${textScale.detail} text-[var(--text-body)] leading-relaxed transition-all duration-150 ${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
                         {brief ? brief.whatsNext : 'Further official proceedings, regulatory filings, or judicial updates are monitored on the wire.'}
                       </p>
                     </div>
