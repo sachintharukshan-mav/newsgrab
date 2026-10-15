@@ -506,7 +506,7 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
           {/* Main Article Reading Column (8 Cols) */}
           <div className="lg:col-span-8 space-y-8">
             {/* Axios Smart Brevity Executive Dossier */}
-            <div className="p-6 sm:p-8 rounded-xl bg-[var(--bg-card)] dark:bg-gradient-to-b dark:from-[#14161f] dark:to-[#0f1016] border border-[var(--border-line)] shadow-xl space-y-6">
+            <div className="p-6 sm:p-8 rounded-xl bg-[var(--bg-card)] border border-[var(--border-line)] shadow-lg space-y-6">
               {/* Dossier Institutional Header */}
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-4 border-b border-[var(--border-line)]">
                 <div className="flex items-center gap-2">
@@ -640,7 +640,7 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
             </div>
 
             {/* Outbound Canonical Publisher Action Card (Direct Traffic Driver) */}
-            <div className="p-6 sm:p-8 rounded-xl bg-[var(--bg-card)] dark:bg-gradient-to-br dark:from-[#181a22] dark:to-[#121319] border border-[var(--border-line)] shadow-xl space-y-5">
+            <div className="p-6 sm:p-8 rounded-xl bg-[var(--bg-card)] border border-[var(--border-line)] shadow-lg space-y-5">
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-5">
                 <div className="space-y-1.5">
                   <div className="inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-widest text-rose-600 dark:text-rose-400 font-semibold">

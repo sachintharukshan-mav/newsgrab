@@ -305,7 +305,7 @@ export const QuickReadDrawer: React.FC<QuickReadDrawerProps> = ({
           )}
 
           {/* Axios Smart Brevity Executive Dossier */}
-          <div className="p-5 rounded-lg bg-[var(--bg-card)] dark:bg-gradient-to-b dark:from-[#14161f] dark:to-[#0f1016] border border-[var(--border-line)] shadow-lg space-y-4">
+          <div className="p-5 rounded-lg bg-[var(--bg-card)] border border-[var(--border-line)] shadow-lg space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-[var(--border-line)]">
               <div className="flex items-center gap-1.5">
                 <Sparkles className="w-3.5 h-3.5 text-amber-500" />
@@ -404,7 +404,7 @@ export const QuickReadDrawer: React.FC<QuickReadDrawerProps> = ({
             </div>
 
           {/* Outbound Canonical Publisher Action Card (Direct Traffic Driver) */}
-          <div className="p-5 sm:p-6 rounded-lg bg-[var(--bg-card)] dark:bg-gradient-to-br dark:from-[#181a22] dark:to-[#121319] border border-[var(--border-line)] shadow-lg space-y-4">
+          <div className="p-5 sm:p-6 rounded-lg bg-[var(--bg-card)] border border-[var(--border-line)] shadow-lg space-y-4">
             <div className="space-y-1">
               <div className="text-[10px] font-mono uppercase tracking-widest text-rose-600 dark:text-rose-400 font-semibold">
                 {drawerLabels.originalWire[currentLang]}

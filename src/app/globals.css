@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, [data-theme="dark"], .dark *, [data-theme="dark"] *));
+
 :root, html.dark, [data-theme="dark"] {
   color-scheme: dark;
   --bg-page: #111216;

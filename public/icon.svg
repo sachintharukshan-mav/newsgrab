@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32">
+  <defs>
+    <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f43f5e" />
+      <stop offset="100%" stop-color="#be123c" />
+    </linearGradient>
+  </defs>
+  <rect width="32" height="32" rx="7" fill="url(#grad)" />
+  <!-- Lanka Dispatch Monogram 'LD' -->
+  <path d="M6 9 h3.2 v11.3 h4.8 v3 H6 Z" fill="#ffffff" />
+  <path fill-rule="evenodd" d="M15 9 h4 c4.2 0 7.2 2.9 7.2 7.1 c0 4.2 -3 7.1 -7.2 7.1 h-4 Z M18.2 12.2 v7.8 h0.8 c2.2 0 4 -1.6 4 -3.9 c0 -2.3 -1.8 -3.9 -4 -3.9 Z" fill="#ffffff" />
+  <!-- Breaking Pulse Dot -->
+  <circle cx="26" cy="7.5" r="2.2" fill="#facc15" stroke="#be123c" stroke-width="0.7" />
+</svg>
