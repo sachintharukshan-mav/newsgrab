@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
+import Link from 'next/link';
 import { Article, ExecutiveBrief, Language } from '@/lib/types';
 import { ArrowLeft, Clock, Share2, Check, ExternalLink, MessageCircle, Sparkles, Zap, Quote, ShieldCheck, Loader2, Volume2, VolumeX, Bookmark } from 'lucide-react';
 import { AdBanner } from '@/components/ads/AdBanner';
@@ -787,21 +788,30 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
 
             {/* End of Article Source Citation & Return Button */}
             <div className="pt-8 border-t border-[var(--border-line)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-              <div className="text-xs font-mono text-[var(--text-muted)] space-y-1">
+              <div className="text-xs font-mono text-[var(--text-muted)] space-y-1.5">
                 <p>
-                  Original wire: <span className="text-[var(--text-main)] font-semibold">{article.publisherName}</span>. Formatted for continuous, uninterrupted reading on Lanka Dispatch.
+                  Reporting: <span className="text-[var(--text-main)] font-semibold">{article.publisherName}</span> • Synthesis &amp; Multi-Source Indexing: <Link href="/about#masthead" className="text-[var(--text-main)] hover:text-rose-500 underline underline-offset-2">Lanka Dispatch Wire Desk</Link>
                 </p>
-                {article.sourceUrl && article.sourceUrl !== '#' && (
-                  <a
-                    href={article.sourceUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
+                <div className="flex flex-wrap items-center gap-3 text-[11px]">
+                  {article.sourceUrl && article.sourceUrl !== '#' && (
+                    <a
+                      href={article.sourceUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-[var(--text-muted)] hover:text-[var(--text-main)] underline underline-offset-2 transition-colors"
+                    >
+                      <span>Original wire report</span>
+                      <ExternalLink className="w-3 h-3" />
+                    </a>
+                  )}
+                  <span>•</span>
+                  <Link
+                    href="/about#corrections-policy"
                     className="inline-flex items-center gap-1 text-[var(--text-muted)] hover:text-[var(--text-main)] underline underline-offset-2 transition-colors"
                   >
-                    <span>View original source wire report</span>
-                    <ExternalLink className="w-3 h-3" />
-                  </a>
-                )}
+                    <span>Editorial Standards &amp; Corrections</span>
+                  </Link>
+                </div>
               </div>
               <button
                 onClick={onBack}

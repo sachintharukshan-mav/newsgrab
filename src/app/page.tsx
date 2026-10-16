@@ -648,16 +648,24 @@ export default function HomePage() {
               </div>
               <ul className="space-y-1.5 text-[var(--text-muted)]">
                 <li id="editorial-policy">
-                  <span className="text-[var(--text-main)] font-semibold">Editorial Policy:</span> Direct original attribution &amp; fair use wire reporting.
+                  <Link href="/about#editorial-policy" className="hover:text-[var(--text-main)] transition-colors">
+                    <span className="text-[var(--text-main)] font-semibold underline underline-offset-2">Editorial Policy:</span> Direct original attribution &amp; fair use wire reporting.
+                  </Link>
                 </li>
                 <li id="corrections-policy">
-                  <span className="text-[var(--text-main)] font-semibold">Corrections:</span> Updates reflect publisher modifications immediately.
+                  <Link href="/about#corrections-policy" className="hover:text-[var(--text-main)] transition-colors">
+                    <span className="text-[var(--text-main)] font-semibold underline underline-offset-2">Corrections:</span> Updates reflect publisher modifications immediately.
+                  </Link>
                 </li>
                 <li id="ethics-policy">
-                  <span className="text-[var(--text-main)] font-semibold">Ethics:</span> Non-partisan, impartial multi-source perspective indexing.
+                  <Link href="/about#ethics-policy" className="hover:text-[var(--text-main)] transition-colors">
+                    <span className="text-[var(--text-main)] font-semibold underline underline-offset-2">Ethics &amp; Masthead:</span> Non-partisan, impartial multi-source perspective indexing.
+                  </Link>
                 </li>
                 <li id="diversity-policy">
-                  <span className="text-[var(--text-main)] font-semibold">Diversity:</span> Unbiased trilingual coverage (සිංහල · தமிழ் · English).
+                  <Link href="/about#diversity-policy" className="hover:text-[var(--text-main)] transition-colors">
+                    <span className="text-[var(--text-main)] font-semibold underline underline-offset-2">Diversity:</span> Unbiased trilingual coverage (සිංහල · தமிழ் · English).
+                  </Link>
                 </li>
               </ul>
             </div>
@@ -669,9 +677,10 @@ export default function HomePage() {
               </div>
               <ul className="space-y-1.5 text-[var(--text-muted)]">
                 <li>Editorial Desk: <span className="text-[var(--text-main)]">desk@lankadispatch.com</span></li>
+                <li>Corrections Desk: <a href="mailto:corrections@lankadispatch.com" className="text-[var(--text-main)] hover:text-rose-500 underline underline-offset-2">corrections@lankadispatch.com</a></li>
                 <li>Advertising &amp; SSPs: <span className="text-[var(--text-main)]">advertising@lankadispatch.com</span></li>
                 <li>Press Releases: <span className="text-[var(--text-main)]">wire@lankadispatch.com</span></li>
-                <li>Corrections &amp; Legal: <span className="text-[var(--text-main)]">legal@lankadispatch.com</span></li>
+                <li>Legal &amp; Grievances: <span className="text-[var(--text-main)]">legal@lankadispatch.com</span></li>
                 <li>Compliance: <Link href="/about" className="text-[var(--text-main)] hover:text-[var(--accent-crimson)] underline underline-offset-2">About Us</Link> · <Link href="/privacy" className="text-[var(--text-main)] hover:text-[var(--accent-crimson)] underline underline-offset-2">Privacy Policy</Link> · <button type="button" onClick={() => window.dispatchEvent(new CustomEvent('newsgrab:open-cookie-consent'))} className="text-[var(--text-main)] hover:text-[var(--accent-crimson)] underline underline-offset-2 cursor-pointer">Cookie Preferences</button> · <Link href="/terms" className="text-[var(--text-main)] hover:text-[var(--accent-crimson)] underline underline-offset-2">Terms</Link> · <a href="/ads.txt" className="text-[var(--text-main)] hover:text-[var(--accent-crimson)] underline underline-offset-2">ads.txt</a></li>
                 <li className="pt-1 text-[10px] text-emerald-500 dark:text-emerald-400">● 24/7 Automated Ingestion Active</li>
               </ul>
