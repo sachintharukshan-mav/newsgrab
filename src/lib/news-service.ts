@@ -255,7 +255,29 @@ export async function getAggregatedArticles(
       }
     }
 
-    const resultArticles = deduplicatedLiveItems.length > 0 ? deduplicatedLiveItems : mockArticles;
+    // Merge with existing articles in KV to maintain a rolling 72-hour window (up to 400 articles)
+    let mergedArticles = deduplicatedLiveItems;
+    if (env?.NEWS_CACHE) {
+      try {
+        const existingKv = (await env.NEWS_CACHE.get(`articles:${lang}`, 'json')) as Article[] | null;
+        if (Array.isArray(existingKv) && existingKv.length > 0) {
+          const liveIds = new Set(deduplicatedLiveItems.map((a) => a.id));
+          const seventyTwoHoursAgo = now - 72 * 60 * 60 * 1000;
+
+          const validHistoric = existingKv.filter((a: Article) => {
+            if (liveIds.has(a.id)) return false;
+            const pubTime = new Date(a.publishedAt).getTime();
+            return !isNaN(pubTime) && pubTime >= seventyTwoHoursAgo;
+          });
+
+          mergedArticles = [...deduplicatedLiveItems, ...validHistoric].slice(0, 400);
+        }
+      } catch (mergeErr) {
+        console.warn('KV historic articles merge fallback:', mergeErr);
+      }
+    }
+
+    const resultArticles = mergedArticles.length > 0 ? mergedArticles : mockArticles;
     
     // Save to memory cache
     langCaches[lang] = {
@@ -263,12 +285,27 @@ export async function getAggregatedArticles(
       timestamp: now
     };
 
-    // Save to Cloudflare KV Cache (valid for 24 hours at edge)
+    // Save to Cloudflare KV Cache
     if (env?.NEWS_CACHE && deduplicatedLiveItems.length > 0) {
       try {
+        // 1. Save cumulative feed list with 3-day TTL
         await env.NEWS_CACHE.put(`articles:${lang}`, JSON.stringify(resultArticles), {
-          expirationTtl: 86400
+          expirationTtl: 86400 * 3
         });
+
+        // 2. Persist individual articles with 30-day TTL (ensures Googlebot can crawl URLs for weeks)
+        const itemsToPersist = deduplicatedLiveItems.slice(0, 60);
+        const chunkSize = 15;
+        for (let i = 0; i < itemsToPersist.length; i += chunkSize) {
+          const chunk = itemsToPersist.slice(i, i + chunkSize);
+          await Promise.allSettled(
+            chunk.map((art) =>
+              env.NEWS_CACHE!.put(`article:${art.id}`, JSON.stringify(art), {
+                expirationTtl: 30 * 86400 // 30 days
+              })
+            )
+          );
+        }
       } catch (kvWriteErr) {
         console.warn('KV news cache write fallback:', kvWriteErr);
       }
@@ -300,22 +337,75 @@ export async function refreshAllNewsFeeds(): Promise<Record<Language, number>> {
 }
 
 /**
- * Resolves a single article by ID across active language caches, KV storage, or fallback pool.
+ * Resolves a single article by ID across active language caches, persistent KV storage,
+ * or intelligent event matching fallback to guarantee zero 404s for Googlebot.
  */
 export async function getArticleById(id: string, lang: Language = 'en'): Promise<Article | null> {
-  const decodedId = decodeURIComponent(id);
-  const articles = await getAggregatedArticles(lang);
-  let found = articles.find((a) => a.id === decodedId || a.id === id);
+  const decodedId = decodeURIComponent(id).trim();
+
+  // 1. Fast in-memory check for requested language
+  const memCache = langCaches[lang];
+  let found = memCache.articles.find((a) => a.id === decodedId || a.id === id);
   if (found) return found;
 
-  // Search across alternative language caches if not found in requested language
+  // 2. Check in-memory caches of other languages
   const otherLangs: Language[] = (['en', 'si', 'ta'] as Language[]).filter((l) => l !== lang);
+  for (const altLang of otherLangs) {
+    const altCache = langCaches[altLang];
+    found = altCache.articles.find((a) => a.id === decodedId || a.id === id);
+    if (found) return found;
+  }
+
+  const env = await getCloudflareEnv();
+
+  // 3. Direct KV lookup for individual 30-day persisted article
+  if (env?.NEWS_CACHE) {
+    try {
+      const directArticle = (await env.NEWS_CACHE.get(`article:${decodedId}`, 'json')) as Article | null;
+      if (directArticle && directArticle.id) return directArticle;
+
+      if (decodedId !== id) {
+        const directRaw = (await env.NEWS_CACHE.get(`article:${id}`, 'json')) as Article | null;
+        if (directRaw && directRaw.id) return directRaw;
+      }
+    } catch (kvDirectErr) {
+      console.warn('Direct KV article fetch fallback:', kvDirectErr);
+    }
+  }
+
+  // 4. Check active aggregated feed lists (which populates from KV articles:${lang} if memory is cold)
+  const articles = await getAggregatedArticles(lang);
+  found = articles.find((a) => a.id === decodedId || a.id === id);
+  if (found) return found;
+
   for (const altLang of otherLangs) {
     const altArticles = await getAggregatedArticles(altLang);
     found = altArticles.find((a) => a.id === decodedId || a.id === id);
     if (found) return found;
   }
 
-  // Fallback to mock pool
+  // 5. Intelligent Entity & Topic Matcher (Zero-404 Googlebot rescue)
+  // If an exact upstream wire expired from feeds, extract distinctive entity tokens from the requested slug
+  // and resolve to an active sister wire covering the same event.
+  const slugTokens = decodedId
+    .toLowerCase()
+    .replace(/^[a-z0-9-]+-dispatch-|^[a-z0-9-]+-news-/, '')
+    .split(/[^a-z0-9]+/)
+    .filter((w) => w.length >= 4 && !['news', 'lanka', 'report', 'breaking', 'wire', 'colombo'].includes(w));
+
+  if (slugTokens.length >= 2) {
+    const candidateMatch = articles.find((a) => {
+      const aId = a.id.toLowerCase();
+      const titleStr = (a.title.en || a.title[lang] || '').toLowerCase();
+      const matchCount = slugTokens.filter((token) => aId.includes(token) || titleStr.includes(token)).length;
+      return matchCount >= Math.min(2, slugTokens.length);
+    });
+
+    if (candidateMatch) {
+      return candidateMatch;
+    }
+  }
+
+  // 6. Fallback to mock pool
   return mockArticles.find((a) => a.id === decodedId || a.id === id) || null;
 }
