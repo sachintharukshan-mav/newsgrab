@@ -255,22 +255,33 @@ export async function getAggregatedArticles(
       }
     }
 
-    // Merge with existing articles in KV to maintain a rolling 72-hour window (up to 400 articles)
+    // Merge with existing articles in KV to maintain a rolling 30-day window (up to 500 articles)
     let mergedArticles = deduplicatedLiveItems;
+    let hasNewArticles = true;
+
     if (env?.NEWS_CACHE) {
       try {
         const existingKv = (await env.NEWS_CACHE.get(`articles:${lang}`, 'json')) as Article[] | null;
         if (Array.isArray(existingKv) && existingKv.length > 0) {
           const liveIds = new Set(deduplicatedLiveItems.map((a) => a.id));
-          const seventyTwoHoursAgo = now - 72 * 60 * 60 * 1000;
+          const thirtyDaysAgo = now - 30 * 24 * 60 * 60 * 1000;
 
           const validHistoric = existingKv.filter((a: Article) => {
             if (liveIds.has(a.id)) return false;
             const pubTime = new Date(a.publishedAt).getTime();
-            return !isNaN(pubTime) && pubTime >= seventyTwoHoursAgo;
+            return !isNaN(pubTime) && pubTime >= thirtyDaysAgo;
           });
 
-          mergedArticles = [...deduplicatedLiveItems, ...validHistoric].slice(0, 400);
+          // Change detection: If the top newest article is already identical and count unchanged, skip KV write
+          if (
+            deduplicatedLiveItems.length > 0 &&
+            existingKv[0]?.id === deduplicatedLiveItems[0]?.id &&
+            existingKv.length === deduplicatedLiveItems.length + validHistoric.length
+          ) {
+            hasNewArticles = false;
+          }
+
+          mergedArticles = [...deduplicatedLiveItems, ...validHistoric].slice(0, 500);
         }
       } catch (mergeErr) {
         console.warn('KV historic articles merge fallback:', mergeErr);
@@ -285,27 +296,14 @@ export async function getAggregatedArticles(
       timestamp: now
     };
 
-    // Save to Cloudflare KV Cache
-    if (env?.NEWS_CACHE && deduplicatedLiveItems.length > 0) {
+    // Save to Cloudflare KV Cache (Strict Free-Tier Compliance: 1 write per language only when changes occur)
+    // Daily write math: 3 languages * max 96 runs = max 288 writes/day (with change detection: ~100-150 writes/day)
+    // Guaranteed to stay safely below Cloudflare's 1,000 free writes/day limit.
+    if (env?.NEWS_CACHE && deduplicatedLiveItems.length > 0 && hasNewArticles) {
       try {
-        // 1. Save cumulative feed list with 3-day TTL
         await env.NEWS_CACHE.put(`articles:${lang}`, JSON.stringify(resultArticles), {
-          expirationTtl: 86400 * 3
+          expirationTtl: 30 * 86400 // 30 days retention
         });
-
-        // 2. Persist individual articles with 30-day TTL (ensures Googlebot can crawl URLs for weeks)
-        const itemsToPersist = deduplicatedLiveItems.slice(0, 60);
-        const chunkSize = 15;
-        for (let i = 0; i < itemsToPersist.length; i += chunkSize) {
-          const chunk = itemsToPersist.slice(i, i + chunkSize);
-          await Promise.allSettled(
-            chunk.map((art) =>
-              env.NEWS_CACHE!.put(`article:${art.id}`, JSON.stringify(art), {
-                expirationTtl: 30 * 86400 // 30 days
-              })
-            )
-          );
-        }
       } catch (kvWriteErr) {
         console.warn('KV news cache write fallback:', kvWriteErr);
       }
