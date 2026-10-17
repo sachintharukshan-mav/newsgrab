@@ -248,7 +248,7 @@ export const NewsCard: React.FC<NewsCardProps> = ({
 
         {/* Headline */}
         <h3
-          className={`text-base sm:text-lg font-bold text-[var(--text-main)] font-headline leading-snug group-hover:text-rose-600 transition-colors line-clamp-3 ${
+          className={`text-base sm:text-lg font-bold text-[var(--text-main)] font-headline leading-snug group-hover:text-black dark:group-hover:text-white group-hover:underline underline-offset-2 transition-colors line-clamp-3 ${
             isSinhala ? 'font-sinhala leading-[1.3]' : ''
           } ${isTamil ? 'font-tamil leading-[1.28]' : ''}`}
         >

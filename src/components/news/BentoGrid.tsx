@@ -294,7 +294,7 @@ export const BentoGrid: React.FC<BentoGridProps> = ({
                       </span>
                     </div>
                     <h4
-                      className={`text-sm font-semibold text-[var(--text-main)] group-hover:text-rose-600 transition-colors line-clamp-2 leading-snug ${
+                      className={`text-sm font-semibold text-[var(--text-main)] group-hover:text-black dark:group-hover:text-white group-hover:underline underline-offset-2 transition-colors line-clamp-2 leading-snug ${
                         isSinhala ? 'font-sinhala' : ''
                       } ${isTamil ? 'font-tamil' : ''}`}
                     >

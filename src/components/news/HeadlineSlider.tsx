@@ -234,7 +234,7 @@ export const HeadlineSlider: React.FC<HeadlineSliderProps> = ({
                       {/* Headline Title */}
                       <h2
                         onClick={() => onOpenQuickRead(article)}
-                        className={`text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[var(--text-main)] font-headline leading-[1.2] hover:text-rose-600 transition-colors cursor-pointer ${
+                        className={`text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[var(--text-main)] font-headline leading-[1.2] hover:text-black dark:hover:text-white hover:underline underline-offset-4 transition-colors cursor-pointer ${
                           isSinhala ? 'font-sinhala leading-[1.4]' : ''
                         } ${isTamil ? 'font-tamil leading-[1.35]' : ''}`}
                       >

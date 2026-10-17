@@ -193,7 +193,7 @@ export const SavedArticlesDrawer: React.FC<SavedArticlesDrawerProps> = ({
                           <span className="text-[var(--text-faint)]">·</span>
                           <span className="truncate">{article.publisherName}</span>
                         </div>
-                        <h4 className="text-xs font-semibold text-[var(--text-main)] line-clamp-2 group-hover:text-rose-600 transition-colors leading-snug">
+                        <h4 className="text-xs font-semibold text-[var(--text-main)] line-clamp-2 group-hover:text-black dark:group-hover:text-white group-hover:underline underline-offset-2 transition-colors leading-snug">
                           {title}
                         </h4>
                       </div>

@@ -856,7 +856,7 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
                           <span className="font-medium text-[var(--text-body)]">{rel.publisherName}</span>
                           <span>{rel.category}</span>
                         </div>
-                        <h5 className="text-xs font-medium text-[var(--text-main)] group-hover:text-rose-600 transition-colors line-clamp-2 leading-snug">
+                        <h5 className="text-xs font-medium text-[var(--text-main)] group-hover:text-black dark:group-hover:text-white group-hover:underline underline-offset-2 transition-colors line-clamp-2 leading-snug">
                           {relTitle}
                         </h5>
                       </div>
