@@ -4,6 +4,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { Article, ExecutiveBrief, Language } from '@/lib/types';
 import { X, Share2, Check, ArrowLeft, Clock, ExternalLink, Sparkles, Zap, Quote, ShieldCheck, Loader2 } from 'lucide-react';
 import { buildOptimisticBrief } from '@/lib/brief-utils';
+import { ArticleMetricsBadge, recordArticleRead } from './ArticleMetricsBadge';
 
 interface QuickReadDrawerProps {
   article: Article | null;
@@ -36,6 +37,13 @@ export const QuickReadDrawer: React.FC<QuickReadDrawerProps> = ({
   // Instantly compute structured Smart Brevity brief from article metadata (0ms perceived latency)
   const optimisticBrief = useMemo(() => article ? buildOptimisticBrief(article, currentLang) : null, [article, currentLang]);
   const brief = article?.brief?.[currentLang] || fetchedBrief || optimisticBrief;
+
+  // Track unique read when drawer opens
+  useEffect(() => {
+    if (article?.id) {
+      recordArticleRead(article.id, article.publishedAt);
+    }
+  }, [article?.id, article?.publishedAt]);
 
   useEffect(() => {
     if (!article || (article.brief?.[currentLang] && photoToDisplay)) {
@@ -228,13 +236,16 @@ export const QuickReadDrawer: React.FC<QuickReadDrawerProps> = ({
               {title}
             </h1>
 
-            {/* Byline & Date */}
-            <div className="flex items-center justify-between text-xs font-mono text-[var(--text-muted)] pt-2 pb-4 border-b border-[var(--border-line)]">
+            {/* Byline & Date & Engagement */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs font-mono text-[var(--text-muted)] pt-2 pb-4 border-b border-[var(--border-line)]">
               <div>
                 <span>{drawerLabels.reportedBy[currentLang]}</span>
                 <span className="text-[var(--text-main)] font-semibold">{article.publisherName}</span>
               </div>
-              <span suppressHydrationWarning>{formattedDate}</span>
+              <div className="flex items-center gap-3">
+                <span suppressHydrationWarning>{formattedDate}</span>
+                <ArticleMetricsBadge articleId={article.id} publishedAt={article.publishedAt} />
+              </div>
             </div>
           </div>
 

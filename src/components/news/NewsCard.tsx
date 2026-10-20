@@ -5,6 +5,7 @@ import { Article, Language } from '@/lib/types';
 import { ArrowUpRight, Bookmark } from 'lucide-react';
 import { formatRelativeTime } from '@/lib/time-utils';
 import { CoverageDistributionBar } from './CoverageDistributionBar';
+import { ArticleMetricsBadge, recordArticleRead } from './ArticleMetricsBadge';
 
 interface NewsCardProps {
   article: Article;
@@ -57,11 +58,16 @@ export const NewsCard: React.FC<NewsCardProps> = ({
     }
   };
 
+  const handleCardClick = () => {
+    recordArticleRead(article.id, article.publishedAt);
+    onOpenQuickRead(article);
+  };
+
   // Lead Front-Page Story (Broadsheet Hero)
   if (variant === 'lead') {
     return (
       <article
-        onClick={() => onOpenQuickRead(article)}
+        onClick={handleCardClick}
         onMouseEnter={handleMouseEnter}
         className="group cursor-pointer grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 pb-8 mb-8 border-b border-[var(--border-line)]"
       >
@@ -109,6 +115,12 @@ export const NewsCard: React.FC<NewsCardProps> = ({
             >
               {title}
             </h2>
+
+            {/* Engagement Metrics Sub-line matching reference image: Time · Comments · Reads */}
+            <div className="flex items-center gap-3.5 text-xs font-mono text-[var(--text-muted)] -mt-1 pb-1">
+              <span suppressHydrationWarning>{relativeTime}</span>
+              <ArticleMetricsBadge articleId={article.id} publishedAt={article.publishedAt} isLead />
+            </div>
 
             <p
               className={`text-sm sm:text-base text-[var(--text-body)] leading-relaxed ${
@@ -180,7 +192,7 @@ export const NewsCard: React.FC<NewsCardProps> = ({
   // Standard Editorial Card (Magazine Grid)
   return (
     <article
-      onClick={() => onOpenQuickRead(article)}
+      onClick={handleCardClick}
       onMouseEnter={handleMouseEnter}
       className="group cursor-pointer flex flex-col justify-between editorial-card p-4 rounded-lg bg-[var(--bg-card)] border border-[var(--border-line)] hover:border-[var(--border-strong)] hover:bg-[var(--bg-card-hover)] transition-all duration-300 relative shadow-sm"
     >
@@ -254,6 +266,12 @@ export const NewsCard: React.FC<NewsCardProps> = ({
         >
           {title}
         </h3>
+
+        {/* Engagement Sub-line matching reference image: Time · Comments · Reads */}
+        <div className="flex items-center gap-3 text-[11px] font-mono text-[var(--text-muted)] -mt-1 pb-0.5">
+          <span suppressHydrationWarning>{relativeTime}</span>
+          <ArticleMetricsBadge articleId={article.id} publishedAt={article.publishedAt} />
+        </div>
 
         {/* Summary Snippet */}
         <p

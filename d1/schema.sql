@@ -27,3 +27,12 @@ CREATE TABLE IF NOT EXISTS comments (
 
 CREATE INDEX IF NOT EXISTS idx_comments_article_id ON comments (article_id);
 CREATE INDEX IF NOT EXISTS idx_comments_created_at ON comments (created_at);
+
+-- 3. Article Reads & Engagement Metrics Table
+CREATE TABLE IF NOT EXISTS article_reads (
+  article_id TEXT PRIMARY KEY,
+  reads INTEGER NOT NULL DEFAULT 0,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX IF NOT EXISTS idx_article_reads_id ON article_reads (article_id);

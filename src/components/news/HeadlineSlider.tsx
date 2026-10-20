@@ -5,6 +5,7 @@ import { Article, Language } from '@/lib/types';
 import { ChevronLeft, ChevronRight, Pause, Play, ArrowUpRight, Bookmark } from 'lucide-react';
 import { formatRelativeTime } from '@/lib/time-utils';
 import { CoverageDistributionBar } from './CoverageDistributionBar';
+import { ArticleMetricsBadge, recordArticleRead } from './ArticleMetricsBadge';
 
 interface HeadlineSliderProps {
   articles: Article[];
@@ -233,13 +234,22 @@ export const HeadlineSlider: React.FC<HeadlineSliderProps> = ({
 
                       {/* Headline Title */}
                       <h2
-                        onClick={() => onOpenQuickRead(article)}
+                        onClick={() => {
+                          recordArticleRead(article.id, article.publishedAt);
+                          onOpenQuickRead(article);
+                        }}
                         className={`text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[var(--text-main)] font-headline leading-[1.2] hover:text-black dark:hover:text-white hover:underline underline-offset-4 transition-colors cursor-pointer ${
                           isSinhala ? 'font-sinhala leading-[1.4]' : ''
                         } ${isTamil ? 'font-tamil leading-[1.35]' : ''}`}
                       >
                         {title}
                       </h2>
+
+                      {/* Engagement Metrics matching screenshot: Time · Comments · Reads */}
+                      <div className="flex items-center gap-3.5 text-xs font-mono text-[var(--text-muted)] -mt-1 pb-1">
+                        <span suppressHydrationWarning>{formatRelativeTime(article.publishedAt, currentLang)}</span>
+                        <ArticleMetricsBadge articleId={article.id} publishedAt={article.publishedAt} isLead />
+                      </div>
 
                       {/* Summary Excerpt */}
                       <p
@@ -267,7 +277,10 @@ export const HeadlineSlider: React.FC<HeadlineSliderProps> = ({
                       </div>
 
                       <button
-                        onClick={() => onOpenQuickRead(article)}
+                        onClick={() => {
+                          recordArticleRead(article.id, article.publishedAt);
+                          onOpenQuickRead(article);
+                        }}
                         className="inline-flex items-center gap-1.5 px-4 py-2 rounded-md bg-rose-600 hover:bg-rose-500 text-white font-medium text-xs transition-all shadow-md shadow-rose-950/40 cursor-pointer flex-shrink-0"
                       >
                         <span>{sliderLabels.readBriefing[currentLang]}</span>

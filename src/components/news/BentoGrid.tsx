@@ -8,6 +8,7 @@ import { AdBanner } from '@/components/ads/AdBanner';
 import { Bookmark, ArrowUpRight } from 'lucide-react';
 import { formatRelativeTime } from '@/lib/time-utils';
 import { PredictionTracker } from '@/components/widgets/PredictionTracker';
+import { ArticleMetricsBadge, recordArticleRead } from './ArticleMetricsBadge';
 
 interface BentoGridProps {
   articles: Article[];
@@ -101,11 +102,15 @@ export const BentoGrid: React.FC<BentoGridProps> = ({
             return (
               <React.Fragment key={article.id}>
                 <div
-                  onClick={() => onOpenQuickRead(article)}
+                  onClick={() => {
+                    recordArticleRead(article.id, article.publishedAt);
+                    onOpenQuickRead(article);
+                  }}
                   className="group py-3 px-2 flex items-baseline justify-between gap-4 cursor-pointer hover:bg-[var(--bg-card-hover)] transition-colors"
                 >
                   <div className="flex items-baseline gap-4 flex-1">
                     <span className="font-mono text-xs text-[var(--text-muted)] flex-shrink-0" suppressHydrationWarning>{timeAgo}</span>
+                    <ArticleMetricsBadge articleId={article.id} publishedAt={article.publishedAt} className="flex-shrink-0" />
                     <span className="font-mono text-[11px] text-[var(--text-muted)] uppercase flex-shrink-0 w-28 truncate">
                       {article.publisherName}
                     </span>
@@ -279,7 +284,10 @@ export const BentoGrid: React.FC<BentoGridProps> = ({
                 return (
                   <div
                     key={article.id}
-                    onClick={() => onOpenQuickRead(article)}
+                    onClick={() => {
+                      recordArticleRead(article.id, article.publishedAt);
+                      onOpenQuickRead(article);
+                    }}
                     className="pt-3 group cursor-pointer space-y-1.5 transition-transform duration-200 hover:translate-x-1"
                   >
                     <div className="flex items-center justify-between text-[11px] font-mono text-[var(--text-muted)]">
@@ -300,6 +308,11 @@ export const BentoGrid: React.FC<BentoGridProps> = ({
                     >
                       {title}
                     </h4>
+
+                    {/* Engagement Metrics matching screenshot */}
+                    <div className="flex items-center gap-2.5 text-[10px] font-mono text-[var(--text-muted)] pt-0.5">
+                      <ArticleMetricsBadge articleId={article.id} publishedAt={article.publishedAt} />
+                    </div>
                   </div>
                 );
               })}

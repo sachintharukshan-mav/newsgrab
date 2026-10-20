@@ -6,6 +6,7 @@ import { AdBanner } from '@/components/ads/AdBanner';
 import { DiscussionSection } from './DiscussionSection';
 import { buildOptimisticBrief } from '@/lib/brief-utils';
 import { CoverageDistributionBar } from './CoverageDistributionBar';
+import { ArticleMetricsBadge, recordArticleRead } from './ArticleMetricsBadge';
 
 interface FullArticlePageProps {
   article: Article;
@@ -176,7 +177,10 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
   // Scroll to top when article opens
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  }, [article.id]);
+    if (article?.id) {
+      recordArticleRead(article.id, article.publishedAt);
+    }
+  }, [article.id, article.publishedAt]);
 
   // Cancel speech synthesis when unmounting or switching article
   useEffect(() => {
@@ -473,13 +477,16 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
             {title}
           </h1>
 
-          {/* Byline and Timestamp */}
+          {/* Byline and Timestamp & Engagement Stats */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs font-mono text-[var(--text-muted)] pt-3">
             <div>
               <span>{fullArticleLabels.reportingBy[currentLang]}</span>
               <span className="text-[var(--text-main)] font-bold">{article.publisherName}</span>
             </div>
-            <span suppressHydrationWarning>{formattedDate}</span>
+            <div className="flex items-center gap-4">
+              <span suppressHydrationWarning>{formattedDate}</span>
+              <ArticleMetricsBadge articleId={article.id} publishedAt={article.publishedAt} />
+            </div>
           </div>
         </div>
 
