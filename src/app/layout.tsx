@@ -126,6 +126,8 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${geistSans.variable} ${newsreader.variable} h-full antialiased dark`}
+      data-theme="dark"
+      suppressHydrationWarning
     >
       <head>
         <script

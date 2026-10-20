@@ -14,6 +14,7 @@ import { SavedArticlesDrawer } from '@/components/news/SavedArticlesDrawer';
 import { AudioFlashBar } from '@/components/audio/AudioFlashBar';
 import { InternationalLiveWire } from '@/components/news/InternationalLiveWire';
 import { AdBanner } from '@/components/ads/AdBanner';
+import { PowerCutBanner } from '@/components/powercut/PowerCutBanner';
 import {
   OrganizationJsonLd,
   WebSiteJsonLd,
@@ -476,6 +477,9 @@ export default function HomePage() {
         savedCount={savedArticleIds.length}
         onOpenSavedDrawer={() => setIsSavedDrawerOpen(true)}
       />
+
+      {/* Grid Alert: Sri Lanka Rotational Power Cut Live Utility Bar */}
+      <PowerCutBanner />
 
       {/* 3. Main Content: Full Article Page (Across Entire View) OR Front Page Broadsheet */}
       {selectedArticle ? (

@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Language, DateRange } from '@/lib/types';
-import { Search, RefreshCw, X, Clock, Bookmark, Sun, Moon } from 'lucide-react';
+import { Search, RefreshCw, X, Clock, Bookmark, Sun, Moon, Zap } from 'lucide-react';
+import { isPowercutScheduleExpired } from '@/data/powercut-schedule';
 
 interface NavbarProps {
   currentLang: Language;
@@ -67,7 +68,8 @@ const navbarTranslations = {
   timeRange30d: { en: 'Past 30d', si: 'දින 30', ta: '30 நாட்கள்' },
   timeRange1y: { en: 'Past Year', si: 'වසරක්', ta: '1 வருடம்' },
   saved: { en: 'Saved', si: 'සුරැකි', ta: 'சேமிக்கப்பட்டவை' },
-  savedQueue: { en: 'Reading Queue', si: 'කියවීම් ලැයිස්තුව', ta: 'வாசிப்பு வரிசை' }
+  savedQueue: { en: 'Reading Queue', si: 'කියවීම් ලැයිස්තුව', ta: 'வாசிப்பு வரிசை' },
+  powerCuts: { en: 'Power Cuts', si: 'විදුලි කප්පාදුව', ta: 'மின்வெட்டு' }
 };
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -206,6 +208,19 @@ export const Navbar: React.FC<NavbarProps> = ({
                   </span>
                 )}
               </button>
+            )}
+
+            {/* Power Cuts Live Utility Button (auto-hides at 00:00:00 on 22 October 2026) */}
+            {!isPowercutScheduleExpired() && (
+              <Link
+                href="/powercut"
+                className="flex items-center gap-1 px-2 py-0.5 rounded border border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400 text-[10px] font-mono font-semibold cursor-pointer transition-colors"
+                title="CEB Power Cut Schedule & Interactive Area Map"
+                aria-label="CEB Power Cut Schedule"
+              >
+                <Zap className="w-2.5 h-2.5 text-amber-500 fill-current animate-pulse" />
+                <span>{navbarTranslations.powerCuts[currentLang]}</span>
+              </Link>
             )}
           </div>
 
