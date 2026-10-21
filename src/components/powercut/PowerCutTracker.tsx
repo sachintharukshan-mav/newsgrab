@@ -40,7 +40,7 @@ interface PowerCutTrackerProps {
 export const PowerCutTracker: React.FC<PowerCutTrackerProps> = ({
   currentLang = 'en'
 }) => {
-  const [selectedDate, setSelectedDate] = useState<string>('2026-10-20');
+  const [selectedDate, setSelectedDate] = useState<string>('2026-10-21');
   const [selectedDistrict, setSelectedDistrict] = useState<DistrictInfo | null>(null);
   const [hoveredDistrict, setHoveredDistrict] = useState<DistrictInfo | null>(null);
   const [highlightGroup, setHighlightGroup] = useState<number | null>(null);
@@ -65,7 +65,7 @@ export const PowerCutTracker: React.FC<PowerCutTrackerProps> = ({
   }, []);
 
   const activeSchedule = useMemo(() => {
-    return POWER_CUT_SCHEDULES.find(s => s.date === selectedDate) || POWER_CUT_SCHEDULES[1];
+    return POWER_CUT_SCHEDULES.find(s => s.date === selectedDate) || POWER_CUT_SCHEDULES[2];
   }, [selectedDate]);
 
   const inspectingDistrict = hoveredDistrict || selectedDistrict || SRI_LANKA_DISTRICTS[0];

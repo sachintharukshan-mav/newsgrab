@@ -84,7 +84,7 @@ export const POWER_CUT_SCHEDULES: DaySchedule[] = [
   },
   {
     date: '2026-10-20',
-    dayLabel: 'Tuesday, Oct 20 (Today)',
+    dayLabel: 'Tuesday, Oct 20',
     slots: [
       { groupId: 4, start: '16:30', end: '17:30', displayTime: '4:30 PM – 5:30 PM' },
       { groupId: 1, start: '17:30', end: '18:30', displayTime: '5:30 PM – 6:30 PM' },
@@ -94,7 +94,7 @@ export const POWER_CUT_SCHEDULES: DaySchedule[] = [
   },
   {
     date: '2026-10-21',
-    dayLabel: 'Wednesday, Oct 21 (Tomorrow)',
+    dayLabel: 'Wednesday, Oct 21 (Today)',
     slots: [
       { groupId: 3, start: '16:30', end: '17:30', displayTime: '4:30 PM – 5:30 PM' },
       { groupId: 4, start: '17:30', end: '18:30', displayTime: '5:30 PM – 6:30 PM' },
@@ -462,7 +462,7 @@ export function getRealtimeCutStatus(customDate?: Date): RealtimeCutStatus {
 
   const year = partMap.year || '2026';
   const month = partMap.month || '10';
-  const day = partMap.day || '20';
+  const day = partMap.day || '21';
   const dateStr = `${year}-${month}-${day}`;
 
   const rawHour = parseInt(partMap.hour || '0', 10);
