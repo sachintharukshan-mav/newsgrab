@@ -5,6 +5,7 @@ import { ArrowLeft, Clock, Share2, Check, ExternalLink, MessageCircle, Sparkles,
 import { AdBanner } from '@/components/ads/AdBanner';
 import { DiscussionSection } from './DiscussionSection';
 import { buildOptimisticBrief } from '@/lib/brief-utils';
+import { getMatchingTopicsForArticle } from '@/lib/topics';
 import { CoverageDistributionBar } from './CoverageDistributionBar';
 import { ArticleMetricsBadge, recordArticleRead } from './ArticleMetricsBadge';
 
@@ -311,6 +312,9 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
 
   // Get other stories excluding this one
   const relatedStories = allArticles.filter((a) => a.id !== article.id).slice(0, 4);
+  const matchingTopics = useMemo(() => getMatchingTopicsForArticle(article), [article]);
+  const langQuery = currentLang !== 'en' ? `?lang=${currentLang}` : '';
+  const sectionSlug = article.category === 'all' ? 'local' : article.category;
 
   return (
     <article className="w-full min-h-screen animate-in fade-in duration-300">
@@ -454,11 +458,19 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         {/* Article Masthead Header */}
         <div className="max-w-4xl mx-auto space-y-6 pb-8 border-b border-[var(--border-line)]">
-          <div className="flex items-center gap-3 text-xs font-mono uppercase tracking-wider">
-            <span className="px-2 py-0.5 rounded bg-[var(--bg-subtle)] border border-[var(--border-line)] text-[11px] font-mono text-[var(--text-body)]">
+          <div className="flex items-center gap-3 text-xs font-mono uppercase tracking-wider flex-wrap">
+            <Link
+              href={`/category/${article.region === 'world' ? 'world' : 'local'}${langQuery}`}
+              className="px-2 py-0.5 rounded bg-[var(--bg-subtle)] hover:bg-[var(--bg-card-hover)] border border-[var(--border-line)] text-[11px] font-mono text-[var(--text-body)] transition-colors"
+            >
               {article.region === 'world' ? '🌐 World' : '🇱🇰 Sri Lanka'}
-            </span>
-            <span className="text-rose-600 dark:text-amber-400 font-bold">{article.category}</span>
+            </Link>
+            <Link
+              href={`/category/${sectionSlug}${langQuery}`}
+              className="text-rose-600 dark:text-amber-400 font-bold hover:underline underline-offset-2"
+            >
+              {article.category}
+            </Link>
             <span className="text-[var(--text-faint)]">/</span>
             <span className="text-[var(--text-main)] font-medium">{article.publisherName}</span>
             <span className="text-[var(--text-faint)]">•</span>
@@ -488,6 +500,24 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
               <ArticleMetricsBadge articleId={article.id} publishedAt={article.publishedAt} />
             </div>
           </div>
+
+          {/* Topic Intelligence Hub Links for Internal SEO Graph */}
+          {matchingTopics.length > 0 && (
+            <div className="flex items-center gap-2 flex-wrap pt-1 text-[11px] font-mono">
+              <span className="text-[var(--text-muted)] uppercase tracking-wider">
+                {currentLang === 'si' ? 'විශේෂ මාතෘකා:' : currentLang === 'ta' ? 'முக்கிய தலைப்புகள்:' : 'Related Hubs:'}
+              </span>
+              {matchingTopics.map((topic) => (
+                <Link
+                  key={topic.slug}
+                  href={`/topic/${topic.slug}${langQuery}`}
+                  className="px-2.5 py-0.5 rounded bg-[var(--bg-card)] hover:bg-[var(--bg-card-hover)] border border-[var(--border-line)] hover:border-[var(--text-main)] text-[var(--text-main)] transition-colors"
+                >
+                  #{topic.shortLabel[currentLang]}
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Featured Editorial Visual / Authentic Wire Photography */}

@@ -4,6 +4,7 @@ import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { mockArticles, mockMarketPulse } from '@/lib/mock-data';
 import { Article, Category, Language, DateRange, MarketPulse } from '@/lib/types';
+import { SECTION_HUBS, TOPIC_HUBS } from '@/lib/topics';
 import { MarketTicker } from '@/components/header/MarketTicker';
 import { Navbar } from '@/components/header/Navbar';
 import { CategoryNav } from '@/components/news/CategoryNav';
@@ -91,9 +92,16 @@ export default function HomePage() {
         }
       }
       const urlTimeRange = params.get('timeRange') as DateRange;
+      const urlCategory = params.get('category') as Category;
       React.startTransition(() => {
         if (urlTimeRange && ['all', '24h', '7d', '30d', '1y'].includes(urlTimeRange)) {
           setDateRange(urlTimeRange);
+        }
+        if (
+          urlCategory &&
+          ['all', 'local', 'world', 'breaking', 'economy', 'politics', 'tech', 'sports'].includes(urlCategory)
+        ) {
+          setCurrentCategory(urlCategory);
         }
         setCurrentLang(initialLang);
       });
@@ -688,6 +696,38 @@ export default function HomePage() {
                 <li>Compliance: <Link href="/about" className="text-[var(--text-main)] hover:text-[var(--accent-crimson)] underline underline-offset-2">About Us</Link> · <Link href="/privacy" className="text-[var(--text-main)] hover:text-[var(--accent-crimson)] underline underline-offset-2">Privacy Policy</Link> · <button type="button" onClick={() => window.dispatchEvent(new CustomEvent('newsgrab:open-cookie-consent'))} className="text-[var(--text-main)] hover:text-[var(--accent-crimson)] underline underline-offset-2 cursor-pointer">Cookie Preferences</button> · <Link href="/terms" className="text-[var(--text-main)] hover:text-[var(--accent-crimson)] underline underline-offset-2">Terms</Link> · <a href="/ads.txt" className="text-[var(--text-main)] hover:text-[var(--accent-crimson)] underline underline-offset-2">ads.txt</a></li>
                 <li className="pt-1 text-[10px] text-emerald-500 dark:text-emerald-400">● 24/7 Automated Ingestion Active</li>
               </ul>
+            </div>
+          </div>
+
+          {/* Section Desks & Topic Intelligence Hubs Index (Crawlable Internal Link Directory) */}
+          <div className="py-6 border-b border-[var(--border-line)] space-y-4 font-mono text-[11px]">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+              <span className="font-bold text-[var(--text-main)] uppercase tracking-wider font-sans text-xs">
+                Section Desks:
+              </span>
+              {Object.values(SECTION_HUBS).map((sec) => (
+                <Link
+                  key={sec.slug}
+                  href={`/category/${sec.slug}${currentLang !== 'en' ? `?lang=${currentLang}` : ''}`}
+                  className="text-[var(--text-muted)] hover:text-[var(--text-main)] underline-offset-2 hover:underline transition-colors"
+                >
+                  {sec.title[currentLang]}
+                </Link>
+              ))}
+            </div>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+              <span className="font-bold text-[var(--text-main)] uppercase tracking-wider font-sans text-xs">
+                Topic Hubs:
+              </span>
+              {Object.values(TOPIC_HUBS).map((top) => (
+                <Link
+                  key={top.slug}
+                  href={`/topic/${top.slug}${currentLang !== 'en' ? `?lang=${currentLang}` : ''}`}
+                  className="text-[var(--text-muted)] hover:text-[var(--text-main)] underline-offset-2 hover:underline transition-colors"
+                >
+                  {top.shortLabel[currentLang]}
+                </Link>
+              ))}
             </div>
           </div>
 

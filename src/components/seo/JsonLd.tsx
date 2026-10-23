@@ -168,12 +168,16 @@ interface BreadcrumbJsonLdProps {
   category?: Category;
   currentLang: Language;
   articleTitle?: string;
+  topicSlug?: string;
+  topicTitle?: string;
 }
 
 export const BreadcrumbJsonLd: React.FC<BreadcrumbJsonLdProps> = ({
   category = 'all',
   currentLang,
   articleTitle,
+  topicSlug,
+  topicTitle,
 }) => {
   const categoryNames: Record<Category, Record<Language, string>> = {
     all: { en: 'Front Page', si: 'මුල් පිටුව', ta: 'முகப்பு' },
@@ -198,7 +202,15 @@ export const BreadcrumbJsonLd: React.FC<BreadcrumbJsonLdProps> = ({
     breadcrumbs.push({
       position: 2,
       name: categoryNames[category][currentLang],
-      item: `${SITE_URL}/?category=${category}`,
+      item: `${SITE_URL}/category/${category}`,
+    });
+  }
+
+  if (topicSlug && topicTitle) {
+    breadcrumbs.push({
+      position: breadcrumbs.length + 1,
+      name: topicTitle,
+      item: `${SITE_URL}/topic/${topicSlug}`,
     });
   }
 
@@ -218,6 +230,104 @@ export const BreadcrumbJsonLd: React.FC<BreadcrumbJsonLdProps> = ({
       position: b.position,
       name: b.name,
       item: b.item,
+    })),
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  );
+};
+
+interface CollectionPageJsonLdProps {
+  name: string;
+  description: string;
+  path: string;
+  articles: Article[];
+  currentLang: Language;
+}
+
+export const CollectionPageJsonLd: React.FC<CollectionPageJsonLdProps> = ({
+  name,
+  description,
+  path,
+  articles,
+  currentLang,
+}) => {
+  const langCode = currentLang === 'si' ? 'si-LK' : currentLang === 'ta' ? 'ta-LK' : 'en-LK';
+  const topArticles = articles.slice(0, 15);
+  const fullUrl = `${SITE_URL}${path}${currentLang !== 'en' ? `?lang=${currentLang}` : ''}`;
+
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'CollectionPage',
+    '@id': fullUrl,
+    name,
+    description,
+    url: fullUrl,
+    inLanguage: langCode,
+    isPartOf: {
+      '@type': 'WebSite',
+      name: 'LANKA DISPATCH',
+      url: SITE_URL,
+    },
+    publisher: {
+      '@type': 'NewsMediaOrganization',
+      name: 'LANKA DISPATCH',
+      url: SITE_URL,
+      logo: {
+        '@type': 'ImageObject',
+        url: `${SITE_URL}/logo.png`,
+      },
+    },
+    mainEntity: {
+      '@type': 'ItemList',
+      name: `${name} — Dispatches`,
+      numberOfItems: topArticles.length,
+      itemListElement: topArticles.map((article, index) => {
+        const title = article.title[currentLang] || article.title.en || '';
+        return {
+          '@type': 'ListItem',
+          position: index + 1,
+          name: title,
+          url: `${SITE_URL}/article/${encodeURIComponent(article.id)}${currentLang !== 'en' ? `?lang=${currentLang}` : ''}`,
+          image: article.imageUrl || undefined,
+        };
+      }),
+    },
+  };
+
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+    />
+  );
+};
+
+interface FAQPageJsonLdProps {
+  faqs: Array<{
+    question: Record<Language, string>;
+    answer: Record<Language, string>;
+  }>;
+  currentLang: Language;
+}
+
+export const FAQPageJsonLd: React.FC<FAQPageJsonLdProps> = ({ faqs, currentLang }) => {
+  if (!faqs || faqs.length === 0) return null;
+
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question[currentLang] || faq.question.en,
+      acceptedAnswer: {
+        '@type': 'Answer',
+        text: faq.answer[currentLang] || faq.answer.en,
+      },
     })),
   };
 

@@ -42,6 +42,7 @@ export const NewsCard: React.FC<NewsCardProps> = ({
   const relativeTime = formatRelativeTime(article.publishedAt, currentLang);
   const isAuthenticPhoto = Boolean(article.imageUrl && !article.imageUrl.includes('unsplash.com'));
   const displayImage = article.imageUrl || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?auto=format&fit=crop&w=1200&q=80';
+  const articleHref = `/article/${encodeURIComponent(article.id)}${currentLang !== 'en' ? `?lang=${currentLang}` : ''}`;
 
   const handleMouseEnter = () => {
     if (typeof window !== 'undefined' && article.sourceUrl && !article.sourceUrl.startsWith('#')) {
@@ -113,7 +114,17 @@ export const NewsCard: React.FC<NewsCardProps> = ({
                 isSinhala ? 'font-sinhala leading-[1.35]' : ''
               } ${isTamil ? 'font-tamil leading-[1.3]' : ''}`}
             >
-              {title}
+              <a
+                href={articleHref}
+                onClick={(e) => {
+                  if (!e.metaKey && !e.ctrlKey && !e.shiftKey && e.button === 0) {
+                    e.preventDefault();
+                  }
+                }}
+                className="focus:outline-none"
+              >
+                {title}
+              </a>
             </h2>
 
             {/* Engagement Metrics Sub-line matching reference image: Time · Comments · Reads */}
@@ -264,7 +275,17 @@ export const NewsCard: React.FC<NewsCardProps> = ({
             isSinhala ? 'font-sinhala leading-[1.3]' : ''
           } ${isTamil ? 'font-tamil leading-[1.28]' : ''}`}
         >
-          {title}
+          <a
+            href={articleHref}
+            onClick={(e) => {
+              if (!e.metaKey && !e.ctrlKey && !e.shiftKey && e.button === 0) {
+                e.preventDefault();
+              }
+            }}
+            className="focus:outline-none"
+          >
+            {title}
+          </a>
         </h3>
 
         {/* Engagement Sub-line matching reference image: Time · Comments · Reads */}
