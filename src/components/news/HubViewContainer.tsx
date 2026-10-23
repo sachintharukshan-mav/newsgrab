@@ -8,8 +8,8 @@ import { mockArticles, mockMarketPulse } from '@/lib/mock-data';
 import {
   SECTION_HUBS,
   TOPIC_HUBS,
-  SectionHubConfig,
-  TopicHubConfig,
+  getSectionHub,
+  getTopicHub,
 } from '@/lib/topics';
 import { MarketTicker } from '@/components/header/MarketTicker';
 import { Navbar } from '@/components/header/Navbar';
@@ -23,19 +23,21 @@ import { ChevronRight, Sparkles, HelpCircle, Compass, Layers } from 'lucide-reac
 
 interface HubViewContainerProps {
   hubType: 'category' | 'topic';
-  sectionHub?: SectionHubConfig;
-  topicHub?: TopicHubConfig;
+  sectionSlug?: Exclude<Category, 'all'>;
+  topicSlug?: string;
   initialArticles: Article[];
   initialLang: Language;
 }
 
 export const HubViewContainer: React.FC<HubViewContainerProps> = ({
   hubType,
-  sectionHub,
-  topicHub,
+  sectionSlug,
+  topicSlug,
   initialArticles,
   initialLang,
 }) => {
+  const sectionHub = sectionSlug ? getSectionHub(sectionSlug) : null;
+  const topicHub = topicSlug ? getTopicHub(topicSlug) : null;
   const router = useRouter();
   const [currentLang, setCurrentLang] = useState<Language>(initialLang);
   const [articles, setArticles] = useState<Article[]>(initialArticles);

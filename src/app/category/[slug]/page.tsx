@@ -119,7 +119,7 @@ export default async function CategoryPage({
       />
       <HubViewContainer
         hubType="category"
-        sectionHub={section}
+        sectionSlug={section.slug}
         initialArticles={initialArticles}
         initialLang={currentLang}
       />

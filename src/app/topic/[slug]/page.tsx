@@ -123,7 +123,7 @@ export default async function TopicPage({
       />
       <HubViewContainer
         hubType="topic"
-        topicHub={topic}
+        topicSlug={topic.slug}
         initialArticles={initialArticles}
         initialLang={currentLang}
       />
