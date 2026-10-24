@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { refreshAllNewsFeeds } from '@/lib/news-service';
+import { refreshAllNewsFeeds, getAggregatedArticles } from '@/lib/news-service';
+import { submitArticlesToIndexNow, pingSearchEngineSitemaps } from '@/lib/indexnow';
 
 export const dynamic = 'force-dynamic';
 
@@ -32,6 +33,19 @@ export async function GET(request: NextRequest) {
   try {
     const startedAt = Date.now();
     const counts = await refreshAllNewsFeeds();
+
+    // Push newly ingested lead stories to IndexNow (Bing, Copilot, Yandex, Yahoo)
+    let indexNowSummary = null;
+    try {
+      const topArticles = (await getAggregatedArticles('en')).slice(0, 5);
+      if (topArticles.length > 0) {
+        indexNowSummary = await submitArticlesToIndexNow(topArticles);
+      }
+      await pingSearchEngineSitemaps().catch(() => {});
+    } catch (indexNowErr) {
+      console.warn('IndexNow cron push notice:', indexNowErr);
+    }
+
     const durationMs = Date.now() - startedAt;
 
     return NextResponse.json({
@@ -39,7 +53,12 @@ export async function GET(request: NextRequest) {
       message: 'Automated newsroom background scrape completed successfully',
       timestamp: new Date().toISOString(),
       durationMs,
-      articlesIngested: counts
+      articlesIngested: counts,
+      indexNow: indexNowSummary ? {
+        status: indexNowSummary.status,
+        submittedCount: indexNowSummary.submittedCount,
+        endpoint: indexNowSummary.endpoint,
+      } : null,
     });
   } catch (err) {
     console.error('Scheduled scrape failed:', err);
