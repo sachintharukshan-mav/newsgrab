@@ -49,11 +49,12 @@ export async function submitUrlsToIndexNow(urls: string[]): Promise<IndexNowResp
 
   const endpoints = [
     'https://api.indexnow.org/IndexNow',
-    'https://www.bing.com/IndexNow',
+    'https://www.bing.com/indexnow',
+    'https://yandex.com/indexnow',
   ];
 
   let lastStatus = 0;
-  let lastError = '';
+  const attempts: Array<{ endpoint: string; status?: number; error?: string }> = [];
 
   for (const endpoint of endpoints) {
     try {
@@ -61,12 +62,14 @@ export async function submitUrlsToIndexNow(urls: string[]): Promise<IndexNowResp
         method: 'POST',
         headers: {
           'Content-Type': 'application/json; charset=utf-8',
+          'User-Agent': 'Mozilla/5.0 (compatible; LankaDispatchBot/1.0; +https://lankadispatch.com)',
         },
         body: JSON.stringify(payload),
-        signal: AbortSignal.timeout(5000),
+        signal: AbortSignal.timeout(8000),
       });
 
       lastStatus = response.status;
+      attempts.push({ endpoint, status: response.status });
 
       // IndexNow returns 200 (OK) or 202 (Accepted / Key validating)
       if (response.ok || response.status === 200 || response.status === 202) {
@@ -80,11 +83,12 @@ export async function submitUrlsToIndexNow(urls: string[]): Promise<IndexNowResp
       }
 
       const responseText = await response.text().catch(() => '');
-      lastError = `Endpoint ${endpoint} returned status ${response.status}: ${responseText}`;
-      console.warn(`[IndexNow] ${lastError}`);
+      attempts[attempts.length - 1].error = responseText;
+      console.warn(`[IndexNow] ${endpoint} returned status ${response.status}: ${responseText}`);
     } catch (err) {
-      lastError = (err as Error).message;
-      console.warn(`[IndexNow] Failed contacting ${endpoint}:`, lastError);
+      const errorMsg = (err as Error).message;
+      attempts.push({ endpoint, error: errorMsg });
+      console.warn(`[IndexNow] Failed contacting ${endpoint}:`, errorMsg);
     }
   }
 
@@ -94,7 +98,7 @@ export async function submitUrlsToIndexNow(urls: string[]): Promise<IndexNowResp
     submittedCount: 0,
     endpoint: endpoints[0],
     message: 'Failed to submit URLs to IndexNow endpoints.',
-    error: lastError,
+    error: JSON.stringify(attempts),
   };
 }
 
