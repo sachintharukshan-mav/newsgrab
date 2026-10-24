@@ -6,6 +6,8 @@ import { Language } from '@/lib/types';
 import { NewsArticleJsonLd } from '@/components/seo/JsonLd';
 import { ArticleViewContainer } from '@/components/news/ArticleViewContainer';
 import { getSiteUrl } from '@/lib/site-config';
+import { getCachedBrief } from '@/lib/gemini-synthesizer';
+import { buildOptimisticBrief } from '@/lib/brief-utils';
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -31,12 +33,32 @@ export async function generateMetadata({
     };
   }
 
+  // Pre-attach Smart Brevity executive brief for SSR metadata if missing
+  if (!article.brief?.[currentLang]) {
+    const cachedBrief = getCachedBrief(article.sourceUrl, currentLang);
+    article.brief = {
+      ...article.brief,
+      [currentLang]: cachedBrief || buildOptimisticBrief(article, currentLang),
+    };
+  }
+
   const title = article.title[currentLang] || article.title.en || 'Sri Lanka News Dispatch';
-  const summary = article.summary[currentLang] || article.summary.en || 'Latest breaking reporting from Colombo and international wire desks.';
-  const canonicalUrl = `${SITE_URL}/article/${encodeURIComponent(article.id)}`;
+  const activeBrief = article.brief[currentLang];
+  const summary = activeBrief?.whatHappened || article.summary[currentLang] || article.summary.en || 'Latest breaking reporting from Colombo and international wire desks.';
+
+  const baseUrl = `${SITE_URL}/article/${encodeURIComponent(article.id)}`;
+  const canonicalUrl = currentLang === 'en' ? baseUrl : `${baseUrl}?lang=${currentLang}`;
   const ogImageUrl = article.imageUrl
     ? article.imageUrl
     : `${SITE_URL}/api/og?title=${encodeURIComponent(title.slice(0, 80))}&category=${encodeURIComponent(article.category)}&pub=${encodeURIComponent(article.publisherName)}`;
+
+  const ogLocaleMap: Record<Language, string> = {
+    en: 'en_LK',
+    si: 'si_LK',
+    ta: 'ta_LK',
+  };
+  const activeLocale = ogLocaleMap[currentLang];
+  const alternateLocales = Object.values(ogLocaleMap).filter((loc) => loc !== activeLocale);
 
   return {
     title: title.slice(0, 110),
@@ -44,10 +66,10 @@ export async function generateMetadata({
     alternates: {
       canonical: canonicalUrl,
       languages: {
-        'en-LK': `${canonicalUrl}?lang=en`,
-        'si-LK': `${canonicalUrl}?lang=si`,
-        'ta-LK': `${canonicalUrl}?lang=ta`,
-        'x-default': canonicalUrl,
+        'en-LK': baseUrl,
+        'si-LK': `${baseUrl}?lang=si`,
+        'ta-LK': `${baseUrl}?lang=ta`,
+        'x-default': baseUrl,
       },
     },
     openGraph: {
@@ -55,6 +77,8 @@ export async function generateMetadata({
       description: summary,
       url: canonicalUrl,
       siteName: 'LANKA DISPATCH',
+      locale: activeLocale,
+      alternateLocale: alternateLocales,
       images: [
         {
           url: ogImageUrl,
@@ -87,6 +111,16 @@ export default async function ArticlePage({ params, searchParams }: PageProps) {
 
   if (!article) {
     notFound();
+  }
+
+  // Pre-attach Smart Brevity executive brief so Googlebot and search crawlers
+  // receive the full, rich, structured editorial dispatch in initial SSR HTML.
+  if (!article.brief?.[currentLang]) {
+    const cachedBrief = getCachedBrief(article.sourceUrl, currentLang);
+    article.brief = {
+      ...article.brief,
+      [currentLang]: cachedBrief || buildOptimisticBrief(article, currentLang),
+    };
   }
 
   return (

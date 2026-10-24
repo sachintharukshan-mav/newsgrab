@@ -56,7 +56,15 @@ export const ArticleViewContainer: React.FC<ArticleViewContainerProps> = ({
         if (data.articles && data.articles.length > 0) {
           setAllArticles(data.articles);
           const current = data.articles.find((a: Article) => a.id === article.id);
-          if (current) setArticle(current);
+          if (current) {
+            setArticle((prev) => ({
+              ...current,
+              brief: {
+                ...prev.brief,
+                ...current.brief,
+              },
+            }));
+          }
         }
       })
       .catch(() => {});

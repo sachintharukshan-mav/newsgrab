@@ -75,7 +75,7 @@ export async function GET() {
 
     xml += `  <url>\n`;
     xml += `    <loc>${escapeXml(fullUrl)}</loc>\n`;
-    xml += `    <xhtml:link rel="alternate" hreflang="en-LK" href="${escapeXml(`${fullUrl}?lang=en`)}" />\n`;
+    xml += `    <xhtml:link rel="alternate" hreflang="en-LK" href="${escapeXml(fullUrl)}" />\n`;
     xml += `    <xhtml:link rel="alternate" hreflang="si-LK" href="${escapeXml(`${fullUrl}?lang=si`)}" />\n`;
     xml += `    <xhtml:link rel="alternate" hreflang="ta-LK" href="${escapeXml(`${fullUrl}?lang=ta`)}" />\n`;
     xml += `    <xhtml:link rel="alternate" hreflang="x-default" href="${escapeXml(fullUrl)}" />\n`;
