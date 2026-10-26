@@ -102,6 +102,17 @@ export const NewsArticleJsonLd: React.FC<NewsArticleJsonLdProps> = ({ article, c
         .join('\n\n')
     : summary;
 
+  const ogImageUrl = `${SITE_URL}/api/og?title=${encodeURIComponent(title.slice(0, 80))}&category=${encodeURIComponent(article.category)}&pub=${encodeURIComponent(article.publisherName)}`;
+  const highResImages = Array.from(
+    new Set(
+      [
+        article.imageUrl,
+        ogImageUrl,
+        `${SITE_URL}/api/og`,
+      ].filter(Boolean) as string[]
+    )
+  );
+
   const schema = {
     '@context': 'https://schema.org',
     '@type': 'NewsArticle',
@@ -113,7 +124,11 @@ export const NewsArticleJsonLd: React.FC<NewsArticleJsonLdProps> = ({ article, c
     description: summary,
     abstract: brief?.whatHappened || summary,
     articleBody: fullArticleBody,
-    image: article.imageUrl ? [article.imageUrl] : [`${SITE_URL}/api/og`],
+    image: highResImages,
+    speakable: {
+      '@type': 'SpeakableSpecification',
+      cssSelector: ['h1', '[data-speakable="headline"]', '[data-speakable="brief"]'],
+    },
     datePublished: article.publishedAt,
     dateModified: article.publishedAt,
     articleSection: article.category,

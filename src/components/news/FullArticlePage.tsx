@@ -482,6 +482,7 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
 
           {/* Grand Broadsheet Headline */}
           <h1
+            data-speakable="headline"
             className={`text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-extrabold text-[var(--text-main)] font-headline leading-[1.12] tracking-tight ${
               isSinhala ? 'font-sinhala' : ''
             } ${isTamil ? 'font-tamil' : ''}`}
@@ -646,6 +647,7 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
                       </span>
                     </div>
                     <p
+                      data-speakable="brief"
                       className={`${textScale.lead} text-[var(--text-main)] font-serif leading-relaxed transition-all duration-150 ${
                         isSinhala ? 'font-sinhala leading-loose' : ''
                       } ${isTamil ? 'font-tamil leading-relaxed' : ''}`}

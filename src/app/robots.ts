@@ -8,7 +8,7 @@ export default function robots(): MetadataRoute.Robots {
       {
         userAgent: '*',
         allow: '/',
-        disallow: ['/api/article', '/api/synthesize', '/api/cron/', '/_next/'],
+        disallow: ['/api/article', '/api/synthesize', '/api/cron/'],
       },
       {
         userAgent: 'Googlebot',
