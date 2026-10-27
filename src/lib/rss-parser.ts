@@ -283,6 +283,33 @@ function fnv1aHash(str: string): string {
   return hash.toString(36);
 }
 
+/**
+ * Strips known RSS syndication boilerplate, WordPress excerpt trailers,
+ * and duplicate publisher attribution stamps.
+ * Ensures Googlebot and Google Discover index clean, original synthesis.
+ */
+export function stripRssBoilerplate(text: string): string {
+  if (!text) return '';
+  return text
+    // 1. WordPress / Yoast / RankMath syndication trailers (e.g., "The post ... appeared first on Newswire.")
+    .replace(/(?:The\s+post\s+[\s\S]*?appeared\s+first\s+on\s+.*?(?:\.|$))/gi, '')
+    .replace(/\bappeared\s+first\s+on\s+.*?(?:\.|$)/gi, '')
+    // 2. Trailing "Read more...", "Continue reading...", "Full story on..."
+    .replace(/\b(?:read\s+more|continue\s+reading|full\s+story|read\s+full\s+article)\b.*$/gi, '')
+    // 3. Broken XML / WordPress entity markers: [&#8230;], [...], &#8230;, ...
+    .replace(/\[\s*(?:&#8230;|\.{3}|…)\s*\]/gi, '')
+    .replace(/&#8230;/g, '...')
+    .replace(/&nbsp;/g, ' ')
+    // 4. Trailing publisher hyphens e.g. " - Daily Mirror" or " - Newsfirst"
+    .replace(/\s*-\s*(Daily Mirror|Newsfirst|News 1st|Daily FT|Sri Lanka|Virakesari|வீரகேசரி|Ada Derana).*$/i, '')
+    // 5. Clean extra whitespace and orphaned punctuation
+    .replace(/\s{2,}/g, ' ')
+    .replace(/\s+([.,;:!?])/g, '$1')
+    .replace(/^[.,;:\s-]+/, '')
+    .replace(/[.,;:\s-]+$/, (m) => (m.includes('.') ? '.' : ''))
+    .trim();
+}
+
 export function generateArticleId(publisher: string, title: string): string {
   const pubSlug = publisher.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '') || 'news';
   const asciiSlug = title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 45);
@@ -331,7 +358,8 @@ export async function fetchRSSFeed(feedUrl: string, publisherName: string, limit
     const articlePromises = items.slice(0, limit).map(async (item, index) => {
       const rawTitle = decodeHtmlEntities(item.title?.trim() || 'Breaking Dispatch');
       const rawDesc = decodeHtmlEntities(item.description || item['content:encoded'] || '');
-      const cleanDesc = rawDesc.replace(/<\/?[^>]+(>|$)/g, '').trim();
+      const rawClean = rawDesc.replace(/<\/?[^>]+(>|$)/g, '').trim();
+      const cleanDesc = stripRssBoilerplate(rawClean);
       const articleLink = item.link || '';
 
       // 1. Check if an authentic image is already embedded in description or content:encoded (e.g. NewsWire)
@@ -392,7 +420,7 @@ export async function fetchRSSFeed(feedUrl: string, publisherName: string, limit
           en: rawTitle
         },
         summary: {
-          en: cleanDesc.length > 0 ? (cleanDesc.slice(0, 240) + (cleanDesc.length > 240 ? '...' : '')) : rawTitle
+          en: cleanDesc.length > 20 ? (cleanDesc.slice(0, 240) + (cleanDesc.length > 240 ? '...' : '')) : `${rawTitle}. Dispatched via ${publisherName}.`
         },
         aiBullets: {
           en: bullets
@@ -479,7 +507,8 @@ export async function fetchHiruNewsArticles(lang: 'en' | 'si' | 'ta' = 'en'): Pr
 
       // Extract description
       const descMatch = inner.match(/<div[^>]+class=["'][^"']*description[^"']*["'][^>]*>([\s\S]*?)<\/div>/i);
-      const desc = descMatch ? descMatch[1].replace(/<[^>]+>/g, '').trim() : '';
+      const rawDesc = descMatch ? descMatch[1].replace(/<[^>]+>/g, '').trim() : '';
+      const desc = stripRssBoilerplate(rawDesc);
 
       // Extract authentic photo directly from Hiru's news card
       const imgMatch = inner.match(/src=["'](https:\/\/cdn\.hirunews\.lk\/Data\/News_Images\/[^"']+)["']/i)
@@ -582,12 +611,13 @@ export async function fetchGoogleNewsFeed(sourceQuery: string, publisherName: st
           .trim() || 'News Dispatch'
       );
 
-      const cleanDesc = decodeHtmlEntities(
+      const rawClean = decodeHtmlEntities(
         (item.description || '')
           .replace(/<\/?[^>]+(>|$)/g, '')
           .replace(/\s*-\s*(Daily Mirror|Newsfirst|Daily FT|Virakesari|வீரகேசரி).*$/i, '')
           .trim()
       );
+      const cleanDesc = stripRssBoilerplate(rawClean);
 
       const detectedCat = detectCategory(rawTitle, cleanDesc, publisherName);
       const detectedReg = detectRegion(rawTitle, cleanDesc, publisherName);
@@ -744,12 +774,13 @@ export async function fetchReutersWorldNews(maxItems = 24): Promise<Partial<Arti
           .trim() || 'Reuters World Dispatch'
       );
 
-      const cleanDesc = decodeHtmlEntities(
+      const rawClean = decodeHtmlEntities(
         (item.description || '')
           .replace(/<\/?[^>]+(>|$)/g, '')
           .replace(/\s*-\s*Reuters.*$/i, '')
           .trim()
       );
+      const cleanDesc = stripRssBoilerplate(rawClean);
 
       const detectedCat = detectCategory(rawTitle, cleanDesc, 'Reuters');
       const detectedReg = detectRegion(rawTitle, cleanDesc, 'Reuters');

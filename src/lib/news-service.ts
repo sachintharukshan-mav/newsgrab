@@ -9,7 +9,8 @@ import {
   fetchBBCWorldNews,
   fetchGuardianWorldNews,
   generateArticleId,
-  getCategoryFallbackImage
+  getCategoryFallbackImage,
+  stripRssBoilerplate
 } from '@/lib/rss-parser';
 import { Article, Category, Language } from '@/lib/types';
 import { getCloudflareEnv } from '@/lib/cloudflare';
@@ -73,11 +74,14 @@ export async function getAggregatedArticles(
       if (lang === 'si') titleObj.si = headline;
       if (lang === 'ta') titleObj.ta = headline;
 
-      const summaryText = item.summary?.[lang] || item.summary?.en || headline;
+      const rawSummary = item.summary?.[lang] || item.summary?.en || headline;
+      const cleanSummary = stripRssBoilerplate(rawSummary);
+      const summaryText = cleanSummary.length > 20 ? cleanSummary : `${headline}. Dispatched via ${pub} news bureau.`;
+
       const summaryObj = {
-        en: item.summary?.en || summaryText,
-        ...(item.summary?.si ? { si: item.summary.si } : {}),
-        ...(item.summary?.ta ? { ta: item.summary.ta } : {})
+        en: stripRssBoilerplate(item.summary?.en || summaryText) || summaryText,
+        ...(item.summary?.si ? { si: stripRssBoilerplate(item.summary.si) || summaryText } : {}),
+        ...(item.summary?.ta ? { ta: stripRssBoilerplate(item.summary.ta) || summaryText } : {})
       };
       if (lang === 'si') summaryObj.si = summaryText;
       if (lang === 'ta') summaryObj.ta = summaryText;
@@ -88,13 +92,19 @@ export async function getAggregatedArticles(
         lang === 'si' ? 'අඛණ්ඩ සත්‍යාපනය සහ සජීවී ආවරණය.' : (lang === 'ta' ? 'தொடர்ச்சியான நேரடி கண்காணிப்பு.' : 'Continuous monitoring and multi-source verification.')
       ];
 
-      const bulletsObj = {
-        en: item.aiBullets?.en || bulletsList,
-        ...(item.aiBullets?.si ? { si: item.aiBullets.si } : {}),
-        ...(item.aiBullets?.ta ? { ta: item.aiBullets.ta } : {})
+      const sanitizeBullets = (bList?: string[]) => {
+        if (!bList || !bList.length) return bList;
+        const cleaned = bList.map((b: string) => stripRssBoilerplate(b)).filter((b: string) => b.length > 5);
+        return cleaned.length >= 2 ? cleaned : bList;
       };
-      if (lang === 'si') bulletsObj.si = bulletsList;
-      if (lang === 'ta') bulletsObj.ta = bulletsList;
+
+      const bulletsObj = {
+        en: sanitizeBullets(item.aiBullets?.en || bulletsList) || bulletsList,
+        ...(item.aiBullets?.si ? { si: sanitizeBullets(item.aiBullets.si) } : {}),
+        ...(item.aiBullets?.ta ? { ta: sanitizeBullets(item.aiBullets.ta) } : {})
+      };
+      if (lang === 'si') bulletsObj.si = sanitizeBullets(bulletsObj.si || bulletsList) || bulletsList;
+      if (lang === 'ta') bulletsObj.ta = sanitizeBullets(bulletsObj.ta || bulletsList) || bulletsList;
 
       liveItems.push({
         id: item.id || fallbackId,
@@ -335,6 +345,37 @@ export async function refreshAllNewsFeeds(): Promise<Record<Language, number>> {
 }
 
 /**
+ * Ensures an article dispatch has clean, unpolluted summary and bullet text
+ * free of trailing WordPress RSS boilerplate before SSR rendering.
+ */
+function sanitizeArticle(article: Article): Article {
+  const cleanSummaryEn = stripRssBoilerplate(article.summary.en);
+  const cleanSummarySi = article.summary.si ? stripRssBoilerplate(article.summary.si) : undefined;
+  const cleanSummaryTa = article.summary.ta ? stripRssBoilerplate(article.summary.ta) : undefined;
+
+  const sanitizeBullets = (bullets?: string[]) => {
+    if (!bullets || !bullets.length) return bullets;
+    const cleaned = bullets.map((b) => stripRssBoilerplate(b)).filter((b) => b.length > 5);
+    return cleaned.length >= 2 ? cleaned : bullets;
+  };
+
+  return {
+    ...article,
+    summary: {
+      ...article.summary,
+      en: cleanSummaryEn.length > 20 ? cleanSummaryEn : (article.summary.en || article.title.en),
+      ...(cleanSummarySi ? { si: cleanSummarySi.length > 20 ? cleanSummarySi : article.summary.si } : {}),
+      ...(cleanSummaryTa ? { ta: cleanSummaryTa.length > 20 ? cleanSummaryTa : article.summary.ta } : {})
+    },
+    aiBullets: {
+      en: sanitizeBullets(article.aiBullets.en) || article.aiBullets.en,
+      ...(article.aiBullets.si ? { si: sanitizeBullets(article.aiBullets.si) } : {}),
+      ...(article.aiBullets.ta ? { ta: sanitizeBullets(article.aiBullets.ta) } : {})
+    }
+  };
+}
+
+/**
  * Resolves a single article by ID across active language caches, persistent KV storage,
  * or intelligent event matching fallback to guarantee zero 404s for Googlebot.
  */
@@ -344,14 +385,14 @@ export async function getArticleById(id: string, lang: Language = 'en'): Promise
   // 1. Fast in-memory check for requested language
   const memCache = langCaches[lang];
   let found = memCache.articles.find((a) => a.id === decodedId || a.id === id);
-  if (found) return found;
+  if (found) return sanitizeArticle(found);
 
   // 2. Check in-memory caches of other languages
   const otherLangs: Language[] = (['en', 'si', 'ta'] as Language[]).filter((l) => l !== lang);
   for (const altLang of otherLangs) {
     const altCache = langCaches[altLang];
     found = altCache.articles.find((a) => a.id === decodedId || a.id === id);
-    if (found) return found;
+    if (found) return sanitizeArticle(found);
   }
 
   const env = await getCloudflareEnv();
@@ -360,11 +401,11 @@ export async function getArticleById(id: string, lang: Language = 'en'): Promise
   if (env?.NEWS_CACHE) {
     try {
       const directArticle = (await env.NEWS_CACHE.get(`article:${decodedId}`, 'json')) as Article | null;
-      if (directArticle && directArticle.id) return directArticle;
+      if (directArticle && directArticle.id) return sanitizeArticle(directArticle);
 
       if (decodedId !== id) {
         const directRaw = (await env.NEWS_CACHE.get(`article:${id}`, 'json')) as Article | null;
-        if (directRaw && directRaw.id) return directRaw;
+        if (directRaw && directRaw.id) return sanitizeArticle(directRaw);
       }
     } catch (kvDirectErr) {
       console.warn('Direct KV article fetch fallback:', kvDirectErr);
@@ -374,12 +415,12 @@ export async function getArticleById(id: string, lang: Language = 'en'): Promise
   // 4. Check active aggregated feed lists (which populates from KV articles:${lang} if memory is cold)
   const articles = await getAggregatedArticles(lang);
   found = articles.find((a) => a.id === decodedId || a.id === id);
-  if (found) return found;
+  if (found) return sanitizeArticle(found);
 
   for (const altLang of otherLangs) {
     const altArticles = await getAggregatedArticles(altLang);
     found = altArticles.find((a) => a.id === decodedId || a.id === id);
-    if (found) return found;
+    if (found) return sanitizeArticle(found);
   }
 
   // 5. Intelligent Entity & Topic Matcher (Zero-404 Googlebot rescue)
@@ -400,18 +441,18 @@ export async function getArticleById(id: string, lang: Language = 'en'): Promise
     });
 
     if (candidateMatch) {
-      return candidateMatch;
+      return sanitizeArticle(candidateMatch);
     }
   }
 
   // 6. Fallback to mock pool
   const mockMatch = mockArticles.find((a) => a.id === decodedId || a.id === id);
-  if (mockMatch) return mockMatch;
+  if (mockMatch) return sanitizeArticle(mockMatch);
 
   // 7. Deterministic Zero-404 Archive Dispatch Constructor
   // If an article was previously indexed by Google or bookmarked by a user but has
   // rolled off the active cache window, reconstruct the authentic dispatch from its slug.
-  return reconstructArchivedArticle(decodedId, lang);
+  return sanitizeArticle(reconstructArchivedArticle(decodedId, lang));
 }
 
 /**
