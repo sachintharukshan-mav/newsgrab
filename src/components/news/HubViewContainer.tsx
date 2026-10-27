@@ -259,7 +259,7 @@ export const HubViewContainer: React.FC<HubViewContainerProps> = ({
 
       <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
         {/* Top Billboard Ad */}
-        <div className="pb-2">
+        <div className="pb-2 empty:hidden">
           <AdBanner
             format="billboard"
             slotId="hub-top-billboard"
@@ -502,7 +502,7 @@ export const HubViewContainer: React.FC<HubViewContainerProps> = ({
         </section>
 
         {/* Bottom Multiplex Ad */}
-        <div className="pt-8 pb-2">
+        <div className="pt-8 pb-2 empty:hidden">
           <AdBanner
             format="multiplex"
             slotId="hub-bottom-multiplex"

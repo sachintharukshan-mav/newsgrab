@@ -733,7 +733,7 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
             <CoverageDistributionBar article={article} currentLang={currentLang} variant="full" />
 
             {/* In-Article Monetization Slot #1 (Leaderboard) */}
-            <div className="py-2">
+            <div className="py-2 empty:hidden">
               <AdBanner
                 format="leaderboard"
                 slotId="fullpage-article-ad-1"
@@ -817,7 +817,7 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
             </div>
 
             {/* Multiplex / Sponsored Recommendations Grid (High-RPM End-of-Article Unit) */}
-            <div className="pt-4 border-t border-[var(--border-line)]">
+            <div className="pt-4 border-t border-[var(--border-line)] empty:hidden">
               <AdBanner
                 format="multiplex"
                 slotId="article-bottom-multiplex"

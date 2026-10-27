@@ -141,7 +141,7 @@ export const BentoGrid: React.FC<BentoGridProps> = ({
 
                 {/* In-feed programmatic ad slot every 15 compact stories */}
                 {(index + 1) % 15 === 0 && index < compactArticles.length - 1 && (
-                  <div className="py-4">
+                  <div className="py-4 empty:hidden">
                     <AdBanner
                       format="infeed"
                       slotId={`infeed-compact-ad-${Math.floor((index + 1) / 15)}`}
@@ -221,7 +221,7 @@ export const BentoGrid: React.FC<BentoGridProps> = ({
 
                 {/* In-feed Ad Banner after every 8 articles (Spans both columns) */}
                 {(index + 1) % 8 === 0 && index < gridStories.length - 1 && (
-                  <div className="col-span-1 sm:col-span-2 my-2">
+                  <div className="col-span-1 sm:col-span-2 my-2 empty:hidden">
                     <AdBanner
                       format="infeed"
                       slotId={`infeed-grid-ad-${Math.floor((index + 1) / 8)}`}
@@ -320,7 +320,7 @@ export const BentoGrid: React.FC<BentoGridProps> = ({
           </div>
 
           {/* Sidebar MREC Ad Unit */}
-          <div className="pt-6">
+          <div className="pt-6 empty:hidden">
             <AdBanner
               format="mrec"
               slotId="sidebar-mrec-ad"

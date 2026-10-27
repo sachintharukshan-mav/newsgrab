@@ -503,7 +503,7 @@ export default function HomePage() {
       ) : (
         <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
           {/* Top Leaderboard / Billboard Ad Slot (Google AdSense & Certified Ad Networks) */}
-          <div className="pb-2">
+          <div className="pb-2 empty:hidden">
             <AdBanner
               format="billboard"
               slotId="home-top-billboard"
@@ -583,7 +583,7 @@ export default function HomePage() {
           />
 
           {/* Bottom Multiplex / Sponsored Stories Grid (High Engagement & RPM) */}
-          <div className="pt-8 pb-2 border-t border-white/[0.06]">
+          <div className="pt-8 pb-2 border-t border-white/[0.06] empty:hidden">
             <AdBanner
               format="multiplex"
               slotId="home-bottom-multiplex"

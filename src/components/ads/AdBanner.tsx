@@ -11,6 +11,27 @@ interface AdBannerProps {
   adSlot?: string;
   className?: string;
   customHtml?: string;
+  showPlaceholder?: boolean;
+}
+
+export function isAdConfigured(
+  format: AdFormat,
+  adSlot?: string,
+  customHtml?: string
+): boolean {
+  if (customHtml) return true;
+  const adClient = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID;
+  if (!adClient) return false;
+  const slot =
+    adSlot ||
+    (format === 'billboard' ? process.env.NEXT_PUBLIC_ADSENSE_SLOT_BILLBOARD : undefined) ||
+    (format === 'leaderboard' ? process.env.NEXT_PUBLIC_ADSENSE_SLOT_TOP_LEADERBOARD || process.env.NEXT_PUBLIC_ADSENSE_SLOT_LEADERBOARD : undefined) ||
+    (format === 'mrec' ? process.env.NEXT_PUBLIC_ADSENSE_SLOT_MREC : undefined) ||
+    (format === 'halfpage' ? process.env.NEXT_PUBLIC_ADSENSE_SLOT_HALFPAGE : undefined) ||
+    (format === 'infeed' ? process.env.NEXT_PUBLIC_ADSENSE_SLOT_INFEED : undefined) ||
+    (format === 'multiplex' ? process.env.NEXT_PUBLIC_ADSENSE_SLOT_MULTIPLEX : undefined) ||
+    process.env.NEXT_PUBLIC_ADSENSE_DEFAULT_SLOT;
+  return Boolean(slot);
 }
 
 export const AdBanner: React.FC<AdBannerProps> = ({
@@ -18,11 +39,43 @@ export const AdBanner: React.FC<AdBannerProps> = ({
   slotId,
   adSlot,
   className = '',
-  customHtml
+  customHtml,
+  showPlaceholder = false
 }) => {
   const adRef = useRef<HTMLDivElement>(null);
   const hasPushed = useRef<boolean>(false);
   const adClient = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID;
+
+  const effectiveAdSlot =
+    adSlot ||
+    (format === 'billboard' ? process.env.NEXT_PUBLIC_ADSENSE_SLOT_BILLBOARD : undefined) ||
+    (format === 'leaderboard' ? process.env.NEXT_PUBLIC_ADSENSE_SLOT_TOP_LEADERBOARD || process.env.NEXT_PUBLIC_ADSENSE_SLOT_LEADERBOARD : undefined) ||
+    (format === 'mrec' ? process.env.NEXT_PUBLIC_ADSENSE_SLOT_MREC : undefined) ||
+    (format === 'halfpage' ? process.env.NEXT_PUBLIC_ADSENSE_SLOT_HALFPAGE : undefined) ||
+    (format === 'infeed' ? process.env.NEXT_PUBLIC_ADSENSE_SLOT_INFEED : undefined) ||
+    (format === 'multiplex' ? process.env.NEXT_PUBLIC_ADSENSE_SLOT_MULTIPLEX : undefined) ||
+    process.env.NEXT_PUBLIC_ADSENSE_DEFAULT_SLOT;
+
+  const hasLiveAd = Boolean(customHtml || (adClient && effectiveAdSlot));
+
+  useEffect(() => {
+    if (adClient && effectiveAdSlot && typeof window !== 'undefined' && !hasPushed.current) {
+      hasPushed.current = true;
+      try {
+        // @ts-expect-error - adsbygoogle is injected by Google AdSense script
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+      } catch (err) {
+        console.debug('AdSense push notice:', err);
+      }
+    }
+  }, [adClient, effectiveAdSlot]);
+
+  // Collapse empty ad placeholder completely when no live ad or slot is assigned.
+  // This cleans mobile screen space, keeps primary news above the fold for Google Discover,
+  // and prevents "Under Construction / Blank Ad" flags during Google AdSense site review.
+  if (!hasLiveAd && !showPlaceholder) {
+    return null;
+  }
 
   // Strict dimensions to guarantee 0.00 Cumulative Layout Shift (CLS)
   const formatStyles: Record<AdFormat, string> = {
@@ -44,28 +97,6 @@ export const AdBanner: React.FC<AdBannerProps> = ({
     multiplex: 'w-full',
     mobile_banner: 'max-w-[320px]',
   };
-
-  const effectiveAdSlot =
-    adSlot ||
-    (format === 'billboard' ? process.env.NEXT_PUBLIC_ADSENSE_SLOT_BILLBOARD : undefined) ||
-    (format === 'leaderboard' ? process.env.NEXT_PUBLIC_ADSENSE_SLOT_TOP_LEADERBOARD || process.env.NEXT_PUBLIC_ADSENSE_SLOT_LEADERBOARD : undefined) ||
-    (format === 'mrec' ? process.env.NEXT_PUBLIC_ADSENSE_SLOT_MREC : undefined) ||
-    (format === 'halfpage' ? process.env.NEXT_PUBLIC_ADSENSE_SLOT_HALFPAGE : undefined) ||
-    (format === 'infeed' ? process.env.NEXT_PUBLIC_ADSENSE_SLOT_INFEED : undefined) ||
-    (format === 'multiplex' ? process.env.NEXT_PUBLIC_ADSENSE_SLOT_MULTIPLEX : undefined) ||
-    process.env.NEXT_PUBLIC_ADSENSE_DEFAULT_SLOT;
-
-  useEffect(() => {
-    if (adClient && effectiveAdSlot && typeof window !== 'undefined' && !hasPushed.current) {
-      hasPushed.current = true;
-      try {
-        // @ts-expect-error - adsbygoogle is injected by Google AdSense script
-        (window.adsbygoogle = window.adsbygoogle || []).push({});
-      } catch (err) {
-        console.debug('AdSense push notice:', err);
-      }
-    }
-  }, [adClient, effectiveAdSlot]);
 
   return (
     <div className={`my-6 flex flex-col items-center justify-center ${className}`}>
