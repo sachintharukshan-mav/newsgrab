@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import { Article, ExecutiveBrief, Language } from '@/lib/types';
-import { ArrowLeft, Clock, Share2, Check, ExternalLink, MessageCircle, Sparkles, Zap, Quote, ShieldCheck, Loader2, Volume2, VolumeX, Bookmark } from 'lucide-react';
+import { ArrowLeft, Clock, Share2, Check, ExternalLink, MessageCircle, Sparkles, Zap, Quote, ShieldCheck, Loader2, Volume2, VolumeX, Bookmark, Send, Copy } from 'lucide-react';
 import { AdBanner } from '@/components/ads/AdBanner';
 import { DiscussionSection } from './DiscussionSection';
 import { buildOptimisticBrief } from '@/lib/brief-utils';
@@ -29,6 +29,7 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
   onToggleSave
 }) => {
   const [copied, setCopied] = useState(false);
+  const [copiedFormatted, setCopiedFormatted] = useState(false);
   const [readingProgress, setReadingProgress] = useState<number>(0);
   const [fontSize, setFontSize] = useState<'normal' | 'large' | 'xl'>('normal');
 
@@ -225,7 +226,10 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
     whatsNext: { en: 'What to Watch For', si: 'ඉදිරි අපේක්ෂාවන්', ta: 'அடுத்து கவனிக்க வேண்டியவை' },
     synthesizedByGemini: { en: 'Synthesized by Gemini 2.0 Flash · 100% Original Editorial Expression', si: 'Gemini 2.0 Flash මගින් සම්පාදිත ස්වාධීන සංස්කාරක විශ්ලේෂණය', ta: 'Gemini 2.0 Flash மூலம் தொகுக்கப்பட்ட சுயாதீன பகுப்பாய்வு' },
     synthesizedByDesk: { en: 'Lanka Dispatch Wire Intelligence Synthesis', si: 'Lanka Dispatch ප්‍රවෘත්ති කාමර සංස්කරණය', ta: 'Lanka Dispatch செய்திப்பிரிவு தொகுப்பு' },
-    synthesizingBrief: { en: 'Synthesizing executive intelligence brief...', si: 'සත්‍යාපිත විධායක පුවත් වාර්තාව සකස් වෙමින් පවතී...', ta: 'சரிபார்க்கப்பட்ட செய்தி சுருக்கம் தயாராகிறது...' }
+    synthesizingBrief: { en: 'Synthesizing executive intelligence brief...', si: 'සත්‍යාපිත විධායක පුවත් වාර්තාව සකස් වෙමින් පවතී...', ta: 'சரிபார்க்கப்பட்ட செய்தி சுருக்கம் தயாராகிறது...' },
+    shareBriefing: { en: 'Share Briefing', si: 'පුවත් සංක්ෂිප්තය බෙදාගන්න', ta: 'செய்திச் சுருக்கத்தைப் பகிரவும்' },
+    copyBriefForChat: { en: 'Copy for WhatsApp / Telegram', si: 'WhatsApp / Telegram සඳහා පිටපත් කරන්න', ta: 'WhatsApp / Telegram க்காக நகலெடு' },
+    briefCopied: { en: 'Briefing Copied to Clipboard!', si: 'සංක්ෂිප්තය පිටපත් විය!', ta: 'செய்தி சுருக்கம் நகலெடுக்கப்பட்டது!' }
   };
 
   const title = article.title[currentLang] || article.title.en || article.title.si || article.title.ta || '';
@@ -250,6 +254,36 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
     const shareUrl = encodeURIComponent(window.location.href);
     const shareText = encodeURIComponent(`${title} — Lanka Dispatch: `);
     window.open(`https://api.whatsapp.com/send?text=${shareText}${shareUrl}`, '_blank', 'noopener,noreferrer');
+  };
+
+  const handleTelegramShare = () => {
+    if (typeof window === 'undefined') return;
+    const shareUrl = encodeURIComponent(window.location.href);
+    const shareText = encodeURIComponent(`${title} — Lanka Dispatch`);
+    window.open(`https://t.me/share/url?url=${shareUrl}&text=${shareText}`, '_blank', 'noopener,noreferrer');
+  };
+
+  const handleFacebookShare = () => {
+    if (typeof window === 'undefined') return;
+    const shareUrl = encodeURIComponent(window.location.href);
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${shareUrl}`, '_blank', 'noopener,noreferrer');
+  };
+
+  const handleCopyFormattedBrief = async () => {
+    try {
+      if (typeof window === 'undefined' || !navigator.clipboard) return;
+      const briefLead = brief ? brief.whatHappened : (article.summary[currentLang] || article.summary.en || '');
+      const keyFactsList = (brief?.keyDetails && brief.keyDetails.length > 0 ? brief.keyDetails : bullets).slice(0, 3);
+      const factsText = keyFactsList.length > 0
+        ? `\n\n📌 *Key Points:*\n${keyFactsList.map(k => `• ${k}`).join('\n')}`
+        : '';
+      const textToCopy = `🇱🇰 *${title}*\n\n${briefLead}${factsText}\n\n🔗 *Read full verified dispatch:*\n${window.location.href}\n\n— _Lanka Dispatch · AI Wire Desk_`;
+      await navigator.clipboard.writeText(textToCopy);
+      setCopiedFormatted(true);
+      setTimeout(() => setCopiedFormatted(false), 2500);
+    } catch (err) {
+      console.warn('Clipboard write failed:', err);
+    }
   };
 
   const handleAudioListenToggle = () => {
@@ -423,6 +457,16 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
             >
               <MessageCircle className="w-3.5 h-3.5 text-emerald-500" />
               <span className="hidden sm:inline">WhatsApp</span>
+            </button>
+
+            {/* Telegram 1-Click Share */}
+            <button
+              onClick={handleTelegramShare}
+              title="Share via Telegram"
+              className="hidden sm:flex items-center gap-1.5 px-2.5 py-1.5 rounded bg-sky-500/10 hover:bg-sky-500/20 text-sky-600 dark:text-sky-400 border border-sky-500/20 transition-colors cursor-pointer"
+            >
+              <Send className="w-3.5 h-3.5 text-sky-500" />
+              <span>Telegram</span>
             </button>
 
             {/* Copy Article Link */}
@@ -657,21 +701,23 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
                   </div>
 
                   {/* 2. Key Facts & Findings */}
-                  <div className="p-5 sm:p-6 rounded-lg bg-[var(--bg-subtle)] border-l-4 border-rose-600 space-y-3">
-                    <h4 className={`text-xs font-mono font-bold uppercase tracking-widest text-[var(--text-main)] ${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
-                      {fullArticleLabels.keyFacts[currentLang]}
-                    </h4>
-                    <ul className="space-y-3">
-                      {(brief?.keyDetails && brief.keyDetails.length > 0 ? brief.keyDetails : bullets).map((fact, idx) => (
-                        <li key={idx} className={`flex items-start gap-3 ${textScale.body} text-[var(--text-body)] transition-all duration-150`}>
-                          <span className="text-rose-600 font-mono font-bold select-none text-base">—</span>
-                          <span className={`leading-relaxed ${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
-                            {fact}
-                          </span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+                  {Boolean((brief?.keyDetails && brief.keyDetails.length > 0) || bullets.length > 0) && (
+                    <div className="p-5 sm:p-6 rounded-lg bg-[var(--bg-subtle)] border-l-4 border-rose-600 space-y-3">
+                      <h4 className={`text-xs font-mono font-bold uppercase tracking-widest text-[var(--text-main)] ${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
+                        {fullArticleLabels.keyFacts[currentLang]}
+                      </h4>
+                      <ul className="space-y-3">
+                        {(brief?.keyDetails && brief.keyDetails.length > 0 ? brief.keyDetails : bullets).map((fact, idx) => (
+                          <li key={idx} className={`flex items-start gap-3 ${textScale.body} text-[var(--text-body)] transition-all duration-150`}>
+                            <span className="text-rose-600 font-mono font-bold select-none text-base">—</span>
+                            <span className={`leading-relaxed ${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
+                              {fact}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
 
                   {/* 3. Statements on Record (Direct Quotes) */}
                   {brief?.quotes && brief.quotes.length > 0 && (
@@ -726,6 +772,63 @@ export const FullArticlePage: React.FC<FullArticlePageProps> = ({
                       </p>
                     </div>
                   </div>
+              </div>
+            </div>
+
+            {/* Rapid Viral Social Distribution Bar */}
+            <div className="p-4 sm:p-5 rounded-xl bg-[var(--bg-card)] border border-[var(--border-line)] shadow-sm space-y-3">
+              <div className="flex items-center justify-between">
+                <span className={`text-xs font-mono uppercase tracking-wider font-semibold text-[var(--text-muted)] ${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}>
+                  {fullArticleLabels.shareBriefing[currentLang]}
+                </span>
+                <span className="text-[11px] font-mono text-[var(--text-muted)]">
+                  Lanka Dispatch Wire
+                </span>
+              </div>
+              <div className="flex flex-wrap items-center gap-2.5">
+                <button
+                  type="button"
+                  onClick={handleWhatsAppShare}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 text-xs font-mono font-medium transition-colors cursor-pointer"
+                >
+                  <MessageCircle className="w-4 h-4 text-emerald-500" />
+                  <span>WhatsApp</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleTelegramShare}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-sky-500/10 hover:bg-sky-500/20 text-sky-600 dark:text-sky-400 border border-sky-500/20 text-xs font-mono font-medium transition-colors cursor-pointer"
+                >
+                  <Send className="w-4 h-4 text-sky-500" />
+                  <span>Telegram</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleFacebookShare}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-600 dark:text-blue-400 border border-blue-500/20 text-xs font-mono font-medium transition-colors cursor-pointer"
+                >
+                  <svg className="w-4 h-4 fill-current text-blue-600 dark:text-blue-400" viewBox="0 0 24 24">
+                    <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                  </svg>
+                  <span>Facebook</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={handleCopyFormattedBrief}
+                  className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-[var(--bg-subtle)] hover:bg-[var(--bg-card-hover)] text-[var(--text-main)] border border-[var(--border-line)] text-xs font-mono font-medium transition-colors cursor-pointer sm:ml-auto"
+                >
+                  {copiedFormatted ? (
+                    <>
+                      <Check className="w-4 h-4 text-emerald-500" />
+                      <span className="text-emerald-600 dark:text-emerald-400">{fullArticleLabels.briefCopied[currentLang]}</span>
+                    </>
+                  ) : (
+                    <>
+                      <Copy className="w-4 h-4 text-[var(--text-muted)]" />
+                      <span>{fullArticleLabels.copyBriefForChat[currentLang]}</span>
+                    </>
+                  )}
+                </button>
               </div>
             </div>
 

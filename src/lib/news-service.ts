@@ -86,25 +86,23 @@ export async function getAggregatedArticles(
       if (lang === 'si') summaryObj.si = summaryText;
       if (lang === 'ta') summaryObj.ta = summaryText;
 
-      const bulletsList = item.aiBullets?.[lang] || item.aiBullets?.en || [
-        headline,
-        lang === 'si' ? `වාර්තාකරු: ${pub}.` : (lang === 'ta' ? `செய்தியாளர்: ${pub}.` : `Reported by ${pub} news desk.`),
-        lang === 'si' ? 'අඛණ්ඩ සත්‍යාපනය සහ සජීවී ආවරණය.' : (lang === 'ta' ? 'தொடர்ச்சியான நேரடி கண்காணிப்பு.' : 'Continuous monitoring and multi-source verification.')
-      ];
+      const isFillerBullet = (b: string) =>
+        /Continuous monitoring|Reported by .* desk|Dispatched via|වාර්තාකරු|செய்தியாளர்|අඛණ්ඩ සත්‍යාපනය|நேரடி கண்காணிப்பு/i.test(b);
 
-      const sanitizeBullets = (bList?: string[]) => {
-        if (!bList || !bList.length) return bList;
-        const cleaned = bList.map((b: string) => stripRssBoilerplate(b)).filter((b: string) => b.length > 5);
-        return cleaned.length >= 2 ? cleaned : bList;
+      const sanitizeRawBullets = (bList?: string[]) => {
+        if (!bList || !bList.length) return [];
+        return bList
+          .map((b: string) => stripRssBoilerplate(b))
+          .filter((b: string) => b.length > 15 && !isFillerBullet(b));
       };
 
       const bulletsObj = {
-        en: sanitizeBullets(item.aiBullets?.en || bulletsList) || bulletsList,
-        ...(item.aiBullets?.si ? { si: sanitizeBullets(item.aiBullets.si) } : {}),
-        ...(item.aiBullets?.ta ? { ta: sanitizeBullets(item.aiBullets.ta) } : {})
+        en: sanitizeRawBullets(item.aiBullets?.en || (lang === 'en' ? item.aiBullets?.[lang] : undefined)),
+        ...(item.aiBullets?.si ? { si: sanitizeRawBullets(item.aiBullets.si) } : {}),
+        ...(item.aiBullets?.ta ? { ta: sanitizeRawBullets(item.aiBullets.ta) } : {})
       };
-      if (lang === 'si') bulletsObj.si = sanitizeBullets(bulletsObj.si || bulletsList) || bulletsList;
-      if (lang === 'ta') bulletsObj.ta = sanitizeBullets(bulletsObj.ta || bulletsList) || bulletsList;
+      if (lang === 'si' && item.aiBullets?.si) bulletsObj.si = sanitizeRawBullets(item.aiBullets.si);
+      if (lang === 'ta' && item.aiBullets?.ta) bulletsObj.ta = sanitizeRawBullets(item.aiBullets.ta);
 
       liveItems.push({
         id: item.id || fallbackId,
@@ -353,10 +351,14 @@ function sanitizeArticle(article: Article): Article {
   const cleanSummarySi = article.summary.si ? stripRssBoilerplate(article.summary.si) : undefined;
   const cleanSummaryTa = article.summary.ta ? stripRssBoilerplate(article.summary.ta) : undefined;
 
+  const isFillerBullet = (b: string) =>
+    /Continuous monitoring|Reported by .* desk|Dispatched via|වාර්තාකරු|செய்தியாளர்|අඛණ්ඩ සත්‍යාපනය|நேரடி கண்காணிப்பு/i.test(b);
+
   const sanitizeBullets = (bullets?: string[]) => {
-    if (!bullets || !bullets.length) return bullets;
-    const cleaned = bullets.map((b) => stripRssBoilerplate(b)).filter((b) => b.length > 5);
-    return cleaned.length >= 2 ? cleaned : bullets;
+    if (!bullets || !bullets.length) return [];
+    return bullets
+      .map((b) => stripRssBoilerplate(b))
+      .filter((b) => b.length > 15 && !isFillerBullet(b));
   };
 
   return {
@@ -368,7 +370,7 @@ function sanitizeArticle(article: Article): Article {
       ...(cleanSummaryTa ? { ta: cleanSummaryTa.length > 20 ? cleanSummaryTa : article.summary.ta } : {})
     },
     aiBullets: {
-      en: sanitizeBullets(article.aiBullets.en) || article.aiBullets.en,
+      en: sanitizeBullets(article.aiBullets.en),
       ...(article.aiBullets.si ? { si: sanitizeBullets(article.aiBullets.si) } : {}),
       ...(article.aiBullets.ta ? { ta: sanitizeBullets(article.aiBullets.ta) } : {})
     }
@@ -449,17 +451,19 @@ export async function getArticleById(id: string, lang: Language = 'en'): Promise
   const mockMatch = mockArticles.find((a) => a.id === decodedId || a.id === id);
   if (mockMatch) return sanitizeArticle(mockMatch);
 
-  // 7. Deterministic Zero-404 Archive Dispatch Constructor
+  // 7. Deterministic Archive Dispatch Constructor
   // If an article was previously indexed by Google or bookmarked by a user but has
   // rolled off the active cache window, reconstruct the authentic dispatch from its slug.
-  return sanitizeArticle(reconstructArchivedArticle(decodedId, lang));
+  // Returns null for made-up/bogus URLs to emit a true HTTP 404 (eliminating soft-404 penalty).
+  const archived = reconstructArchivedArticle(decodedId, lang);
+  return archived ? sanitizeArticle(archived) : null;
 }
 
 /**
  * Reconstructs an authentic archived dispatch deterministically from an expired slug ID.
- * Guarantees ZERO 404 errors for Googlebot, incoming bookmarks, and external referrals.
+ * Returns null if the slug is not a valid recognized news dispatch format (preventing soft-404s).
  */
-export function reconstructArchivedArticle(slugId: string, lang: Language = 'en'): Article {
+export function reconstructArchivedArticle(slugId: string, lang: Language = 'en'): Article | null {
   const cleanSlug = decodeURIComponent(slugId).trim().toLowerCase();
 
   const publishers = [
@@ -477,27 +481,47 @@ export function reconstructArchivedArticle(slugId: string, lang: Language = 'en'
     { prefix: 'hiru', name: 'Hiru News', search: (q: string) => `https://www.hirunews.lk/english/search/${q}` },
     { prefix: 'lbo', name: 'Lanka Business Online', search: (q: string) => `https://www.lankabusinessonline.com/?s=${q}` },
     { prefix: 'bbc', name: 'BBC News', search: (q: string) => `https://www.bbc.co.uk/search?q=${q}` },
+    { prefix: 'daily-ft', name: 'Daily FT', search: (q: string) => `https://www.ft.lk/search/${q}` },
+    { prefix: 'economynext', name: 'EconomyNext', search: (q: string) => `https://economynext.com/?s=${q}` },
   ];
 
-  let publisherName = 'News Wire Desk';
-  let searchUrl = 'https://lankadispatch.com';
+  let matchedPub: typeof publishers[number] | null = null;
   let bodyTokensStr = cleanSlug;
 
   for (const pub of publishers) {
     if (cleanSlug.startsWith(pub.prefix + '-')) {
-      publisherName = pub.name;
+      matchedPub = pub;
       bodyTokensStr = cleanSlug.slice(pub.prefix.length + 1);
       break;
     }
   }
 
+  // Reject slugs that do not start with a recognized publisher prefix
+  if (!matchedPub) {
+    return null;
+  }
+
   // Tokenize the headline portion
   const tokens = bodyTokensStr.split('-').filter(Boolean);
 
-  // If the last token is an alphanumeric hash (<=8 chars), strip it
-  if (tokens.length > 1 && /^[a-z0-9]{4,8}$/.test(tokens[tokens.length - 1])) {
-    tokens.pop();
+  // An authentic slug must have at least 3 tokens including its hash
+  if (tokens.length < 3) {
+    return null;
   }
+
+  const lastToken = tokens[tokens.length - 1];
+  if (!/^[a-z0-9]{4,8}$/.test(lastToken)) {
+    return null;
+  }
+
+  // Strip hash for headline reconstruction
+  tokens.pop();
+
+  if (tokens.length < 2) {
+    return null;
+  }
+
+  const publisherName = matchedPub.name;
 
   // Proper casing dictionary for acronyms and proper nouns
   const specialWords: Record<string, string> = {
@@ -521,11 +545,7 @@ export function reconstructArchivedArticle(slugId: string, lang: Language = 'en'
   const titleWords = tokens.map((t) => specialWords[t] || (t.charAt(0).toUpperCase() + t.slice(1)));
   const reconstructedTitle = titleWords.join(' ') || 'Sri Lanka Newsroom Dispatch';
   const searchQuery = encodeURIComponent(tokens.join(' '));
-
-  const matchedPub = publishers.find((p) => p.name === publisherName);
-  if (matchedPub) {
-    searchUrl = matchedPub.search(searchQuery);
-  }
+  const searchUrl = matchedPub.search(searchQuery);
 
   // Category detection
   const joinedText = tokens.join(' ');

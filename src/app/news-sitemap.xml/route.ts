@@ -41,11 +41,22 @@ export async function GET() {
     ? combinedArticles
     : mockArticles.map((a) => ({ article: a, lang: 'en' as const }));
 
-  // Filter to items within the 48h Google News freshness requirement
-  const recentItems = pool.filter(({ article }) => {
-    if (!article.publishedAt) return true;
-    const pubDate = new Date(article.publishedAt);
-    return isNaN(pubDate.getTime()) || pubDate >= cutoffTime;
+  // Filter to items within the 48h Google News freshness requirement and filter out thin articles
+  const recentItems = pool.filter(({ article, lang }) => {
+    if (article.publishedAt) {
+      const pubDate = new Date(article.publishedAt);
+      if (!isNaN(pubDate.getTime()) && pubDate < cutoffTime) return false;
+    }
+
+    // Exclude thin articles (summary too short or identical to title, and no rich brief)
+    const title = article.title[lang] || article.title.en || '';
+    const summary = article.summary[lang] || article.summary.en || '';
+    const hasBrief = Boolean(article.brief?.[lang]);
+    if (!hasBrief && (summary.length < 80 || summary.trim().toLowerCase() === title.trim().toLowerCase())) {
+      return false;
+    }
+
+    return true;
   });
 
   // Deduplicate by URL

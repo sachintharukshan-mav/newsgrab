@@ -1,6 +1,6 @@
 import React from 'react';
 import type { Metadata } from 'next';
-import { notFound } from 'next/navigation';
+import { notFound, redirect, RedirectType } from 'next/navigation';
 import { getArticleById } from '@/lib/news-service';
 import { Language } from '@/lib/types';
 import { NewsArticleJsonLd } from '@/components/seo/JsonLd';
@@ -30,6 +30,10 @@ export async function generateMetadata({
     return {
       title: 'Dispatch Not Found | LANKA DISPATCH',
       description: 'The requested news wire dispatch could not be found or has expired from the live index.',
+      robots: {
+        index: false,
+        follow: false,
+      },
     };
   }
 
@@ -99,17 +103,22 @@ export async function generateMetadata({
       images: [ogImageUrl],
       site: '@lankadispatch',
     },
-    robots: {
-      index: true,
-      follow: true,
-      googleBot: {
-        index: true,
-        follow: true,
-        'max-video-preview': -1,
-        'max-image-preview': 'large',
-        'max-snippet': -1,
-      },
-    },
+    robots: !article.brief?.[currentLang] && (summary.length < 80 || summary.trim().toLowerCase() === title.trim().toLowerCase())
+      ? {
+          index: false,
+          follow: true,
+        }
+      : {
+          index: true,
+          follow: true,
+          googleBot: {
+            index: true,
+            follow: true,
+            'max-video-preview': -1,
+            'max-image-preview': 'large',
+            'max-snippet': -1,
+          },
+        },
   };
 }
 
@@ -122,6 +131,12 @@ export default async function ArticlePage({ params, searchParams }: PageProps) {
 
   if (!article) {
     notFound();
+  }
+
+  // Canonical redirect if requested id was an alias or sister-slug that resolved to an active article
+  const decodedId = decodeURIComponent(id).trim();
+  if (article.id !== id && article.id !== decodedId) {
+    redirect(`/article/${encodeURIComponent(article.id)}${currentLang !== 'en' ? `?lang=${currentLang}` : ''}`, RedirectType.replace);
   }
 
   // Pre-attach Smart Brevity executive brief so Googlebot and search crawlers
