@@ -729,6 +729,35 @@ export default function HomePage() {
                 </Link>
               ))}
             </div>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-1 border-t border-[var(--border-line)]/50">
+              <span className="font-bold text-[var(--text-main)] uppercase tracking-wider font-sans text-xs">
+                Daily Market Utilities:
+              </span>
+              <Link
+                href="/markets/usd-to-lkr-rate-today"
+                className="text-[var(--text-muted)] hover:text-rose-500 underline-offset-2 hover:underline transition-colors"
+              >
+                USD to LKR Exchange Rates Today
+              </Link>
+              <Link
+                href="/markets/gold-price-sri-lanka-today"
+                className="text-[var(--text-muted)] hover:text-amber-500 underline-offset-2 hover:underline transition-colors"
+              >
+                Sri Lanka Gold Price Today (24K &amp; 22K)
+              </Link>
+              <Link
+                href="/utility/fuel-and-power-sri-lanka"
+                className="text-[var(--text-muted)] hover:text-emerald-500 underline-offset-2 hover:underline transition-colors"
+              >
+                Sri Lanka Fuel Prices Today (CPC / LIOC)
+              </Link>
+              <Link
+                href="/powercut"
+                className="text-[var(--text-muted)] hover:text-amber-500 underline-offset-2 hover:underline transition-colors"
+              >
+                CEB Power Cut Schedule Map
+              </Link>
+            </div>
           </div>
 
           <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-[11px] font-mono text-[var(--text-muted)]">

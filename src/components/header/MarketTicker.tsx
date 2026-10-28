@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import Link from 'next/link';
 import { MarketPulse, Language } from '@/lib/types';
 
 interface MarketTickerProps {
@@ -39,28 +40,38 @@ export const MarketTicker: React.FC<MarketTickerProps> = ({ pulse, currentLang =
       <div className="flex financial-ticker-marquee items-center gap-8 whitespace-nowrap">
         {[0, 1].map((copyIndex) => (
           <div key={copyIndex} className="flex items-center gap-8">
-            <span className="inline-flex items-center gap-1.5 font-mono text-[var(--text-muted)] font-bold uppercase tracking-wider text-[10px]">
+            <Link
+              href="/markets/usd-to-lkr-rate-today"
+              className="inline-flex items-center gap-1.5 font-mono text-[var(--text-muted)] hover:text-[var(--text-main)] font-bold uppercase tracking-wider text-[10px] transition-colors"
+            >
               <span className="inline-block w-1.5 h-1.5 rounded-full bg-[var(--accent-emerald)] animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
               {tickerLabels.cbsl[currentLang]}
-            </span>
+            </Link>
 
             {cbslRates.map((rate) => {
               const isPositive = rate.change24h >= 0;
               return (
-                <div key={`${copyIndex}-${rate.code}`} className="flex items-center gap-1.5 font-mono">
+                <Link
+                  key={`${copyIndex}-${rate.code}`}
+                  href="/markets/usd-to-lkr-rate-today"
+                  className="flex items-center gap-1.5 font-mono hover:text-rose-500 transition-colors"
+                >
                   <span className="text-[var(--text-muted)] font-semibold">{rate.code}/LKR</span>
                   <span className="text-[var(--text-main)] font-medium">{rate.sellRate.toFixed(2)}</span>
                   <span className={`text-[10px] ${isPositive ? 'text-emerald-500 dark:text-emerald-400' : 'text-rose-500 dark:text-rose-400'}`}>
                     {isPositive ? '▲' : '▼'} {Math.abs(rate.change24h)}%
                   </span>
-                </div>
+                </Link>
               );
             })}
 
-            <div className="flex items-center gap-1.5 font-mono">
+            <Link
+              href="/markets/gold-price-sri-lanka-today"
+              className="flex items-center gap-1.5 font-mono hover:text-amber-500 transition-colors"
+            >
               <span className="text-[var(--text-muted)]">{tickerLabels.gold[currentLang]}</span>
               <span className="text-amber-600 dark:text-amber-200 font-medium">Rs. {goldPrice24kPerSovereign.lkr.toLocaleString()}</span>
-            </div>
+            </Link>
 
             <div className="flex items-center gap-1.5 font-mono">
               <span className="text-[var(--text-muted)]">{tickerLabels.cse[currentLang]}</span>

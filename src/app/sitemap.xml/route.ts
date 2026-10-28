@@ -66,6 +66,23 @@ export async function GET() {
     xml += `  </url>\n`;
   }
 
+  // 3.1 Daily Evergreen Utility Hubs (High Organic Search Volume)
+  const utilityPages = [
+    { path: '/markets/usd-to-lkr-rate-today', priority: '0.95', changefreq: 'hourly' },
+    { path: '/markets/gold-price-sri-lanka-today', priority: '0.95', changefreq: 'hourly' },
+    { path: '/utility/fuel-and-power-sri-lanka', priority: '0.95', changefreq: 'daily' },
+    { path: '/powercut', priority: '0.90', changefreq: 'hourly' },
+  ];
+  for (const util of utilityPages) {
+    const utilUrl = `${SITE_URL}${util.path}`;
+    xml += `  <url>\n`;
+    xml += `    <loc>${escapeXml(utilUrl)}</loc>\n`;
+    xml += `    <lastmod>${now}</lastmod>\n`;
+    xml += `    <changefreq>${util.changefreq}</changefreq>\n`;
+    xml += `    <priority>${util.priority}</priority>\n`;
+    xml += `  </url>\n`;
+  }
+
   // 4. Editorial & Wire Dispatches (Up to 150 items with fully escaped image tags and alternates)
   for (const a of articlesPool.slice(0, 150)) {
     const pubDate = a.publishedAt ? new Date(a.publishedAt) : new Date();
