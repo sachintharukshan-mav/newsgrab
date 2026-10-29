@@ -15,6 +15,7 @@ interface CategoryNavProps {
   dateRange?: DateRange;
   onSelectDateRange?: (range: DateRange) => void;
   activeTopicSlug?: string;
+  onSelectTopic?: (topicSlug: string | null) => void;
   preferRouteNavigation?: boolean;
 }
 
@@ -44,6 +45,7 @@ export const CategoryNav: React.FC<CategoryNavProps> = ({
   dateRange = 'all',
   onSelectDateRange,
   activeTopicSlug,
+  onSelectTopic,
   preferRouteNavigation = false,
 }) => {
   const categories: Category[] = ['all', 'local', 'world', 'breaking', 'economy', 'politics', 'tech', 'sports'];
@@ -169,9 +171,22 @@ export const CategoryNav: React.FC<CategoryNavProps> = ({
             <Link
               key={topic.slug}
               href={href}
-              className={`px-2.5 py-1 rounded border transition-all whitespace-nowrap shrink-0 ${
+              onClick={(e) => {
+                if (
+                  onSelectTopic &&
+                  !preferRouteNavigation &&
+                  !e.metaKey &&
+                  !e.ctrlKey &&
+                  !e.shiftKey &&
+                  e.button === 0
+                ) {
+                  e.preventDefault();
+                  onSelectTopic(isTopicActive ? null : topic.slug);
+                }
+              }}
+              className={`px-2.5 py-1 rounded border transition-all whitespace-nowrap shrink-0 cursor-pointer ${
                 isTopicActive
-                  ? 'bg-[var(--text-main)] text-[var(--bg-page)] border-[var(--text-main)] font-bold shadow-xs'
+                  ? 'bg-[var(--accent-crimson)] text-white border-[var(--accent-crimson)] font-bold shadow-xs'
                   : 'bg-[var(--bg-card)] text-[var(--text-body)] border-[var(--border-line)] hover:border-[var(--text-main)] hover:text-[var(--text-main)]'
               } ${isSinhala ? 'font-sinhala' : ''} ${isTamil ? 'font-tamil' : ''}`}
             >

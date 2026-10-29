@@ -8,9 +8,15 @@ import { getRealtimeCutStatus, RealtimeCutStatus, isPowercutScheduleExpired } fr
 export const PowerCutBanner: React.FC = () => {
   const [status, setStatus] = useState<RealtimeCutStatus | null>(null);
   const [dismissed, setDismissed] = useState<boolean>(false);
+  const [langPrefix, setLangPrefix] = useState<string>('');
 
   useEffect(() => {
     setStatus(getRealtimeCutStatus());
+    if (typeof window !== 'undefined') {
+      const p = window.location.pathname;
+      if (p.startsWith('/si/') || p === '/si') setLangPrefix('/si');
+      else if (p.startsWith('/ta/') || p === '/ta') setLangPrefix('/ta');
+    }
     const interval = setInterval(() => {
       setStatus(getRealtimeCutStatus());
     }, 30000);
@@ -58,7 +64,7 @@ export const PowerCutBanner: React.FC = () => {
 
         <div className="flex items-center gap-3 shrink-0">
           <Link
-            href="/powercut"
+            href={`${langPrefix}/powercut`}
             className="inline-flex items-center gap-1 font-bold text-[var(--text-main)] hover:text-[var(--accent-crimson)] underline underline-offset-4 decoration-[var(--border-line)] hover:decoration-current transition-colors text-[11px] sm:text-xs"
           >
             <span>Interactive Map & Times</span>

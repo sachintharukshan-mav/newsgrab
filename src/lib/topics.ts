@@ -741,12 +741,62 @@ export const TOPIC_HUBS: Record<string, TopicHubConfig> = {
 export const SECTION_SLUGS = Object.keys(SECTION_HUBS) as Array<Exclude<Category, 'all'>>;
 export const TOPIC_SLUGS = Object.keys(TOPIC_HUBS);
 
+const TOPIC_ALIASES: Record<string, string> = {
+  'imf-debt-restructuring': 'imf',
+  'imf-debt': 'imf',
+  'imf-sri-lanka': 'imf',
+  'central-bank': 'cbsl',
+  'central-bank-of-sri-lanka': 'cbsl',
+  'lkr-exchange-rates': 'cbsl',
+  'fuel-prices': 'energy-ceb',
+  'fuel-power': 'energy-ceb',
+  'fuel-and-power': 'energy-ceb',
+  'ceb-power-cuts': 'energy-ceb',
+  'ceb-electricity': 'energy-ceb',
+  'parliament': 'parliament-politics',
+  'politics': 'parliament-politics',
+  'national-politics': 'parliament-politics',
+  'slc': 'cricket',
+  'sri-lanka-cricket': 'cricket',
+  'tourism': 'tourism-aviation',
+  'weather': 'weather-disaster',
+  'monsoon-alerts': 'weather-disaster',
+  'inflation': 'economy-inflation',
+  'cost-of-living': 'economy-inflation',
+};
+
+const SECTION_ALIASES: Record<string, Exclude<Category, 'all'>> = {
+  'national': 'local',
+  'sri-lanka': 'local',
+  'international': 'world',
+  'global': 'world',
+  'business': 'economy',
+  'finance': 'economy',
+  'urgent': 'breaking',
+  'technology': 'tech',
+  'sport': 'sports',
+};
+
 export function getSectionHub(slug: string): SectionHubConfig | null {
-  return SECTION_HUBS[slug as Exclude<Category, 'all'>] || null;
+  const normalized = (slug || '').toLowerCase().trim();
+  const direct = SECTION_HUBS[normalized as Exclude<Category, 'all'>];
+  if (direct) return direct;
+  const canonical = SECTION_ALIASES[normalized];
+  if (canonical && SECTION_HUBS[canonical]) {
+    return SECTION_HUBS[canonical];
+  }
+  return null;
 }
 
 export function getTopicHub(slug: string): TopicHubConfig | null {
-  return TOPIC_HUBS[slug] || null;
+  const normalized = (slug || '').toLowerCase().trim();
+  const direct = TOPIC_HUBS[normalized];
+  if (direct) return direct;
+  const canonicalSlug = TOPIC_ALIASES[normalized];
+  if (canonicalSlug && TOPIC_HUBS[canonicalSlug]) {
+    return TOPIC_HUBS[canonicalSlug];
+  }
+  return null;
 }
 
 export function filterArticlesForSection(articles: Article[], category: Exclude<Category, 'all'>): Article[] {

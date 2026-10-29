@@ -97,6 +97,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const [timeAgoStr, setTimeAgoStr] = useState<string>('Just now');
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+  const langPrefix = currentLang === 'si' ? '/si' : currentLang === 'ta' ? '/ta' : '';
 
   useEffect(() => {
     try {
@@ -222,7 +223,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Quick Utility Pill Group */}
             <div className="hidden sm:flex items-center gap-1.5 pl-1 border-l border-[var(--border-line)]">
               <Link
-                href="/utility/fuel-and-power-sri-lanka"
+                href={`${langPrefix}/utility/fuel-and-power-sri-lanka`}
                 className="flex items-center gap-1 px-2 py-0.5 rounded border border-emerald-500/40 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-[10px] font-mono font-semibold cursor-pointer transition-colors"
                 title="Sri Lanka Fuel Prices Today (CPC / LIOC / Sinopec)"
                 aria-label="Fuel Prices Sri Lanka"
@@ -232,7 +233,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               </Link>
 
               <Link
-                href="/markets/usd-to-lkr-rate-today"
+                href={`${langPrefix}/markets/usd-to-lkr-rate-today`}
                 className="flex items-center gap-1 px-2 py-0.5 rounded border border-rose-500/40 bg-rose-500/10 hover:bg-rose-500/20 text-rose-700 dark:text-rose-400 text-[10px] font-mono font-semibold cursor-pointer transition-colors"
                 title="USD to LKR Exchange Rates (CBSL & Banks)"
                 aria-label="USD to LKR Rates"
@@ -242,7 +243,7 @@ export const Navbar: React.FC<NavbarProps> = ({
               </Link>
 
               <Link
-                href="/markets/gold-price-sri-lanka-today"
+                href={`${langPrefix}/markets/gold-price-sri-lanka-today`}
                 className="flex items-center gap-1 px-2 py-0.5 rounded border border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400 text-[10px] font-mono font-semibold cursor-pointer transition-colors"
                 title="Gold Price in Sri Lanka (24K & 22K Sovereign)"
                 aria-label="Gold Rates Sri Lanka"
@@ -255,7 +256,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             {/* Power Cuts Live Utility Button (auto-hides at 00:00:00 on 22 October 2026) */}
             {!isPowercutScheduleExpired() && (
               <Link
-                href="/powercut"
+                href={`${langPrefix}/powercut`}
                 className="flex items-center gap-1 px-2 py-0.5 rounded border border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400 text-[10px] font-mono font-semibold cursor-pointer transition-colors"
                 title="CEB Power Cut Schedule & Interactive Area Map"
                 aria-label="CEB Power Cut Schedule"
@@ -425,7 +426,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             {/* Fuel Prices Pill */}
             <Link
-              href="/utility/fuel-and-power-sri-lanka"
+              href={`${langPrefix}/utility/fuel-and-power-sri-lanka`}
               className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-[var(--bg-card)] hover:bg-[var(--bg-card-hover)] border border-[var(--border-line)] hover:border-emerald-500/50 text-[var(--text-main)] transition-all shrink-0 shadow-2xs group cursor-pointer"
               title="Sri Lanka Fuel Prices Today (CPC / LIOC / Sinopec)"
             >
@@ -440,7 +441,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             {/* USD / LKR Exchange Rate Pill */}
             <Link
-              href="/markets/usd-to-lkr-rate-today"
+              href={`${langPrefix}/markets/usd-to-lkr-rate-today`}
               className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-[var(--bg-card)] hover:bg-[var(--bg-card-hover)] border border-[var(--border-line)] hover:border-rose-500/50 text-[var(--text-main)] transition-all shrink-0 shadow-2xs group cursor-pointer"
               title="USD to LKR Exchange Rates (CBSL & Commercial Banks)"
             >
@@ -455,7 +456,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             {/* Gold Rate Pill */}
             <Link
-              href="/markets/gold-price-sri-lanka-today"
+              href={`${langPrefix}/markets/gold-price-sri-lanka-today`}
               className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-[var(--bg-card)] hover:bg-[var(--bg-card-hover)] border border-[var(--border-line)] hover:border-amber-500/50 text-[var(--text-main)] transition-all shrink-0 shadow-2xs group cursor-pointer"
               title="Gold Sovereign & Gram Price Sri Lanka (24K / 22K)"
             >
@@ -470,7 +471,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             {/* Power Cut Outage Map Pill */}
             <Link
-              href="/powercut"
+              href={`${langPrefix}/powercut`}
               className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-[var(--bg-card)] hover:bg-[var(--bg-card-hover)] border border-[var(--border-line)] hover:border-amber-500/50 text-[var(--text-main)] transition-all shrink-0 shadow-2xs group cursor-pointer"
               title="CEB 25-District Power Cut Map & Rotational Schedule"
             >

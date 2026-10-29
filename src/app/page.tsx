@@ -4,7 +4,7 @@ import React, { useState, useMemo, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { mockArticles, mockMarketPulse } from '@/lib/mock-data';
 import { Article, Category, Language, DateRange, MarketPulse } from '@/lib/types';
-import { SECTION_HUBS, TOPIC_HUBS } from '@/lib/topics';
+import { SECTION_HUBS, TOPIC_HUBS, getTopicHub, filterArticlesForTopic } from '@/lib/topics';
 import { MarketTicker } from '@/components/header/MarketTicker';
 import { Navbar } from '@/components/header/Navbar';
 import { CategoryNav } from '@/components/news/CategoryNav';
@@ -30,6 +30,7 @@ export default function HomePage() {
   const [articles, setArticles] = useState<Article[]>(mockArticles);
   const [currentLang, setCurrentLang] = useState<Language>('en');
   const [currentCategory, setCurrentCategory] = useState<Category>('all');
+  const [activeTopicSlug, setActiveTopicSlug] = useState<string | null>(null);
   const [selectedPublisher, setSelectedPublisher] = useState<string>('all');
   const [searchQuery, setSearchQuery] = useState<string>('');
   const [viewMode, setViewMode] = useState<'bento' | 'compact'>('bento');
@@ -100,6 +101,7 @@ export default function HomePage() {
       }
       const urlTimeRange = new URLSearchParams(window.location.search).get('timeRange') as DateRange;
       const urlCategory = new URLSearchParams(window.location.search).get('category') as Category;
+      const urlTopic = new URLSearchParams(window.location.search).get('topic');
       React.startTransition(() => {
         if (urlTimeRange && ['all', '24h', '7d', '30d', '1y'].includes(urlTimeRange)) {
           setDateRange(urlTimeRange);
@@ -109,6 +111,13 @@ export default function HomePage() {
           ['all', 'local', 'world', 'breaking', 'economy', 'politics', 'tech', 'sports'].includes(urlCategory)
         ) {
           setCurrentCategory(urlCategory);
+        }
+        if (urlTopic) {
+          const topicConfig = getTopicHub(urlTopic);
+          if (topicConfig) {
+            setActiveTopicSlug(topicConfig.slug);
+            setCurrentCategory(topicConfig.category);
+          }
         }
         setCurrentLang(initialLang);
       });
@@ -294,8 +303,11 @@ export default function HomePage() {
     return () => clearTimeout(timer);
   }, [articles, currentLang]);
 
-  // Filter articles strictly by the selected Category / Domain
+  // Filter articles strictly by the selected Category / Domain or Active Topic Hub
   const categoryArticles = useMemo(() => {
+    if (activeTopicSlug) {
+      return filterArticlesForTopic(articles, activeTopicSlug);
+    }
     return articles.filter((article) => {
       if (currentCategory === 'breaking') {
         return article.isBreaking || article.category === 'breaking';
@@ -308,7 +320,7 @@ export default function HomePage() {
       }
       return true;
     });
-  }, [articles, currentCategory]);
+  }, [articles, currentCategory, activeTopicSlug]);
 
   // Dynamically compute publisher counts strictly for the ACTIVE category's relevant news
   const publisherCounts = useMemo(() => {
@@ -321,21 +333,53 @@ export default function HomePage() {
 
   const handleSelectCategory = (cat: Category) => {
     setCurrentCategory(cat);
+    setActiveTopicSlug(null);
     setSelectedPublisher('all');
+    if (typeof window !== 'undefined') {
+      const langPrefix = currentLang === 'si' ? '/si' : currentLang === 'ta' ? '/ta' : '';
+      const targetUrl = cat === 'all' ? (langPrefix || '/') : `${langPrefix}/category/${cat}`;
+      window.history.pushState({}, '', targetUrl);
+    }
+  };
+
+  const handleSelectTopic = (topicSlug: string | null) => {
+    if (!topicSlug) {
+      setActiveTopicSlug(null);
+      setCurrentCategory('all');
+      setSelectedPublisher('all');
+      if (typeof window !== 'undefined') {
+        const langPrefix = currentLang === 'si' ? '/si' : currentLang === 'ta' ? '/ta' : '';
+        window.history.pushState({}, '', langPrefix || '/');
+      }
+      return;
+    }
+
+    const topicConfig = getTopicHub(topicSlug);
+    if (topicConfig) {
+      setActiveTopicSlug(topicConfig.slug);
+      setCurrentCategory(topicConfig.category);
+      setSelectedPublisher('all');
+      if (typeof window !== 'undefined') {
+        const langPrefix = currentLang === 'si' ? '/si' : currentLang === 'ta' ? '/ta' : '';
+        window.history.pushState({}, '', `${langPrefix}/topic/${topicConfig.slug}`);
+      }
+    }
   };
 
   // Handle opening an article fully across the page with browser history sync
   const handleOpenArticle = (article: Article) => {
     setSelectedArticle(article);
     if (typeof window !== 'undefined') {
-      window.history.pushState({ articleId: article.id }, '', `/article/${encodeURIComponent(article.id)}?lang=${currentLang}`);
+      const langPrefix = currentLang === 'si' ? '/si' : currentLang === 'ta' ? '/ta' : '';
+      window.history.pushState({ articleId: article.id }, '', `${langPrefix}/article/${encodeURIComponent(article.id)}`);
     }
   };
 
   const handleBackToFrontPage = () => {
     setSelectedArticle(null);
     if (typeof window !== 'undefined') {
-      window.history.pushState(null, '', `/?lang=${currentLang}`);
+      const langPrefix = currentLang === 'si' ? '/si' : currentLang === 'ta' ? '/ta' : '';
+      window.history.pushState(null, '', langPrefix || '/');
     }
   };
 
@@ -348,15 +392,20 @@ export default function HomePage() {
       } else {
         url.searchParams.set('timeRange', range);
       }
-      window.history.pushState(null, '', url.toString());
+      window.history.pushState(null, '', url.pathname + url.search);
     }
   };
 
   const handleResetFilters = () => {
     setCurrentCategory('all');
+    setActiveTopicSlug(null);
     setSelectedPublisher('all');
     setSearchQuery('');
-    handleDateRangeChange('all');
+    setDateRange('all');
+    if (typeof window !== 'undefined') {
+      const langPrefix = currentLang === 'si' ? '/si' : currentLang === 'ta' ? '/ta' : '';
+      window.history.pushState({}, '', langPrefix || '/');
+    }
   };
 
   const savedArticles = useMemo(() => {
@@ -367,12 +416,8 @@ export default function HomePage() {
 
   const handleLogoClick = () => {
     setSelectedArticle(null);
-    setCurrentCategory('all');
-    setSelectedPublisher('all');
-    setSearchQuery('');
-    handleDateRangeChange('all');
+    handleResetFilters();
     if (typeof window !== 'undefined') {
-      window.history.pushState(null, '', window.location.pathname);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
@@ -531,7 +576,7 @@ export default function HomePage() {
             />
           </div>
 
-          {/* Category Navigation Bar */}
+          {/* Category & Topic Navigation Bar */}
           <CategoryNav
             currentCategory={currentCategory}
             onSelectCategory={handleSelectCategory}
@@ -540,15 +585,19 @@ export default function HomePage() {
             onToggleViewMode={setViewMode}
             dateRange={dateRange}
             onSelectDateRange={handleDateRangeChange}
+            activeTopicSlug={activeTopicSlug || undefined}
+            onSelectTopic={handleSelectTopic}
           />
 
-          {/* Active Category Scope & Historical Filter Status Banner */}
-          {(currentCategory !== 'all' || dateRange !== 'all') && (
+          {/* Active Category / Topic Scope & Historical Filter Status Banner */}
+          {(activeTopicSlug || currentCategory !== 'all' || dateRange !== 'all') && (
             <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 mb-3 border-b border-[var(--border-line)] text-xs font-mono text-[var(--text-muted)] gap-2">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="w-2 h-2 rounded-full bg-[var(--accent-crimson)] animate-pulse" />
                 <span className={`text-[var(--text-main)] font-bold uppercase tracking-wider ${currentLang === 'si' ? 'font-sinhala' : ''} ${currentLang === 'ta' ? 'font-tamil' : ''}`}>
-                  {categoryWireTitles[currentCategory][currentLang]}
+                  {activeTopicSlug && getTopicHub(activeTopicSlug)
+                    ? `📌 ${getTopicHub(activeTopicSlug)!.title[currentLang]}`
+                    : categoryWireTitles[currentCategory][currentLang]}
                 </span>
                 {dateRange !== 'all' && (
                   <span className="px-2 py-0.5 rounded bg-rose-500/15 border border-rose-500/30 text-rose-600 dark:text-rose-300 font-semibold text-[11px] font-mono">
@@ -728,7 +777,7 @@ export default function HomePage() {
               {Object.values(SECTION_HUBS).map((sec) => (
                 <Link
                   key={sec.slug}
-                  href={`/category/${sec.slug}${currentLang !== 'en' ? `?lang=${currentLang}` : ''}`}
+                  href={`${currentLang === 'si' ? '/si' : currentLang === 'ta' ? '/ta' : ''}/category/${sec.slug}`}
                   className="text-[var(--text-muted)] hover:text-[var(--text-main)] underline-offset-2 hover:underline transition-colors"
                 >
                   {sec.title[currentLang]}
@@ -742,7 +791,7 @@ export default function HomePage() {
               {Object.values(TOPIC_HUBS).map((top) => (
                 <Link
                   key={top.slug}
-                  href={`/topic/${top.slug}${currentLang !== 'en' ? `?lang=${currentLang}` : ''}`}
+                  href={`${currentLang === 'si' ? '/si' : currentLang === 'ta' ? '/ta' : ''}/topic/${top.slug}`}
                   className="text-[var(--text-muted)] hover:text-[var(--text-main)] underline-offset-2 hover:underline transition-colors"
                 >
                   {top.shortLabel[currentLang]}
