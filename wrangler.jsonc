@@ -28,10 +28,14 @@
       "*/15 * * * *"
     ]
   },
+  "ai": {
+    "binding": "AI"
+  },
   "vars": {
     "NEXT_PUBLIC_SITE_URL": "https://lankadispatch.com",
     "NEXT_PUBLIC_ADSENSE_CLIENT_ID": "ca-pub-1562210028522673",
     "NEXT_PUBLIC_ADSENSE_PUB_ID": "pub-1562210028522673",
-    "NEXT_PUBLIC_CF_ANALYTICS_TOKEN": "24070ef2185b4962b78ccd04e4b18d88"
+    "NEXT_PUBLIC_CF_ANALYTICS_TOKEN": "24070ef2185b4962b78ccd04e4b18d88",
+    "CLOUDFLARE_ACCOUNT_ID": "82694eacfd3aefe8304a4e2664ca05e8"
   }
 }

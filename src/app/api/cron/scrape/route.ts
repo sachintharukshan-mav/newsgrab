@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { refreshAllNewsFeeds, getAggregatedArticles } from '@/lib/news-service';
+import { refreshAllNewsFeeds, getAggregatedArticles, synthesizeTopLeadStories } from '@/lib/news-service';
 import { submitArticlesToIndexNow, pingSearchEngineSitemaps } from '@/lib/indexnow';
 
 export const dynamic = 'force-dynamic';
@@ -34,6 +34,14 @@ export async function GET(request: NextRequest) {
     const startedAt = Date.now();
     const counts = await refreshAllNewsFeeds();
 
+    // Synthesize top newly ingested lead stories into Axios Smart Brevity briefs with Workers AI
+    let synthesisSummary = null;
+    try {
+      synthesisSummary = await synthesizeTopLeadStories(2);
+    } catch (synthErr) {
+      console.warn('Background AI synthesis notice:', synthErr);
+    }
+
     // Push newly ingested lead stories to IndexNow (Bing, Copilot, Yandex, Yahoo)
     let indexNowSummary = null;
     try {
@@ -54,6 +62,7 @@ export async function GET(request: NextRequest) {
       timestamp: new Date().toISOString(),
       durationMs,
       articlesIngested: counts,
+      aiSynthesis: synthesisSummary,
       indexNow: indexNowSummary ? {
         status: indexNowSummary.status,
         submittedCount: indexNowSummary.submittedCount,

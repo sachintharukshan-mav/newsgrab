@@ -6,7 +6,8 @@ import { Language } from '@/lib/types';
 import { NewsArticleJsonLd } from '@/components/seo/JsonLd';
 import { ArticleViewContainer } from '@/components/news/ArticleViewContainer';
 import { getSiteUrl } from '@/lib/site-config';
-import { getCachedBrief } from '@/lib/gemini-synthesizer';
+import { getCachedBrief as getGeminiCachedBrief } from '@/lib/gemini-synthesizer';
+import { getCachedBrief as getWorkersAiCachedBrief } from '@/lib/workers-ai-synthesizer';
 import { buildOptimisticBrief } from '@/lib/brief-utils';
 
 interface PageProps {
@@ -39,7 +40,7 @@ export async function generateMetadata({
 
   // Pre-attach Smart Brevity executive brief for SSR metadata if missing
   if (!article.brief?.[currentLang]) {
-    const cachedBrief = getCachedBrief(article.sourceUrl, currentLang);
+    const cachedBrief = (await getWorkersAiCachedBrief(article.sourceUrl, currentLang)) || getGeminiCachedBrief(article.sourceUrl, currentLang);
     article.brief = {
       ...article.brief,
       [currentLang]: cachedBrief || buildOptimisticBrief(article, currentLang),
@@ -142,7 +143,7 @@ export default async function ArticlePage({ params, searchParams }: PageProps) {
   // Pre-attach Smart Brevity executive brief so Googlebot and search crawlers
   // receive the full, rich, structured editorial dispatch in initial SSR HTML.
   if (!article.brief?.[currentLang]) {
-    const cachedBrief = getCachedBrief(article.sourceUrl, currentLang);
+    const cachedBrief = (await getWorkersAiCachedBrief(article.sourceUrl, currentLang)) || getGeminiCachedBrief(article.sourceUrl, currentLang);
     article.brief = {
       ...article.brief,
       [currentLang]: cachedBrief || buildOptimisticBrief(article, currentLang),

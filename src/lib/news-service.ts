@@ -14,6 +14,7 @@ import {
 } from '@/lib/rss-parser';
 import { Article, Category, Language } from '@/lib/types';
 import { getCloudflareEnv } from '@/lib/cloudflare';
+import { synthesizeWithWorkersAi, getCachedBrief as getWorkersAiCachedBrief, getDailyAiUsage } from '@/lib/workers-ai-synthesizer';
 
 export const CACHE_TTL_MS = 2 * 60 * 1000; // 2 minutes in memory
 
@@ -656,4 +657,110 @@ export function reconstructArchivedArticle(slugId: string, lang: Language = 'en'
   };
 
   return article;
+}
+
+/**
+ * Synthesizes top newly ingested lead stories into structured Axios Smart Brevity briefs
+ * using Cloudflare Workers AI (@cf/meta/llama-3.2-3b-instruct).
+ * Runs during the 15-minute background cron scrape, strictly inside the 35 stories/day limit.
+ */
+export async function synthesizeTopLeadStories(limit = 2): Promise<{
+  synthesized: number;
+  skipped: number;
+  dailyCount: number;
+  dailyLimit: number;
+}> {
+  const { count, limit: dailyLimit } = await getDailyAiUsage();
+  if (count >= dailyLimit) {
+    return { synthesized: 0, skipped: limit, dailyCount: count, dailyLimit };
+  }
+
+  const enArticles = await getAggregatedArticles('en');
+  if (!enArticles || enArticles.length === 0) {
+    return { synthesized: 0, skipped: 0, dailyCount: count, dailyLimit };
+  }
+
+  const candidates = enArticles.slice(0, 6);
+  let synthesizedCount = 0;
+  let skippedCount = 0;
+  const env = await getCloudflareEnv();
+
+  for (const article of candidates) {
+    if (synthesizedCount >= limit) break;
+
+    // Skip if article already has a synthesized brief in memory/KV
+    if (
+      article.brief?.en &&
+      article.brief.en.whatHappened &&
+      !article.brief.en.whatHappened.includes('Lanka Dispatch digital wire archives') &&
+      !article.brief.en.whatHappened.includes('Verified newsroom reporting syndicated')
+    ) {
+      skippedCount++;
+      continue;
+    }
+
+    const existingBrief = await getWorkersAiCachedBrief(article.sourceUrl, 'en');
+    if (existingBrief) {
+      article.brief = {
+        ...article.brief,
+        en: existingBrief,
+      };
+      skippedCount++;
+      continue;
+    }
+
+    // Synthesize using Workers AI
+    try {
+      const result = await synthesizeWithWorkersAi({
+        url: article.sourceUrl,
+        headline: article.title.en,
+        rawText: article.summary.en,
+        publisherName: article.publisherName,
+        lang: 'en',
+      });
+
+      if (result.provider === 'workers-ai') {
+        article.brief = {
+          ...article.brief,
+          en: result.brief,
+        };
+        synthesizedCount++;
+
+        // Persist updated individual article to KV for instant fast lookup
+        if (env?.NEWS_CACHE) {
+          try {
+            await env.NEWS_CACHE.put(`article:${article.id}`, JSON.stringify(article), {
+              expirationTtl: 30 * 86400,
+            });
+          } catch (kvErr) {
+            console.warn('Persist synthesized article to KV warning:', kvErr);
+          }
+        }
+      } else {
+        skippedCount++;
+      }
+    } catch (synthErr) {
+      console.warn(`Synthesis error for article ${article.id}:`, synthErr);
+      skippedCount++;
+    }
+  }
+
+  // If any articles were synthesized, update the in-memory cache and KV articles list
+  if (synthesizedCount > 0 && env?.NEWS_CACHE) {
+    try {
+      await env.NEWS_CACHE.put('articles:en', JSON.stringify(enArticles), {
+        expirationTtl: 30 * 86400,
+      });
+    } catch (kvUpdateErr) {
+      console.warn('KV articles list update warning:', kvUpdateErr);
+    }
+  }
+
+  const updatedUsage = await getDailyAiUsage();
+  return {
+    synthesized: synthesizedCount,
+    skipped: skippedCount,
+    dailyCount: updatedUsage.count,
+    dailyLimit,
+  };
 }

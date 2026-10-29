@@ -15,8 +15,14 @@ export interface CloudflareBindings {
       };
     };
   };
+  AI?: {
+    run: (model: string, inputs: any) => Promise<any>;
+  };
   NEXT_PUBLIC_ADSENSE_CLIENT_ID?: string;
   NEXT_PUBLIC_ADSENSE_PUB_ID?: string;
+  NEXT_PUBLIC_CF_ANALYTICS_TOKEN?: string;
+  CLOUDFLARE_API_TOKEN?: string;
+  CLOUDFLARE_ACCOUNT_ID?: string;
   CRON_SECRET?: string;
 }
 
