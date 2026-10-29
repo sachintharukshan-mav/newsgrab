@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { refreshAllNewsFeeds, getAggregatedArticles, synthesizeTopLeadStories } from '@/lib/news-service';
 import { submitArticlesToIndexNow, pingSearchEngineSitemaps } from '@/lib/indexnow';
+import { syncFuelPricesFromCeypetco } from '@/lib/fuel-data';
+import { syncLiveMarketSnapshot } from '@/lib/forex-data';
 
 export const dynamic = 'force-dynamic';
 
@@ -42,6 +44,21 @@ export async function GET(request: NextRequest) {
       console.warn('Background AI synthesis notice:', synthErr);
     }
 
+    // Sync live market utilities (Forex, Gold, and Ceypetco Fuel Prices)
+    let marketSyncSummary = null;
+    try {
+      const [forexSnap, fuelSnap] = await Promise.allSettled([
+        syncLiveMarketSnapshot(),
+        syncFuelPricesFromCeypetco(),
+      ]);
+      marketSyncSummary = {
+        forex: forexSnap.status === 'fulfilled' ? { usdLkr: forexSnap.value.usdLkr, gold24k: forexSnap.value.gold24kSovereign } : null,
+        fuel: fuelSnap.status === 'fulfilled' ? { revisionDate: fuelSnap.value.lastRevisionDate, petrol92: fuelSnap.value.fuelTypes[0]?.cpcPrice } : null,
+      };
+    } catch (mktErr) {
+      console.warn('Market sync background notice:', mktErr);
+    }
+
     // Push newly ingested lead stories to IndexNow (Bing, Copilot, Yandex, Yahoo)
     let indexNowSummary = null;
     try {
@@ -63,6 +80,7 @@ export async function GET(request: NextRequest) {
       durationMs,
       articlesIngested: counts,
       aiSynthesis: synthesisSummary,
+      marketUtilities: marketSyncSummary,
       indexNow: indexNowSummary ? {
         status: indexNowSummary.status,
         submittedCount: indexNowSummary.submittedCount,

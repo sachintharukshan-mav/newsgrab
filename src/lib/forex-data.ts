@@ -1,5 +1,6 @@
 // Market Data Utility for Lanka Dispatch Utility Pages
 // Provides real-time currency, gold, and fuel data with reliable caching
+import { getCloudflareEnv } from './cloudflare';
 
 export interface BankRateComparison {
   bankName: string;
@@ -42,10 +43,18 @@ export interface LiveMarketSnapshot {
 }
 
 // Fallback baseline when external APIs are slow or offline
-const BASELINE_USD_LKR = 302.50;
+const BASELINE_USD_LKR = 332.00;
 const BASELINE_GOLD_SPOT_USD = 2735.0;
 
-export async function getLiveMarketSnapshot(): Promise<LiveMarketSnapshot> {
+let memoryMarketCache: LiveMarketSnapshot | null = null;
+let memoryMarketTimestamp = 0;
+const CACHE_TTL_MS = 15 * 60 * 1000; // 15 minutes in-memory
+
+/**
+ * Actively syncs and computes live market FX and Bullion data from global benchmark feeds.
+ * Persists results into distributed Cloudflare KV (NEWS_CACHE) for instant SSR edge retrieval.
+ */
+export async function syncLiveMarketSnapshot(): Promise<LiveMarketSnapshot> {
   let usdLkr = BASELINE_USD_LKR;
   let goldSpotUsd = BASELINE_GOLD_SPOT_USD;
   const now = new Date();
@@ -53,12 +62,18 @@ export async function getLiveMarketSnapshot(): Promise<LiveMarketSnapshot> {
   try {
     const [fxRes, goldRes] = await Promise.allSettled([
       fetch('https://open.er-api.com/v6/latest/USD', {
-        next: { revalidate: 900 },
-        signal: AbortSignal.timeout(4000),
+        headers: {
+          'Accept': 'application/json',
+          'User-Agent': 'LankaDispatch-MarketDesk/1.0 (+https://lankadispatch.com)'
+        },
+        signal: AbortSignal.timeout(4500),
       }),
       fetch('https://api.gold-api.com/price/XAU', {
-        next: { revalidate: 900 },
-        signal: AbortSignal.timeout(4000),
+        headers: {
+          'Accept': 'application/json',
+          'User-Agent': 'LankaDispatch-MarketDesk/1.0 (+https://lankadispatch.com)'
+        },
+        signal: AbortSignal.timeout(4500),
       }),
     ]);
 
@@ -268,7 +283,7 @@ export async function getLiveMarketSnapshot(): Promise<LiveMarketSnapshot> {
     });
   }
 
-  return {
+  const snapshot: LiveMarketSnapshot = {
     updatedAt: now.toISOString(),
     usdLkr,
     currencies,
@@ -280,4 +295,46 @@ export async function getLiveMarketSnapshot(): Promise<LiveMarketSnapshot> {
     gold22kPerGram: gram22k,
     goldSpotUsd,
   };
+
+  memoryMarketCache = snapshot;
+  memoryMarketTimestamp = Date.now();
+
+  const env = await getCloudflareEnv();
+  if (env?.NEWS_CACHE) {
+    try {
+      await env.NEWS_CACHE.put('market_snapshot', JSON.stringify(snapshot), {
+        expirationTtl: 30 * 86400,
+      });
+    } catch (kvErr) {
+      console.warn('[ForexSync] KV write notice:', kvErr);
+    }
+  }
+
+  return snapshot;
+}
+
+/**
+ * Retrieves the current market snapshot from memory, Cloudflare KV, or live sync.
+ */
+export async function getLiveMarketSnapshot(): Promise<LiveMarketSnapshot> {
+  const now = Date.now();
+  if (memoryMarketCache && now - memoryMarketTimestamp < CACHE_TTL_MS) {
+    return memoryMarketCache;
+  }
+
+  const env = await getCloudflareEnv();
+  if (env?.NEWS_CACHE) {
+    try {
+      const kvSnapshot = (await env.NEWS_CACHE.get('market_snapshot', 'json')) as LiveMarketSnapshot | null;
+      if (kvSnapshot && typeof kvSnapshot.usdLkr === 'number' && kvSnapshot.usdLkr > 0) {
+        memoryMarketCache = kvSnapshot;
+        memoryMarketTimestamp = now;
+        return kvSnapshot;
+      }
+    } catch (kvErr) {
+      console.warn('[ForexSync] KV read fallback:', kvErr);
+    }
+  }
+
+  return syncLiveMarketSnapshot();
 }

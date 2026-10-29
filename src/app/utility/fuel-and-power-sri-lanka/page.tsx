@@ -3,6 +3,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowLeft, Fuel, Zap, ShieldCheck, Clock, PhoneCall, AlertTriangle, ExternalLink, MapPin } from 'lucide-react';
 import { getSiteUrl } from '@/lib/site-config';
+import { getFuelSnapshot } from '@/lib/fuel-data';
 
 export const dynamic = 'force-dynamic';
 
@@ -64,143 +65,8 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-interface CeypetcoLiveItem {
-  product: string;
-  price: number;
-  category: string;
-  effectiveDate?: string;
-}
-
-async function getCeypetcoPrices(): Promise<{
-  prices: Record<string, number>;
-  effectiveDate: string;
-}> {
-  try {
-    const res = await fetch('https://api.ceypetco.gov.lk/api/admin/fuel-prices/active?limit=100', {
-      next: { revalidate: 3600 },
-      headers: {
-        'Accept': 'application/json',
-      },
-    });
-    if (res.ok) {
-      const json = (await res.json()) as any;
-      if (json.success && Array.isArray(json.data) && json.data.length > 0) {
-        const prices: Record<string, number> = {};
-        let latestDate = '';
-        for (const item of json.data as CeypetcoLiveItem[]) {
-          if (item.product && typeof item.price === 'number') {
-            prices[item.product] = item.price;
-          }
-          if (item.effectiveDate && (!latestDate || item.effectiveDate > latestDate)) {
-            latestDate = item.effectiveDate;
-          }
-        }
-        let formattedDate = 'October 01, 2026';
-        if (latestDate) {
-          try {
-            const d = new Date(latestDate);
-            d.setDate(d.getDate() + 1);
-            formattedDate = d.toLocaleDateString('en-US', { month: 'long', day: '2-digit', year: 'numeric' });
-          } catch {}
-        }
-        return { prices, effectiveDate: formattedDate };
-      }
-    }
-  } catch (err) {
-    console.warn('Failed to fetch live Ceypetco API, using verified static fallback:', err);
-  }
-  return {
-    prices: {
-      'Lanka Petrol 92 Octane': 414,
-      'Lanka Petrol 95 Octane Euro 4': 475,
-      'Lanka Auto Diesel': 392,
-      'Lanka Super Diesel 4 Star Euro 4': 528,
-      'Lanka Kerosene': 285,
-      'Lanka Industrial Kerosene': 434,
-    },
-    effectiveDate: 'October 01, 2026',
-  };
-}
-
 export default async function FuelAndPowerPage() {
-  const { prices: livePrices, effectiveDate: lastRevisionDate } = await getCeypetcoPrices();
-  const nextFormulaRevision = 'November 01, 2026';
-
-  const pet92 = livePrices['Lanka Petrol 92 Octane'] || 414;
-  const pet95 = livePrices['Lanka Petrol 95 Octane Euro 4'] || 475;
-  const diesel = livePrices['Lanka Auto Diesel'] || 392;
-  const superDiesel = livePrices['Lanka Super Diesel 4 Star Euro 4'] || 528;
-  const kerosene = livePrices['Lanka Kerosene'] || 285;
-  const indKerosene = livePrices['Lanka Industrial Kerosene'] || 434;
-
-  const fuelTypes = [
-    {
-      name: 'Petrol 92 Octane',
-      shortName: 'Petrol 92',
-      cpcPrice: pet92,
-      liocPrice: pet92,
-      sinopecPrice: pet92,
-      change: 15,
-      status: 'revised-up',
-      fuelBadge: 'Automotive Regular',
-      popular: true,
-    },
-    {
-      name: 'Petrol 95 Octane',
-      shortName: 'Petrol 95',
-      cpcPrice: pet95,
-      liocPrice: 495, // Lanka IOC branded premium pricing
-      sinopecPrice: pet95,
-      change: 0,
-      status: 'unchanged',
-      fuelBadge: 'Premium Automotive (LIOC: Rs. 495)',
-      popular: false,
-    },
-    {
-      name: 'Auto Diesel (Standard)',
-      shortName: 'Auto Diesel',
-      cpcPrice: diesel,
-      liocPrice: diesel,
-      sinopecPrice: diesel,
-      change: 10,
-      status: 'revised-up',
-      fuelBadge: 'Commercial & Transport',
-      popular: true,
-    },
-    {
-      name: 'Super Diesel (Euro 4)',
-      shortName: 'Super Diesel',
-      cpcPrice: superDiesel,
-      liocPrice: superDiesel,
-      sinopecPrice: superDiesel,
-      change: 50,
-      status: 'revised-up',
-      fuelBadge: 'High-Performance Diesel',
-      popular: false,
-    },
-    {
-      name: 'Domestic Kerosene',
-      shortName: 'Kerosene',
-      cpcPrice: kerosene,
-      liocPrice: kerosene,
-      sinopecPrice: kerosene,
-      change: 0,
-      status: 'unchanged',
-      fuelBadge: 'Household & Fishery Subsidized',
-      popular: false,
-    },
-    {
-      name: 'Industrial Kerosene',
-      shortName: 'Ind. Kerosene',
-      cpcPrice: indKerosene,
-      liocPrice: indKerosene,
-      sinopecPrice: indKerosene,
-      change: 0,
-      status: 'unchanged',
-      fuelBadge: 'Manufacturing & Plants',
-      popular: false,
-    },
-  ];
+  const { fuelTypes, lastRevisionDate, nextFormulaRevision } = await getFuelSnapshot();
 
   const emergencyHotlines = [
     { name: 'Ceylon Petroleum Corporation (CPC)', hotline: '1944', desc: 'Fuel availability, delivery complaints, bowser tracking' },
