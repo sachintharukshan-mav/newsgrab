@@ -112,8 +112,8 @@ export async function submitArticlesToIndexNow(articles: Array<Pick<Article, 'id
   for (const a of articles) {
     const encodedId = encodeURIComponent(a.id);
     const enUrl = `${SITE_URL}/article/${encodedId}`;
-    const siUrl = `${SITE_URL}/article/${encodedId}?lang=si`;
-    const taUrl = `${SITE_URL}/article/${encodedId}?lang=ta`;
+    const siUrl = `${SITE_URL}/si/article/${encodedId}`;
+    const taUrl = `${SITE_URL}/ta/article/${encodedId}`;
 
     urlList.push(enUrl, siUrl, taUrl);
   }

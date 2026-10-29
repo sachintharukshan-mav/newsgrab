@@ -26,7 +26,13 @@ export const metadata: Metadata = {
     type: 'website'
   },
   alternates: {
-    canonical: 'https://lankadispatch.com/powercut'
+    canonical: 'https://lankadispatch.com/powercut',
+    languages: {
+      'en-LK': 'https://lankadispatch.com/powercut',
+      'si-LK': 'https://lankadispatch.com/si/powercut',
+      'ta-LK': 'https://lankadispatch.com/ta/powercut',
+      'x-default': 'https://lankadispatch.com/powercut',
+    },
   }
 };
 

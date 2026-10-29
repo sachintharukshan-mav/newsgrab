@@ -48,7 +48,7 @@ export const CategoryNav: React.FC<CategoryNavProps> = ({
 }) => {
   const categories: Category[] = ['all', 'local', 'world', 'breaking', 'economy', 'politics', 'tech', 'sports'];
   const topicList = Object.values(TOPIC_HUBS);
-  const langSuffix = currentLang !== 'en' ? `?lang=${currentLang}` : '';
+  const langPrefix = currentLang === 'si' ? '/si' : currentLang === 'ta' ? '/ta' : '';
   const isSinhala = currentLang === 'si';
   const isTamil = currentLang === 'ta';
 
@@ -61,7 +61,7 @@ export const CategoryNav: React.FC<CategoryNavProps> = ({
             {categories.map((cat) => {
               const isActive = !activeTopicSlug && currentCategory === cat;
               const label = categoryLabels[cat][currentLang];
-              const href = cat === 'all' ? `/${langSuffix}` : `/category/${cat}${langSuffix}`;
+              const href = cat === 'all' ? (langPrefix || '/') : `${langPrefix}/category/${cat}`;
 
               return (
                 <Link
@@ -164,7 +164,7 @@ export const CategoryNav: React.FC<CategoryNavProps> = ({
         </span>
         {topicList.map((topic) => {
           const isTopicActive = activeTopicSlug === topic.slug;
-          const href = `/topic/${topic.slug}${langSuffix}`;
+          const href = `${langPrefix}/topic/${topic.slug}`;
           return (
             <Link
               key={topic.slug}

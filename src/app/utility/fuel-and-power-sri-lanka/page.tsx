@@ -11,7 +11,10 @@ export async function generateMetadata(): Promise<Metadata> {
   const SITE_URL = getSiteUrl();
   const title = 'Sri Lanka Fuel Prices Today & CEB Power Alerts | LANKA DISPATCH';
   const description = 'Latest CPC, Lanka IOC, and Sinopec fuel prices in Sri Lanka. Petrol 92, Petrol 95, Auto Diesel, Super Diesel, and CEB rotational power cut schedule status.';
-  const canonicalUrl = `${SITE_URL}/utility/fuel-and-power-sri-lanka`;
+  const enUrl = `${SITE_URL}/utility/fuel-and-power-sri-lanka`;
+  const siUrl = `${SITE_URL}/si/utility/fuel-and-power-sri-lanka`;
+  const taUrl = `${SITE_URL}/ta/utility/fuel-and-power-sri-lanka`;
+  const canonicalUrl = enUrl;
 
   return {
     title,
@@ -30,7 +33,13 @@ export async function generateMetadata(): Promise<Metadata> {
       'இன்றைய பெட்ரோல் டீசல் விலை'
     ],
     alternates: {
-      canonical: canonicalUrl,
+      canonical: enUrl,
+      languages: {
+        'en-LK': enUrl,
+        'si-LK': siUrl,
+        'ta-LK': taUrl,
+        'x-default': enUrl,
+      },
     },
     openGraph: {
       title,

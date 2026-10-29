@@ -12,7 +12,10 @@ export async function generateMetadata(): Promise<Metadata> {
   const SITE_URL = getSiteUrl();
   const title = 'Gold Price in Sri Lanka Today | 24K & 22K Sovereign Rates | LANKA DISPATCH';
   const description = 'Live gold price in Sri Lanka today. Real-time 24 Karat and 22 Karat Sea Street Colombo gold rates per sovereign (pawan / 8g) and 1 gram. Interactive gold calculator and jeweler comparison.';
-  const canonicalUrl = `${SITE_URL}/markets/gold-price-sri-lanka-today`;
+  const enUrl = `${SITE_URL}/markets/gold-price-sri-lanka-today`;
+  const siUrl = `${SITE_URL}/si/markets/gold-price-sri-lanka-today`;
+  const taUrl = `${SITE_URL}/ta/markets/gold-price-sri-lanka-today`;
+  const canonicalUrl = enUrl;
 
   return {
     title,
@@ -31,7 +34,13 @@ export async function generateMetadata(): Promise<Metadata> {
       'swarna mahal gold price'
     ],
     alternates: {
-      canonical: canonicalUrl,
+      canonical: enUrl,
+      languages: {
+        'en-LK': enUrl,
+        'si-LK': siUrl,
+        'ta-LK': taUrl,
+        'x-default': enUrl,
+      },
     },
     openGraph: {
       title,

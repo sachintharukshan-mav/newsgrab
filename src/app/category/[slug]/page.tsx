@@ -39,8 +39,10 @@ export async function generateMetadata({
     };
   }
 
-  const baseUrl = `${SITE_URL}/category/${section.slug}`;
-  const canonicalUrl = currentLang !== 'en' ? `${baseUrl}?lang=${currentLang}` : baseUrl;
+  const enUrl = `${SITE_URL}/category/${section.slug}`;
+  const siUrl = `${SITE_URL}/si/category/${section.slug}`;
+  const taUrl = `${SITE_URL}/ta/category/${section.slug}`;
+  const canonicalUrl = currentLang === 'si' ? siUrl : currentLang === 'ta' ? taUrl : enUrl;
   const title = section.seoTitle[currentLang] || section.seoTitle.en;
   const description = section.description[currentLang] || section.description.en;
   const ogImageUrl = `${SITE_URL}/api/og?title=${encodeURIComponent(section.title.en)}&category=${encodeURIComponent(section.slug)}&pub=Lanka+Dispatch`;
@@ -52,10 +54,10 @@ export async function generateMetadata({
     alternates: {
       canonical: canonicalUrl,
       languages: {
-        'en-LK': baseUrl,
-        'si-LK': `${baseUrl}?lang=si`,
-        'ta-LK': `${baseUrl}?lang=ta`,
-        'x-default': baseUrl,
+        'en-LK': enUrl,
+        'si-LK': siUrl,
+        'ta-LK': taUrl,
+        'x-default': enUrl,
       },
     },
     openGraph: {

@@ -81,18 +81,25 @@ export default function HomePage() {
   useEffect(() => {
     let initialLang: Language = 'en';
     if (typeof window !== 'undefined') {
-      const params = new URLSearchParams(window.location.search);
-      const urlLang = params.get('lang') as Language;
-      if (urlLang && ['en', 'si', 'ta'].includes(urlLang)) {
-        initialLang = urlLang;
+      const pathname = window.location.pathname;
+      if (pathname.startsWith('/si/') || pathname === '/si') {
+        initialLang = 'si';
+      } else if (pathname.startsWith('/ta/') || pathname === '/ta') {
+        initialLang = 'ta';
       } else {
-        const savedLang = localStorage.getItem('newsgrab_lang') as Language;
-        if (savedLang && ['en', 'si', 'ta'].includes(savedLang)) {
-          initialLang = savedLang;
+        const params = new URLSearchParams(window.location.search);
+        const urlLang = params.get('lang') as Language;
+        if (urlLang && ['en', 'si', 'ta'].includes(urlLang)) {
+          initialLang = urlLang;
+        } else {
+          const savedLang = localStorage.getItem('newsgrab_lang') as Language;
+          if (savedLang && ['en', 'si', 'ta'].includes(savedLang)) {
+            initialLang = savedLang;
+          }
         }
       }
-      const urlTimeRange = params.get('timeRange') as DateRange;
-      const urlCategory = params.get('category') as Category;
+      const urlTimeRange = new URLSearchParams(window.location.search).get('timeRange') as DateRange;
+      const urlCategory = new URLSearchParams(window.location.search).get('category') as Category;
       React.startTransition(() => {
         if (urlTimeRange && ['all', '24h', '7d', '30d', '1y'].includes(urlTimeRange)) {
           setDateRange(urlTimeRange);
@@ -227,6 +234,19 @@ export default function HomePage() {
     setSelectedPublisher('all');
     if (typeof window !== 'undefined') {
       localStorage.setItem('newsgrab_lang', newLang);
+      try {
+        const url = new URL(window.location.href);
+        url.searchParams.delete('lang');
+        const currentPath = url.pathname.replace(/^\/(?:si|ta)(?:\/|$)/, '/');
+        if (newLang === 'si') {
+          url.pathname = currentPath === '/' ? '/si' : `/si${currentPath}`;
+        } else if (newLang === 'ta') {
+          url.pathname = currentPath === '/' ? '/ta' : `/ta${currentPath}`;
+        } else {
+          url.pathname = currentPath;
+        }
+        window.history.pushState({}, '', url.pathname + url.search);
+      } catch {}
     }
     fetchNews(newLang);
   };

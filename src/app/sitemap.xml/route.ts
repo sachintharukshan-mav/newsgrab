@@ -27,23 +27,46 @@ export async function GET() {
   // 1. Homepage & Trilingual Alternates
   xml += `  <url>\n`;
   xml += `    <loc>${escapeXml(`${SITE_URL}/`)}</loc>\n`;
-  xml += `    <xhtml:link rel="alternate" hreflang="en-LK" href="${escapeXml(`${SITE_URL}/?lang=en`)}" />\n`;
-  xml += `    <xhtml:link rel="alternate" hreflang="si-LK" href="${escapeXml(`${SITE_URL}/?lang=si`)}" />\n`;
-  xml += `    <xhtml:link rel="alternate" hreflang="ta-LK" href="${escapeXml(`${SITE_URL}/?lang=ta`)}" />\n`;
+  xml += `    <xhtml:link rel="alternate" hreflang="en-LK" href="${escapeXml(`${SITE_URL}/`)}" />\n`;
+  xml += `    <xhtml:link rel="alternate" hreflang="si-LK" href="${escapeXml(`${SITE_URL}/si`)}" />\n`;
+  xml += `    <xhtml:link rel="alternate" hreflang="ta-LK" href="${escapeXml(`${SITE_URL}/ta`)}" />\n`;
   xml += `    <xhtml:link rel="alternate" hreflang="x-default" href="${escapeXml(`${SITE_URL}/`)}" />\n`;
   xml += `    <lastmod>${now}</lastmod>\n`;
   xml += `    <changefreq>always</changefreq>\n`;
   xml += `    <priority>1.0</priority>\n`;
   xml += `  </url>\n`;
 
+  // 1.1 Dedicated Sinhala & Tamil Homepage loc nodes
+  xml += `  <url>\n`;
+  xml += `    <loc>${escapeXml(`${SITE_URL}/si`)}</loc>\n`;
+  xml += `    <xhtml:link rel="alternate" hreflang="en-LK" href="${escapeXml(`${SITE_URL}/`)}" />\n`;
+  xml += `    <xhtml:link rel="alternate" hreflang="si-LK" href="${escapeXml(`${SITE_URL}/si`)}" />\n`;
+  xml += `    <xhtml:link rel="alternate" hreflang="ta-LK" href="${escapeXml(`${SITE_URL}/ta`)}" />\n`;
+  xml += `    <lastmod>${now}</lastmod>\n`;
+  xml += `    <changefreq>always</changefreq>\n`;
+  xml += `    <priority>0.98</priority>\n`;
+  xml += `  </url>\n`;
+
+  xml += `  <url>\n`;
+  xml += `    <loc>${escapeXml(`${SITE_URL}/ta`)}</loc>\n`;
+  xml += `    <xhtml:link rel="alternate" hreflang="en-LK" href="${escapeXml(`${SITE_URL}/`)}" />\n`;
+  xml += `    <xhtml:link rel="alternate" hreflang="si-LK" href="${escapeXml(`${SITE_URL}/si`)}" />\n`;
+  xml += `    <xhtml:link rel="alternate" hreflang="ta-LK" href="${escapeXml(`${SITE_URL}/ta`)}" />\n`;
+  xml += `    <lastmod>${now}</lastmod>\n`;
+  xml += `    <changefreq>always</changefreq>\n`;
+  xml += `    <priority>0.98</priority>\n`;
+  xml += `  </url>\n`;
+
   // 2. Section Desk Hubs (/category/[slug] with trilingual alternates)
   for (const cat of SECTION_SLUGS) {
     const catUrl = `${SITE_URL}/category/${cat}`;
+    const siCatUrl = `${SITE_URL}/si/category/${cat}`;
+    const taCatUrl = `${SITE_URL}/ta/category/${cat}`;
     xml += `  <url>\n`;
     xml += `    <loc>${escapeXml(catUrl)}</loc>\n`;
     xml += `    <xhtml:link rel="alternate" hreflang="en-LK" href="${escapeXml(catUrl)}" />\n`;
-    xml += `    <xhtml:link rel="alternate" hreflang="si-LK" href="${escapeXml(`${catUrl}?lang=si`)}" />\n`;
-    xml += `    <xhtml:link rel="alternate" hreflang="ta-LK" href="${escapeXml(`${catUrl}?lang=ta`)}" />\n`;
+    xml += `    <xhtml:link rel="alternate" hreflang="si-LK" href="${escapeXml(siCatUrl)}" />\n`;
+    xml += `    <xhtml:link rel="alternate" hreflang="ta-LK" href="${escapeXml(taCatUrl)}" />\n`;
     xml += `    <xhtml:link rel="alternate" hreflang="x-default" href="${escapeXml(catUrl)}" />\n`;
     xml += `    <lastmod>${now}</lastmod>\n`;
     xml += `    <changefreq>hourly</changefreq>\n`;
@@ -54,11 +77,13 @@ export async function GET() {
   // 3. Evergreen Topic Intelligence Hubs (/topic/[slug] with trilingual alternates)
   for (const topicSlug of TOPIC_SLUGS) {
     const topicUrl = `${SITE_URL}/topic/${topicSlug}`;
+    const siTopicUrl = `${SITE_URL}/si/topic/${topicSlug}`;
+    const taTopicUrl = `${SITE_URL}/ta/topic/${topicSlug}`;
     xml += `  <url>\n`;
     xml += `    <loc>${escapeXml(topicUrl)}</loc>\n`;
     xml += `    <xhtml:link rel="alternate" hreflang="en-LK" href="${escapeXml(topicUrl)}" />\n`;
-    xml += `    <xhtml:link rel="alternate" hreflang="si-LK" href="${escapeXml(`${topicUrl}?lang=si`)}" />\n`;
-    xml += `    <xhtml:link rel="alternate" hreflang="ta-LK" href="${escapeXml(`${topicUrl}?lang=ta`)}" />\n`;
+    xml += `    <xhtml:link rel="alternate" hreflang="si-LK" href="${escapeXml(siTopicUrl)}" />\n`;
+    xml += `    <xhtml:link rel="alternate" hreflang="ta-LK" href="${escapeXml(taTopicUrl)}" />\n`;
     xml += `    <xhtml:link rel="alternate" hreflang="x-default" href="${escapeXml(topicUrl)}" />\n`;
     xml += `    <lastmod>${now}</lastmod>\n`;
     xml += `    <changefreq>hourly</changefreq>\n`;
@@ -75,8 +100,14 @@ export async function GET() {
   ];
   for (const util of utilityPages) {
     const utilUrl = `${SITE_URL}${util.path}`;
+    const siUtilUrl = `${SITE_URL}/si${util.path}`;
+    const taUtilUrl = `${SITE_URL}/ta${util.path}`;
     xml += `  <url>\n`;
     xml += `    <loc>${escapeXml(utilUrl)}</loc>\n`;
+    xml += `    <xhtml:link rel="alternate" hreflang="en-LK" href="${escapeXml(utilUrl)}" />\n`;
+    xml += `    <xhtml:link rel="alternate" hreflang="si-LK" href="${escapeXml(siUtilUrl)}" />\n`;
+    xml += `    <xhtml:link rel="alternate" hreflang="ta-LK" href="${escapeXml(taUtilUrl)}" />\n`;
+    xml += `    <xhtml:link rel="alternate" hreflang="x-default" href="${escapeXml(utilUrl)}" />\n`;
     xml += `    <lastmod>${now}</lastmod>\n`;
     xml += `    <changefreq>${util.changefreq}</changefreq>\n`;
     xml += `    <priority>${util.priority}</priority>\n`;
@@ -89,12 +120,14 @@ export async function GET() {
     const isoDate = isNaN(pubDate.getTime()) ? now : pubDate.toISOString();
     const articlePath = `/article/${encodeURIComponent(a.id)}`;
     const fullUrl = `${SITE_URL}${articlePath}`;
+    const siUrl = `${SITE_URL}/si${articlePath}`;
+    const taUrl = `${SITE_URL}/ta${articlePath}`;
 
     xml += `  <url>\n`;
     xml += `    <loc>${escapeXml(fullUrl)}</loc>\n`;
     xml += `    <xhtml:link rel="alternate" hreflang="en-LK" href="${escapeXml(fullUrl)}" />\n`;
-    xml += `    <xhtml:link rel="alternate" hreflang="si-LK" href="${escapeXml(`${fullUrl}?lang=si`)}" />\n`;
-    xml += `    <xhtml:link rel="alternate" hreflang="ta-LK" href="${escapeXml(`${fullUrl}?lang=ta`)}" />\n`;
+    xml += `    <xhtml:link rel="alternate" hreflang="si-LK" href="${escapeXml(siUrl)}" />\n`;
+    xml += `    <xhtml:link rel="alternate" hreflang="ta-LK" href="${escapeXml(taUrl)}" />\n`;
     xml += `    <xhtml:link rel="alternate" hreflang="x-default" href="${escapeXml(fullUrl)}" />\n`;
     if (a.imageUrl) {
       xml += `    <image:image>\n`;

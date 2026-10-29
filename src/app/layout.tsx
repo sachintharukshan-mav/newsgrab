@@ -61,9 +61,9 @@ export const metadata: Metadata = {
   alternates: {
     canonical: './',
     languages: {
-      'en-LK': '/?lang=en',
-      'si-LK': '/?lang=si',
-      'ta-LK': '/?lang=ta',
+      'en-LK': '/',
+      'si-LK': '/si',
+      'ta-LK': '/ta',
       'x-default': '/',
     },
   },

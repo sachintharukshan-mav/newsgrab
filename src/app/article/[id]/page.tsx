@@ -51,8 +51,10 @@ export async function generateMetadata({
   const activeBrief = article.brief[currentLang];
   const summary = activeBrief?.whatHappened || article.summary[currentLang] || article.summary.en || 'Latest breaking reporting from Colombo and international wire desks.';
 
-  const baseUrl = `${SITE_URL}/article/${encodeURIComponent(article.id)}`;
-  const canonicalUrl = currentLang === 'en' ? baseUrl : `${baseUrl}?lang=${currentLang}`;
+  const enUrl = `${SITE_URL}/article/${encodeURIComponent(article.id)}`;
+  const siUrl = `${SITE_URL}/si/article/${encodeURIComponent(article.id)}`;
+  const taUrl = `${SITE_URL}/ta/article/${encodeURIComponent(article.id)}`;
+  const canonicalUrl = currentLang === 'si' ? siUrl : currentLang === 'ta' ? taUrl : enUrl;
   const ogImageUrl = article.imageUrl
     ? article.imageUrl
     : `${SITE_URL}/api/og?title=${encodeURIComponent(title.slice(0, 80))}&category=${encodeURIComponent(article.category)}&pub=${encodeURIComponent(article.publisherName)}`;
@@ -71,10 +73,10 @@ export async function generateMetadata({
     alternates: {
       canonical: canonicalUrl,
       languages: {
-        'en-LK': baseUrl,
-        'si-LK': `${baseUrl}?lang=si`,
-        'ta-LK': `${baseUrl}?lang=ta`,
-        'x-default': baseUrl,
+        'en-LK': enUrl,
+        'si-LK': siUrl,
+        'ta-LK': taUrl,
+        'x-default': enUrl,
       },
     },
     openGraph: {
@@ -137,7 +139,8 @@ export default async function ArticlePage({ params, searchParams }: PageProps) {
   // Canonical redirect if requested id was an alias or sister-slug that resolved to an active article
   const decodedId = decodeURIComponent(id).trim();
   if (article.id !== id && article.id !== decodedId) {
-    redirect(`/article/${encodeURIComponent(article.id)}${currentLang !== 'en' ? `?lang=${currentLang}` : ''}`, RedirectType.replace);
+    const prefix = currentLang === 'si' ? '/si' : currentLang === 'ta' ? '/ta' : '';
+    redirect(`${prefix}/article/${encodeURIComponent(article.id)}`, RedirectType.replace);
   }
 
   // Pre-attach Smart Brevity executive brief so Googlebot and search crawlers

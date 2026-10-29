@@ -77,7 +77,8 @@ export async function GET() {
     const pubDate = article.publishedAt ? new Date(article.publishedAt) : now;
     const isoDate = isNaN(pubDate.getTime()) ? now.toISOString() : pubDate.toISOString();
     const title = article.title[lang] || article.title.en || article.title.si || article.title.ta || '';
-    const fullUrl = `${SITE_URL}/article/${encodeURIComponent(article.id)}${lang !== 'en' ? `?lang=${lang}` : ''}`;
+    const prefix = lang === 'si' ? '/si' : lang === 'ta' ? '/ta' : '';
+    const fullUrl = `${SITE_URL}${prefix}/article/${encodeURIComponent(article.id)}`;
 
     xml += `  <url>\n`;
     xml += `    <loc>${escapeXml(fullUrl)}</loc>\n`;

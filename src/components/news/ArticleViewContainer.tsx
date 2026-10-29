@@ -115,13 +115,15 @@ export const ArticleViewContainer: React.FC<ArticleViewContainerProps> = ({
   const handleLanguageChange = useCallback(
     (newLang: Language) => {
       setCurrentLang(newLang);
-      router.replace(`/article/${encodeURIComponent(article.id)}?lang=${newLang}`);
+      const prefix = newLang === 'si' ? '/si' : newLang === 'ta' ? '/ta' : '';
+      router.replace(`${prefix}/article/${encodeURIComponent(article.id)}`);
     },
     [router, article.id]
   );
 
   const handleBackToFrontPage = useCallback(() => {
-    router.push(`/?lang=${currentLang}`);
+    const prefix = currentLang === 'si' ? '/si' : currentLang === 'ta' ? '/ta' : '';
+    router.push(prefix || '/');
   }, [router, currentLang]);
 
   const handleSelectRelatedArticle = useCallback(

@@ -112,7 +112,10 @@ export const HubViewContainer: React.FC<HubViewContainerProps> = ({
       try {
         localStorage.setItem('newsgrab_lang', newLang);
       } catch {}
-      router.push(`${basePath}${newLang !== 'en' ? `?lang=${newLang}` : ''}`);
+      const cleanBasePath = basePath.replace(/^\/(?:si|ta)(?:\/|$)/, '/');
+      const prefix = newLang === 'si' ? '/si' : newLang === 'ta' ? '/ta' : '';
+      const target = cleanBasePath === '/' ? (prefix || '/') : `${prefix}${cleanBasePath}`;
+      router.push(target);
     },
     [router, basePath]
   );

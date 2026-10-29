@@ -12,7 +12,10 @@ export async function generateMetadata(): Promise<Metadata> {
   const SITE_URL = getSiteUrl();
   const title = 'USD to LKR Rate Today Sri Lanka | CBSL & Bank Exchange Rates';
   const description = 'Live USD to LKR exchange rate today in Sri Lanka. Compare daily Central Bank (CBSL) indicative rates, BOC, Commercial Bank, HNB, and Sampath bank buying & selling rates with currency converter.';
-  const canonicalUrl = `${SITE_URL}/markets/usd-to-lkr-rate-today`;
+  const enUrl = `${SITE_URL}/markets/usd-to-lkr-rate-today`;
+  const siUrl = `${SITE_URL}/si/markets/usd-to-lkr-rate-today`;
+  const taUrl = `${SITE_URL}/ta/markets/usd-to-lkr-rate-today`;
+  const canonicalUrl = enUrl;
 
   return {
     title,
@@ -30,7 +33,13 @@ export async function generateMetadata(): Promise<Metadata> {
       'sri lanka currency converter'
     ],
     alternates: {
-      canonical: canonicalUrl,
+      canonical: enUrl,
+      languages: {
+        'en-LK': enUrl,
+        'si-LK': siUrl,
+        'ta-LK': taUrl,
+        'x-default': enUrl,
+      },
     },
     openGraph: {
       title,
