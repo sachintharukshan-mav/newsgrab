@@ -92,16 +92,24 @@ export default async function FuelAndPowerPage() {
 
   const faqItems = [
     {
+      question: 'Are fuel prices different between Ceypetco, Lanka IOC, and Sinopec?',
+      answer: `Yes, for certain products. Petrol 92 (Rs. ${pet92}), Auto Diesel (Rs. ${diesel}), and Super Diesel (Rs. ${superDiesel}) maintain uniform price parity across CEYPETCO, Lanka IOC, and Sinopec. However, Petrol 95 Octane differs: CEYPETCO retails at Rs. ${pet95} per litre, while Lanka IOC and Sinopec retail at Rs. 495 per litre (a Rs. 20/L difference). Domestic Kerosene (Rs. ${kerosene}/L) is subsidized and exclusively retailed by CEYPETCO.`,
+    },
+    {
+      question: 'What is the price of Petrol 95 in Sri Lanka today?',
+      answer: `Petrol 95 Octane is priced at Rs. ${pet95} per litre at CEYPETCO (CPC) filling stations, and Rs. 495 per litre at Lanka IOC and Sinopec filling stations (reflecting a Rs. 20 per litre difference).`,
+    },
+    {
       question: 'What is the price of Petrol 92 in Sri Lanka today?',
       answer: `Petrol 92 Octane is officially retail priced at Rs. ${pet92} per litre across Ceylon Petroleum Corporation (CPC), Lanka IOC (LIOC), and Sinopec fuel stations islandwide.`,
     },
     {
       question: 'What is the price of Auto Diesel in Sri Lanka today?',
-      answer: `Auto Diesel is priced at Rs. ${diesel} per litre, while Super Diesel is priced at Rs. ${superDiesel} per litre at all licensed filling stations in Sri Lanka.`,
+      answer: `Auto Diesel is priced at Rs. ${diesel} per litre, while Super Diesel is priced at Rs. ${superDiesel} per litre at all licensed filling stations across Sri Lanka.`,
     },
     {
-      question: 'What is the price of Petrol 95 in Sri Lanka today?',
-      answer: `Petrol 95 Octane is priced at Rs. ${pet95} per litre at CPC and Sinopec filling stations, and Rs. 495 per litre at Lanka IOC stations.`,
+      question: 'Can I purchase subsidized domestic kerosene at Lanka IOC or Sinopec?',
+      answer: 'No. Subsidized domestic kerosene (Rs. 285 per litre) is exclusively distributed through state-run CEYPETCO dealer stations and MPCS cooperative societies to support low-income families and fishing communities.',
     },
     {
       question: 'How often are fuel prices revised in Sri Lanka?',
@@ -254,46 +262,85 @@ export default async function FuelAndPowerPage() {
 
         {/* Primary Pump Rate Spotlight Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-          {fuelTypes.slice(0, 4).map((f) => (
-            <div
-              key={f.shortName}
-              className={`p-5 sm:p-6 rounded-xl bg-[var(--bg-card)] border ${
-                f.popular ? 'border-rose-500/30 shadow-xl' : 'border-[var(--border-line)] shadow-lg'
-              } space-y-3`}
-            >
-              <div className="flex items-center justify-between text-xs font-mono text-[var(--text-muted)]">
-                <span className="font-bold flex items-center gap-1.5 text-[var(--text-main)]">
-                  <Fuel className="w-4 h-4 text-rose-500" /> {f.shortName}
-                </span>
-                <span className="text-[10px] px-1.5 py-0.5 rounded bg-[var(--bg-subtle)] text-[var(--text-muted)] font-semibold">
-                  Per Litre
-                </span>
-              </div>
-              <div className="text-3xl sm:text-4xl font-extrabold font-mono text-[var(--text-main)]">
-                Rs. {f.cpcPrice}
-              </div>
-              <div className="flex items-center justify-between text-xs font-mono text-[var(--text-muted)] pt-1 border-t border-[var(--border-line)]">
-                <span>CPC / LIOC / Sinopec</span>
-                {f.change !== 0 ? (
-                  <span className={f.change < 0 ? 'text-emerald-500 font-bold' : 'text-rose-500 font-bold'}>
-                    {f.change < 0 ? `▼ Rs. ${Math.abs(f.change)}` : `▲ Rs. ${f.change}`}
+          {fuelTypes.slice(0, 4).map((f) => {
+            const hasDifference = f.liocPrice !== null && f.cpcPrice !== f.liocPrice;
+            return (
+              <div
+                key={f.shortName}
+                className={`p-5 sm:p-6 rounded-xl bg-[var(--bg-card)] border ${
+                  hasDifference
+                    ? 'border-amber-500/50 shadow-xl ring-1 ring-amber-500/20'
+                    : f.popular
+                    ? 'border-rose-500/30 shadow-xl'
+                    : 'border-[var(--border-line)] shadow-lg'
+                } space-y-3`}
+              >
+                <div className="flex items-center justify-between text-xs font-mono text-[var(--text-muted)]">
+                  <span className="font-bold flex items-center gap-1.5 text-[var(--text-main)]">
+                    <Fuel className="w-4 h-4 text-rose-500" /> {f.shortName}
                   </span>
-                ) : (
-                  <span className="text-zinc-400">Unchanged</span>
-                )}
+                  <span className="text-[10px] px-1.5 py-0.5 rounded bg-[var(--bg-subtle)] text-[var(--text-muted)] font-semibold">
+                    Per Litre
+                  </span>
+                </div>
+
+                <div>
+                  <div className="text-xs font-mono text-[var(--text-muted)] flex items-center justify-between">
+                    <span>CEYPETCO (CPC)</span>
+                    {hasDifference && (
+                      <span className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-1.5 py-0.2 rounded border border-emerald-500/30">
+                        Lowest Rate
+                      </span>
+                    )}
+                  </div>
+                  <div className="text-3xl sm:text-4xl font-extrabold font-mono text-[var(--text-main)]">
+                    Rs. {f.cpcPrice}
+                  </div>
+                </div>
+
+                <div className="pt-2 border-t border-[var(--border-line)] space-y-1.5 text-xs font-mono">
+                  {hasDifference ? (
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between text-[11px]">
+                        <span className="text-[var(--text-muted)]">LIOC &amp; Sinopec:</span>
+                        <span className="font-bold text-amber-600 dark:text-amber-400">Rs. {f.liocPrice}</span>
+                      </div>
+                      <div className="text-[10px] text-amber-700 dark:text-amber-300 font-semibold bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20 flex items-center justify-between">
+                        <span>Price divergence:</span>
+                        <span>+Rs. {f.liocPrice! - f.cpcPrice} / Litre</span>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-between text-[var(--text-muted)]">
+                      <span className="text-[11px]">LIOC &amp; Sinopec:</span>
+                      <span className="text-emerald-600 dark:text-emerald-400 font-semibold text-[11px]">Same (Rs. {f.cpcPrice})</span>
+                    </div>
+                  )}
+
+                  <div className="flex items-center justify-between text-[11px] pt-1">
+                    <span className="text-[var(--text-muted)]">Monthly trend:</span>
+                    {f.change !== 0 ? (
+                      <span className={f.change < 0 ? 'text-emerald-500 font-bold' : 'text-rose-500 font-bold'}>
+                        {f.change < 0 ? `▼ Rs. ${Math.abs(f.change)}` : `▲ Rs. ${f.change}`}
+                      </span>
+                    ) : (
+                      <span className="text-zinc-400 font-semibold">Unchanged</span>
+                    )}
+                  </div>
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
 
-        {/* Comprehensive Retail Fuel Price Board */}
+        {/* Comprehensive Retail Fuel Price Board with Operator Variance */}
         <section className="space-y-4">
           <div>
             <h2 className="text-xl sm:text-2xl font-bold font-headline text-[var(--text-main)]">
               Official Sri Lanka Pump Prices by Fuel Category
             </h2>
             <p className="text-xs font-mono text-[var(--text-muted)]">
-              Fixed islandwide parity across Ceylon Petroleum Corporation (CPC), Lanka IOC, and Sinopec
+              Direct pricing comparison between state-owned Ceylon Petroleum Corporation (CPC), Lanka IOC, and Sinopec Energy Lanka
             </p>
           </div>
 
@@ -302,41 +349,150 @@ export default async function FuelAndPowerPage() {
               <thead>
                 <tr className="border-b border-[var(--border-line)] bg-[var(--bg-subtle)] text-[11px] font-mono uppercase tracking-wider text-[var(--text-muted)]">
                   <th className="py-3 px-4 sm:px-6">Fuel Product</th>
-                  <th className="py-3 px-4">CPC Price / Litre</th>
-                  <th className="py-3 px-4">Lanka IOC Price</th>
-                  <th className="py-3 px-4">Sinopec Price</th>
+                  <th className="py-3 px-4">CEYPETCO (CPC)</th>
+                  <th className="py-3 px-4">Lanka IOC (LIOC)</th>
+                  <th className="py-3 px-4">Sinopec</th>
+                  <th className="py-3 px-4">Distributor Parity</th>
                   <th className="py-3 px-4">Last Adjustment</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--border-line)] text-sm font-mono">
-                {fuelTypes.map((f) => (
-                  <tr key={f.name} className="hover:bg-[var(--bg-subtle)] transition-colors">
-                    <td className="py-3.5 px-4 sm:px-6 font-bold text-[var(--text-main)]">
-                      <div>{f.name}</div>
-                      <div className="text-[11px] font-normal text-[var(--text-muted)]">{f.fuelBadge}</div>
-                    </td>
-                    <td className="py-3.5 px-4 font-bold text-[var(--text-main)]">
-                      Rs. {f.cpcPrice}.00
-                    </td>
-                    <td className="py-3.5 px-4 font-bold text-[var(--text-main)]">
-                      Rs. {f.liocPrice}.00
-                    </td>
-                    <td className="py-3.5 px-4 font-bold text-[var(--text-main)]">
-                      Rs. {f.sinopecPrice}.00
-                    </td>
-                    <td className="py-3.5 px-4">
-                      {f.change !== 0 ? (
-                        <span className={`inline-flex items-center text-xs font-semibold ${f.change < 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
-                          {f.change < 0 ? `▼ Reduced by Rs. ${Math.abs(f.change)}` : `▲ Increased by Rs. ${f.change}`}
-                        </span>
-                      ) : (
-                        <span className="text-xs text-[var(--text-muted)]">No Change</span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
+                {fuelTypes.map((f) => {
+                  const hasDifference = f.liocPrice !== null && f.cpcPrice !== f.liocPrice;
+                  return (
+                    <tr
+                      key={f.name}
+                      className={`hover:bg-[var(--bg-subtle)] transition-colors ${
+                        hasDifference ? 'bg-amber-500/5 dark:bg-amber-950/15' : ''
+                      }`}
+                    >
+                      <td className="py-3.5 px-4 sm:px-6 font-bold text-[var(--text-main)]">
+                        <div className="flex items-center gap-2">
+                          <span>{f.name}</span>
+                          {hasDifference && (
+                            <span className="text-[10px] px-1.5 py-0.5 rounded bg-amber-500/20 text-amber-700 dark:text-amber-300 font-bold font-mono">
+                              Prices Differ
+                            </span>
+                          )}
+                        </div>
+                        <div className="text-[11px] font-normal text-[var(--text-muted)]">{f.fuelBadge}</div>
+                      </td>
+                      <td className="py-3.5 px-4 font-bold text-[var(--text-main)]">
+                        <div>Rs. {f.cpcPrice}.00</div>
+                        <div className="text-[10px] font-normal text-emerald-600 dark:text-emerald-400">State Benchmark</div>
+                      </td>
+                      <td className="py-3.5 px-4 font-bold text-[var(--text-main)]">
+                        {f.liocPrice !== null ? (
+                          <div>
+                            <span>Rs. {f.liocPrice}.00</span>
+                            {f.liocPrice > f.cpcPrice && (
+                              <span className="ml-1 text-[10px] text-amber-600 dark:text-amber-400 font-normal">
+                                (+Rs. {f.liocPrice - f.cpcPrice})
+                              </span>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-zinc-500 text-xs font-normal">N/A (CPC Only)</span>
+                        )}
+                      </td>
+                      <td className="py-3.5 px-4 font-bold text-[var(--text-main)]">
+                        {f.sinopecPrice !== null ? (
+                          <div>
+                            <span>Rs. {f.sinopecPrice}.00</span>
+                            {f.sinopecPrice > f.cpcPrice && (
+                              <span className="ml-1 text-[10px] text-amber-600 dark:text-amber-400 font-normal">
+                                (+Rs. {f.sinopecPrice - f.cpcPrice})
+                              </span>
+                            )}
+                          </div>
+                        ) : (
+                          <span className="text-zinc-500 text-xs font-normal">N/A (CPC Only)</span>
+                        )}
+                      </td>
+                      <td className="py-3.5 px-4">
+                        {hasDifference ? (
+                          <span className="inline-flex items-center text-[11px] font-semibold text-amber-700 dark:text-amber-300 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
+                            ⚡ CPC is Rs. {f.liocPrice! - f.cpcPrice} Cheaper
+                          </span>
+                        ) : f.liocPrice === null ? (
+                          <span className="text-xs text-[var(--text-muted)]">State Subsidized</span>
+                        ) : (
+                          <span className="inline-flex items-center text-[11px] text-emerald-600 dark:text-emerald-400 font-medium">
+                            ✓ Parity Across All 3
+                          </span>
+                        )}
+                      </td>
+                      <td className="py-3.5 px-4">
+                        {f.change !== 0 ? (
+                          <span className={`inline-flex items-center text-xs font-semibold ${f.change < 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
+                            {f.change < 0 ? `▼ Reduced by Rs. ${Math.abs(f.change)}` : `▲ Increased by Rs. ${f.change}`}
+                          </span>
+                        ) : (
+                          <span className="text-xs text-[var(--text-muted)]">No Change</span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
+          </div>
+        </section>
+
+        {/* Multi-Distributor Comparison Guide: CEYPETCO vs Lanka IOC vs Sinopec */}
+        <section className="p-6 sm:p-8 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-line)] shadow-sm space-y-6">
+          <div className="space-y-1">
+            <div className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider text-rose-600 dark:text-rose-400 font-semibold">
+              <Fuel className="w-4 h-4 text-rose-500" />
+              <span>Multi-Distributor Pricing Guide</span>
+            </div>
+            <h3 className="text-xl sm:text-2xl font-bold font-headline text-[var(--text-main)]">
+              Why Are Fuel Prices Different Across CEYPETCO, Lanka IOC &amp; Sinopec?
+            </h3>
+            <p className="text-xs sm:text-sm text-[var(--text-muted)] max-w-3xl leading-relaxed">
+              Sri Lanka's fuel market operates under a mixed state-and-private retail structure regulated by the Ministry of Power and Energy. While standard consumer fuels maintain regulated parity, private operators maintain pricing flexibility on select premium products.
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* CEYPETCO Card */}
+            <div className="p-5 rounded-xl bg-[var(--bg-subtle)] border border-[var(--border-line)] space-y-2.5">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-sm text-[var(--text-main)]">CEYPETCO (CPC)</span>
+                <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-mono font-semibold border border-emerald-500/20">
+                  State-Owned
+                </span>
+              </div>
+              <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+                Operates ~1,300 sheds nationwide. Benchmarks the monthly national price formula. Provides the <strong>cheapest Petrol 95 at Rs. 475</strong> (Rs. 20 less than private rivals) and is the sole distributor of subsidized Domestic Kerosene (Rs. 285).
+              </p>
+            </div>
+
+            {/* Lanka IOC Card */}
+            <div className="p-5 rounded-xl bg-[var(--bg-subtle)] border border-[var(--border-line)] space-y-2.5">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-sm text-[var(--text-main)]">Lanka IOC (LIOC)</span>
+                <span className="text-[10px] px-2 py-0.5 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400 font-mono font-semibold border border-blue-500/20">
+                  210+ Stations
+                </span>
+              </div>
+              <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+                Indian Oil Corporation subsidiary. Matches CPC on high-volume staples (Petrol 92: Rs. 414, Diesel: Rs. 392). Adjusts <strong>Petrol 95 at Rs. 495</strong> (+Rs. 20) to reflect independent landed procurement costs. Does not retail subsidized kerosene.
+              </p>
+            </div>
+
+            {/* Sinopec Card */}
+            <div className="p-5 rounded-xl bg-[var(--bg-subtle)] border border-[var(--border-line)] space-y-2.5">
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-sm text-[var(--text-main)]">Sinopec Energy</span>
+                <span className="text-[10px] px-2 py-0.5 rounded bg-amber-500/10 text-amber-600 dark:text-amber-400 font-mono font-semibold border border-amber-500/20">
+                  150+ Stations
+                </span>
+              </div>
+              <p className="text-xs text-[var(--text-muted)] leading-relaxed">
+                Chinese state enterprise operator. Matches CPC benchmark on Petrol 92 (Rs. 414) and Diesel (Rs. 392). Retails <strong>Petrol 95 at Rs. 495</strong> (matching LIOC). Periodically offers corporate fleet credit and digital payment cashback promotions.
+              </p>
+            </div>
           </div>
         </section>
 

@@ -4,8 +4,8 @@ export interface FuelPriceItem {
   name: string;
   shortName: string;
   cpcPrice: number;
-  liocPrice: number;
-  sinopecPrice: number;
+  liocPrice: number | null;
+  sinopecPrice: number | null;
   change: number;
   status: 'revised-up' | 'revised-down' | 'unchanged';
   fuelBadge: string;
@@ -54,10 +54,10 @@ const DEFAULT_FUEL_SNAPSHOT: FuelSnapshot = {
       shortName: 'Petrol 95',
       cpcPrice: 475,
       liocPrice: 495,
-      sinopecPrice: 475,
+      sinopecPrice: 495,
       change: 0,
       status: 'unchanged',
-      fuelBadge: 'Premium Automotive (LIOC: Rs. 495)',
+      fuelBadge: 'Premium Automotive (CPC: Rs. 475 · LIOC & Sinopec: Rs. 495)',
       popular: false,
     },
     {
@@ -86,22 +86,22 @@ const DEFAULT_FUEL_SNAPSHOT: FuelSnapshot = {
       name: 'Domestic Kerosene',
       shortName: 'Kerosene',
       cpcPrice: 285,
-      liocPrice: 285,
-      sinopecPrice: 285,
+      liocPrice: null,
+      sinopecPrice: null,
       change: 0,
       status: 'unchanged',
-      fuelBadge: 'Household & Fishery Subsidized',
+      fuelBadge: 'Government Subsidized (CEYPETCO Exclusive)',
       popular: false,
     },
     {
       name: 'Industrial Kerosene',
       shortName: 'Ind. Kerosene',
       cpcPrice: 434,
-      liocPrice: 434,
-      sinopecPrice: 434,
+      liocPrice: null,
+      sinopecPrice: null,
       change: 0,
       status: 'unchanged',
-      fuelBadge: 'Manufacturing & Plants',
+      fuelBadge: 'Manufacturing & Plants (CEYPETCO Commercial)',
       popular: false,
     },
   ],
@@ -208,10 +208,10 @@ export async function syncFuelPricesFromCeypetco(): Promise<FuelSnapshot> {
               shortName: 'Petrol 95',
               cpcPrice: pet95,
               liocPrice: 495,
-              sinopecPrice: pet95,
+              sinopecPrice: 495,
               change: pet95Delta.change,
               status: pet95Delta.status,
-              fuelBadge: 'Premium Automotive (LIOC: Rs. 495)',
+              fuelBadge: 'Premium Automotive (CPC: Rs. 475 · LIOC & Sinopec: Rs. 495)',
               popular: false,
             },
             {
@@ -240,22 +240,22 @@ export async function syncFuelPricesFromCeypetco(): Promise<FuelSnapshot> {
               name: 'Domestic Kerosene',
               shortName: 'Kerosene',
               cpcPrice: kerosene,
-              liocPrice: kerosene,
-              sinopecPrice: kerosene,
+              liocPrice: null,
+              sinopecPrice: null,
               change: keroseneDelta.change,
               status: keroseneDelta.status,
-              fuelBadge: 'Household & Fishery Subsidized',
+              fuelBadge: 'Government Subsidized (CEYPETCO Exclusive)',
               popular: false,
             },
             {
               name: 'Industrial Kerosene',
               shortName: 'Ind. Kerosene',
               cpcPrice: indKerosene,
-              liocPrice: indKerosene,
-              sinopecPrice: indKerosene,
+              liocPrice: null,
+              sinopecPrice: null,
               change: indKeroseneDelta.change,
               status: indKeroseneDelta.status,
-              fuelBadge: 'Manufacturing & Plants',
+              fuelBadge: 'Manufacturing & Plants (CEYPETCO Commercial)',
               popular: false,
             },
           ],
