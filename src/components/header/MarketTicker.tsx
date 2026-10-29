@@ -20,6 +20,11 @@ const tickerLabels = {
     si: 'රන් පවුම 24K:',
     ta: 'தங்கம் 24K (பவுன்):'
   },
+  fuel: {
+    en: 'FUEL (CPC/LIOC):',
+    si: 'ඉන්ධන මිල (සීපීසී):',
+    ta: 'எரிபொருள் விலை:'
+  },
   cse: {
     en: 'CSE ASPI:',
     si: 'කොළඹ කොටස් මිල දර්ශකය:',
@@ -71,6 +76,16 @@ export const MarketTicker: React.FC<MarketTickerProps> = ({ pulse, currentLang =
             >
               <span className="text-[var(--text-muted)]">{tickerLabels.gold[currentLang]}</span>
               <span className="text-amber-600 dark:text-amber-200 font-medium">Rs. {goldPrice24kPerSovereign.lkr.toLocaleString()}</span>
+            </Link>
+
+            <Link
+              href="/utility/fuel-and-power-sri-lanka"
+              className="flex items-center gap-1.5 font-mono hover:text-emerald-500 transition-colors"
+            >
+              <span className="text-[var(--text-muted)]">{tickerLabels.fuel[currentLang]}</span>
+              <span className="text-emerald-600 dark:text-emerald-400 font-medium">PETROL 92: Rs. 414</span>
+              <span className="text-[var(--text-faint)]">|</span>
+              <span className="text-emerald-600 dark:text-emerald-400 font-medium">DIESEL: Rs. 392</span>
             </Link>
 
             <div className="flex items-center gap-1.5 font-mono">

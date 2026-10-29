@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Language, DateRange } from '@/lib/types';
-import { Search, RefreshCw, X, Clock, Bookmark, Sun, Moon, Zap } from 'lucide-react';
+import { Search, RefreshCw, X, Clock, Bookmark, Sun, Moon, Zap, Fuel, DollarSign, Coins } from 'lucide-react';
 import { isPowercutScheduleExpired } from '@/data/powercut-schedule';
 
 interface NavbarProps {
@@ -69,7 +69,16 @@ const navbarTranslations = {
   timeRange1y: { en: 'Past Year', si: 'වසරක්', ta: '1 வருடம்' },
   saved: { en: 'Saved', si: 'සුරැකි', ta: 'சேமிக்கப்பட்டவை' },
   savedQueue: { en: 'Reading Queue', si: 'කියවීම් ලැයිස්තුව', ta: 'வாசிப்பு வரிசை' },
-  powerCuts: { en: 'Power Cuts', si: 'විදුලි කප්පාදුව', ta: 'மின்வெட்டு' }
+  powerCuts: { en: 'Power Cuts', si: 'විදුලි කප්පාදුව', ta: 'மின்வெட்டு' },
+  dailyTrackers: { en: 'Daily Trackers:', si: 'දෛනික දර්ශක:', ta: 'அன்றாட குறிகாட்டிகள்:' },
+  fuelPricesTag: { en: 'Fuel (CPC/LIOC)', si: 'ඉන්ධන මිල', ta: 'எரிபொருள்' },
+  fuelPricesDetail: { en: 'Petrol 92: Rs. 414 · Diesel: Rs. 392', si: 'පෙට්‍රල් 92: රු. 414 · ඩීසල්: රු. 392', ta: 'பெட்ரோல் 92: ரூ. 414 · டீசல்: ரூ. 392' },
+  usdLkrTag: { en: 'USD / LKR', si: 'ඩොලර් විනිමය', ta: 'டொலர் மாற்று விகிதம்' },
+  usdLkrDetail: { en: 'CBSL & Bank Rates', si: 'මහ බැංකු සහ බැංකු අනුපාත', ta: 'மத்திய வங்கி & வர்த்தக வங்கி' },
+  goldTag: { en: 'Gold (24K/22K)', si: 'රන් මිල (24K/22K)', ta: 'தங்கம் (24K/22K)' },
+  goldDetail: { en: 'Sea Street Rates', si: 'හෙට්ටිවීදිය මිල ගණන්', ta: 'செட்டியார் தெரு விலை' },
+  powercutTag: { en: 'CEB Power', si: 'විදුලි කප්පාදුව', ta: 'மின்வெட்டு' },
+  powercutDetail: { en: 'Interactive Area Map', si: 'දිස්ත්‍රික් සිතියම', ta: 'மாவட்ட வரைபடம்' }
 };
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -209,6 +218,39 @@ export const Navbar: React.FC<NavbarProps> = ({
                 )}
               </button>
             )}
+
+            {/* Quick Utility Pill Group */}
+            <div className="hidden sm:flex items-center gap-1.5 pl-1 border-l border-[var(--border-line)]">
+              <Link
+                href="/utility/fuel-and-power-sri-lanka"
+                className="flex items-center gap-1 px-2 py-0.5 rounded border border-emerald-500/40 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-700 dark:text-emerald-400 text-[10px] font-mono font-semibold cursor-pointer transition-colors"
+                title="Sri Lanka Fuel Prices Today (CPC / LIOC / Sinopec)"
+                aria-label="Fuel Prices Sri Lanka"
+              >
+                <Fuel className="w-2.5 h-2.5 text-emerald-500" />
+                <span>{navbarTranslations.fuelPricesTag[currentLang]}</span>
+              </Link>
+
+              <Link
+                href="/markets/usd-to-lkr-rate-today"
+                className="flex items-center gap-1 px-2 py-0.5 rounded border border-rose-500/40 bg-rose-500/10 hover:bg-rose-500/20 text-rose-700 dark:text-rose-400 text-[10px] font-mono font-semibold cursor-pointer transition-colors"
+                title="USD to LKR Exchange Rates (CBSL & Banks)"
+                aria-label="USD to LKR Rates"
+              >
+                <DollarSign className="w-2.5 h-2.5 text-rose-500" />
+                <span>{navbarTranslations.usdLkrTag[currentLang]}</span>
+              </Link>
+
+              <Link
+                href="/markets/gold-price-sri-lanka-today"
+                className="flex items-center gap-1 px-2 py-0.5 rounded border border-amber-500/40 bg-amber-500/10 hover:bg-amber-500/20 text-amber-700 dark:text-amber-400 text-[10px] font-mono font-semibold cursor-pointer transition-colors"
+                title="Gold Price in Sri Lanka (24K & 22K Sovereign)"
+                aria-label="Gold Rates Sri Lanka"
+              >
+                <Coins className="w-2.5 h-2.5 text-amber-500" />
+                <span>{navbarTranslations.goldTag[currentLang]}</span>
+              </Link>
+            </div>
 
             {/* Power Cuts Live Utility Button (auto-hides at 00:00:00 on 22 October 2026) */}
             {!isPowercutScheduleExpired() && (
@@ -369,6 +411,78 @@ export const Navbar: React.FC<NavbarProps> = ({
               )}
             </button>
           )}
+        </div>
+      </div>
+
+      {/* Island Daily Trackers Quick-Access Bar (Always visible & tap-friendly on mobile & desktop) */}
+      <div className="border-t border-[var(--border-line)]/60 bg-[var(--bg-subtle)]/60 py-2">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-2 overflow-x-auto scrollbar-none text-xs font-mono">
+            <span className="text-[var(--text-muted)] uppercase tracking-wider shrink-0 text-[10px] font-bold flex items-center gap-1 mr-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
+              <span>{navbarTranslations.dailyTrackers[currentLang]}</span>
+            </span>
+
+            {/* Fuel Prices Pill */}
+            <Link
+              href="/utility/fuel-and-power-sri-lanka"
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-[var(--bg-card)] hover:bg-[var(--bg-card-hover)] border border-[var(--border-line)] hover:border-emerald-500/50 text-[var(--text-main)] transition-all shrink-0 shadow-2xs group cursor-pointer"
+              title="Sri Lanka Fuel Prices Today (CPC / LIOC / Sinopec)"
+            >
+              <Fuel className="w-3.5 h-3.5 text-emerald-500 group-hover:scale-110 transition-transform" />
+              <span className="font-semibold text-emerald-600 dark:text-emerald-400">
+                {navbarTranslations.fuelPricesTag[currentLang]}:
+              </span>
+              <span className="text-[var(--text-body)] text-[11px]">
+                {navbarTranslations.fuelPricesDetail[currentLang]}
+              </span>
+            </Link>
+
+            {/* USD / LKR Exchange Rate Pill */}
+            <Link
+              href="/markets/usd-to-lkr-rate-today"
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-[var(--bg-card)] hover:bg-[var(--bg-card-hover)] border border-[var(--border-line)] hover:border-rose-500/50 text-[var(--text-main)] transition-all shrink-0 shadow-2xs group cursor-pointer"
+              title="USD to LKR Exchange Rates (CBSL & Commercial Banks)"
+            >
+              <DollarSign className="w-3.5 h-3.5 text-rose-500 group-hover:scale-110 transition-transform" />
+              <span className="font-semibold text-rose-600 dark:text-rose-400">
+                {navbarTranslations.usdLkrTag[currentLang]}:
+              </span>
+              <span className="text-[var(--text-body)] text-[11px]">
+                {navbarTranslations.usdLkrDetail[currentLang]}
+              </span>
+            </Link>
+
+            {/* Gold Rate Pill */}
+            <Link
+              href="/markets/gold-price-sri-lanka-today"
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-[var(--bg-card)] hover:bg-[var(--bg-card-hover)] border border-[var(--border-line)] hover:border-amber-500/50 text-[var(--text-main)] transition-all shrink-0 shadow-2xs group cursor-pointer"
+              title="Gold Sovereign & Gram Price Sri Lanka (24K / 22K)"
+            >
+              <Coins className="w-3.5 h-3.5 text-amber-500 group-hover:scale-110 transition-transform" />
+              <span className="font-semibold text-amber-600 dark:text-amber-400">
+                {navbarTranslations.goldTag[currentLang]}:
+              </span>
+              <span className="text-[var(--text-body)] text-[11px]">
+                {navbarTranslations.goldDetail[currentLang]}
+              </span>
+            </Link>
+
+            {/* Power Cut Outage Map Pill */}
+            <Link
+              href="/powercut"
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-[var(--bg-card)] hover:bg-[var(--bg-card-hover)] border border-[var(--border-line)] hover:border-amber-500/50 text-[var(--text-main)] transition-all shrink-0 shadow-2xs group cursor-pointer"
+              title="CEB 25-District Power Cut Map & Rotational Schedule"
+            >
+              <Zap className="w-3.5 h-3.5 text-amber-500 fill-current group-hover:scale-110 transition-transform" />
+              <span className="font-semibold text-amber-600 dark:text-amber-400">
+                {navbarTranslations.powercutTag[currentLang]}:
+              </span>
+              <span className="text-[var(--text-body)] text-[11px]">
+                {navbarTranslations.powercutDetail[currentLang]}
+              </span>
+            </Link>
+          </div>
         </div>
       </div>
     </header>

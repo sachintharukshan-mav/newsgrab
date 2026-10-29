@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowLeft, Fuel, Zap, ShieldCheck, Clock, PhoneCall, AlertTriangle, ExternalLink, MapPin } from 'lucide-react';
+import { ArrowLeft, Fuel, Zap, ShieldCheck, Clock, PhoneCall, AlertTriangle, ExternalLink, MapPin, DollarSign, Coins } from 'lucide-react';
 import { getSiteUrl } from '@/lib/site-config';
 import { getFuelSnapshot } from '@/lib/fuel-data';
 
@@ -68,6 +68,12 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function FuelAndPowerPage() {
   const { fuelTypes, lastRevisionDate, nextFormulaRevision } = await getFuelSnapshot();
 
+  const pet92 = fuelTypes.find((f) => f.shortName === 'Petrol 92')?.cpcPrice ?? 414;
+  const pet95 = fuelTypes.find((f) => f.shortName === 'Petrol 95')?.cpcPrice ?? 475;
+  const diesel = fuelTypes.find((f) => f.shortName === 'Auto Diesel')?.cpcPrice ?? 392;
+  const superDiesel = fuelTypes.find((f) => f.shortName === 'Super Diesel')?.cpcPrice ?? 528;
+  const kerosene = fuelTypes.find((f) => f.shortName === 'Kerosene')?.cpcPrice ?? 285;
+
   const emergencyHotlines = [
     { name: 'Ceylon Petroleum Corporation (CPC)', hotline: '1944', desc: 'Fuel availability, delivery complaints, bowser tracking' },
     { name: 'Lanka IOC Customer Helpline', hotline: '011 247 5720', desc: 'Lanka IOC filling station issues & fuel cards' },
@@ -78,15 +84,15 @@ export default async function FuelAndPowerPage() {
   const faqItems = [
     {
       question: 'What is the price of Petrol 92 in Sri Lanka today?',
-      answer: 'Petrol 92 Octane is officially retail priced at Rs. 414 per litre across all Ceylon Petroleum Corporation (CPC), Lanka IOC (LIOC), and Sinopec fuel stations islandwide.',
+      answer: `Petrol 92 Octane is officially retail priced at Rs. ${pet92} per litre across Ceylon Petroleum Corporation (CPC), Lanka IOC (LIOC), and Sinopec fuel stations islandwide.`,
     },
     {
       question: 'What is the price of Auto Diesel in Sri Lanka today?',
-      answer: 'Auto Diesel is priced at Rs. 392 per litre, while Super Diesel is priced at Rs. 528 per litre at all licensed filling stations in Sri Lanka.',
+      answer: `Auto Diesel is priced at Rs. ${diesel} per litre, while Super Diesel is priced at Rs. ${superDiesel} per litre at all licensed filling stations in Sri Lanka.`,
     },
     {
       question: 'What is the price of Petrol 95 in Sri Lanka today?',
-      answer: 'Petrol 95 Octane is priced at Rs. 475 per litre at CPC and Sinopec filling stations, and Rs. 495 per litre at Lanka IOC stations.',
+      answer: `Petrol 95 Octane is priced at Rs. ${pet95} per litre at CPC and Sinopec filling stations, and Rs. 495 per litre at Lanka IOC stations.`,
     },
     {
       question: 'How often are fuel prices revised in Sri Lanka?',
@@ -126,7 +132,8 @@ export default async function FuelAndPowerPage() {
             className="inline-flex items-center gap-2 text-xs font-mono font-bold text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors group cursor-pointer"
           >
             <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
-            <span>Back to Front Page</span>
+            <span className="hidden sm:inline">Back to Front Page</span>
+            <span className="sm:hidden">Back</span>
           </Link>
 
           <Link href="/" className="flex items-center gap-2 cursor-pointer">
@@ -138,13 +145,30 @@ export default async function FuelAndPowerPage() {
             </span>
           </Link>
 
-          <div className="flex items-center gap-3 text-xs font-mono text-[var(--text-muted)]">
+          <div className="flex items-center gap-2 sm:gap-3 text-xs font-mono text-[var(--text-muted)]">
+            <Link
+              href="/markets/usd-to-lkr-rate-today"
+              className="flex items-center gap-1 hover:text-rose-500 transition-colors py-1 px-1.5 rounded hover:bg-[var(--bg-subtle)]"
+              title="USD to LKR Exchange Rates"
+            >
+              <DollarSign className="w-3.5 h-3.5 text-rose-500" />
+              <span className="hidden md:inline">USD/LKR</span>
+            </Link>
+            <Link
+              href="/markets/gold-price-sri-lanka-today"
+              className="flex items-center gap-1 hover:text-amber-500 transition-colors py-1 px-1.5 rounded hover:bg-[var(--bg-subtle)]"
+              title="Gold Sovereign Rates"
+            >
+              <Coins className="w-3.5 h-3.5 text-amber-500" />
+              <span className="hidden md:inline">Gold Rates</span>
+            </Link>
             <Link
               href="/powercut"
-              className="flex items-center gap-1 text-amber-500 hover:text-amber-400 transition-colors"
+              className="flex items-center gap-1 text-amber-500 hover:text-amber-400 transition-colors py-1 px-1.5 rounded hover:bg-amber-500/10"
+              title="CEB Power Cut Schedule"
             >
               <Zap className="w-3.5 h-3.5 fill-current" />
-              <span>Interactive CEB Map</span>
+              <span className="hidden sm:inline">Power Cuts</span>
             </Link>
           </div>
         </div>
@@ -152,6 +176,38 @@ export default async function FuelAndPowerPage() {
 
       {/* Main Content Area */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-10">
+        {/* Island Trackers Quick Switcher Strip */}
+        <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-1 border-b border-[var(--border-line)] text-xs font-mono">
+          <span className="text-[var(--text-muted)] uppercase tracking-wider shrink-0 text-[11px] font-bold">
+            Island Trackers:
+          </span>
+          <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/30 font-bold shrink-0 flex items-center gap-1.5">
+            <Fuel className="w-3 h-3 text-emerald-500" />
+            <span>Fuel Prices (Active)</span>
+          </span>
+          <Link
+            href="/markets/usd-to-lkr-rate-today"
+            className="px-3 py-1 rounded-full bg-[var(--bg-card)] hover:bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:text-[var(--text-main)] border border-[var(--border-line)] transition-colors shrink-0 flex items-center gap-1.5"
+          >
+            <DollarSign className="w-3 h-3 text-rose-500" />
+            <span>USD to LKR Rate</span>
+          </Link>
+          <Link
+            href="/markets/gold-price-sri-lanka-today"
+            className="px-3 py-1 rounded-full bg-[var(--bg-card)] hover:bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:text-[var(--text-main)] border border-[var(--border-line)] transition-colors shrink-0 flex items-center gap-1.5"
+          >
+            <Coins className="w-3 h-3 text-amber-500" />
+            <span>Gold Price (24K/22K)</span>
+          </Link>
+          <Link
+            href="/powercut"
+            className="px-3 py-1 rounded-full bg-[var(--bg-card)] hover:bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:text-[var(--text-main)] border border-[var(--border-line)] transition-colors shrink-0 flex items-center gap-1.5"
+          >
+            <Zap className="w-3 h-3 text-amber-500" />
+            <span>CEB Power Cuts</span>
+          </Link>
+        </div>
+
         {/* Masthead Banner */}
         <div className="space-y-4 border-b border-[var(--border-line)] pb-8">
           <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-rose-600 dark:text-rose-400 font-semibold">

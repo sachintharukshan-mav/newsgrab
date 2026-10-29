@@ -1,7 +1,7 @@
 import React from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowLeft, Zap, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, Zap, ShieldCheck, Fuel, DollarSign, Coins } from 'lucide-react';
 import { PowerCutTracker } from '@/components/powercut/PowerCutTracker';
 import { PowerCutExpiredNotice } from '@/components/powercut/PowerCutExpiredNotice';
 import { isPowercutScheduleExpired } from '@/data/powercut-schedule';
@@ -77,27 +77,82 @@ export default function PowerCutPage() {
             className="inline-flex items-center gap-2 text-xs font-mono font-bold text-[var(--text-muted)] hover:text-[var(--text-main)] transition-colors group"
           >
             <ArrowLeft className="w-4 h-4 transition-transform group-hover:-translate-x-1" />
-            <span>Back to Front Page</span>
+            <span className="hidden sm:inline">Back to Front Page</span>
+            <span className="sm:hidden">Back</span>
           </Link>
 
           <Link href="/" className="flex items-center gap-2">
             <span className="font-serif font-black text-lg sm:text-xl tracking-tight text-[var(--text-main)]">
-              LANKA DISPATCH
+              LANKA<span className="text-rose-500">DISPATCH</span>
             </span>
-            <span className="hidden sm:inline-block px-1.5 py-0.5 bg-[var(--accent-crimson)] text-white text-[10px] font-mono font-bold uppercase rounded-xs">
+            <span className="hidden sm:inline-block px-1.5 py-0.5 bg-amber-500/10 text-amber-500 text-[10px] font-mono font-bold uppercase rounded border border-amber-500/20">
               Utility Desk
             </span>
           </Link>
 
-          <div className="flex items-center gap-2 text-xs font-mono text-[var(--text-muted)]">
-            <span className="hidden md:inline">Public Utility Intelligence</span>
-            <ShieldCheck className="w-4 h-4 text-emerald-500" />
+          <div className="flex items-center gap-2 sm:gap-3 text-xs font-mono text-[var(--text-muted)]">
+            <Link
+              href="/utility/fuel-and-power-sri-lanka"
+              className="flex items-center gap-1 hover:text-emerald-500 transition-colors py-1 px-1.5 rounded hover:bg-[var(--bg-subtle)]"
+              title="Fuel Prices Sri Lanka"
+            >
+              <Fuel className="w-3.5 h-3.5 text-emerald-500" />
+              <span className="hidden md:inline">Fuel Prices</span>
+            </Link>
+            <Link
+              href="/markets/usd-to-lkr-rate-today"
+              className="flex items-center gap-1 hover:text-rose-500 transition-colors py-1 px-1.5 rounded hover:bg-[var(--bg-subtle)]"
+              title="USD to LKR Rates"
+            >
+              <DollarSign className="w-3.5 h-3.5 text-rose-500" />
+              <span className="hidden md:inline">USD/LKR</span>
+            </Link>
+            <Link
+              href="/markets/gold-price-sri-lanka-today"
+              className="flex items-center gap-1 hover:text-amber-500 transition-colors py-1 px-1.5 rounded hover:bg-[var(--bg-subtle)]"
+              title="Gold Sovereign Rates"
+            >
+              <Coins className="w-3.5 h-3.5 text-amber-500" />
+              <span className="hidden md:inline">Gold Rates</span>
+            </Link>
           </div>
         </div>
       </header>
 
       {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+        {/* Island Trackers Quick Switcher Strip */}
+        <div className="flex items-center gap-2 overflow-x-auto scrollbar-none pb-1 border-b border-[var(--border-line)] text-xs font-mono">
+          <span className="text-[var(--text-muted)] uppercase tracking-wider shrink-0 text-[11px] font-bold">
+            Island Trackers:
+          </span>
+          <span className="px-3 py-1 rounded-full bg-amber-500/10 text-amber-500 border border-amber-500/30 font-bold shrink-0 flex items-center gap-1.5">
+            <Zap className="w-3 h-3 text-amber-500" />
+            <span>CEB Power Cuts (Active)</span>
+          </span>
+          <Link
+            href="/utility/fuel-and-power-sri-lanka"
+            className="px-3 py-1 rounded-full bg-[var(--bg-card)] hover:bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:text-[var(--text-main)] border border-[var(--border-line)] transition-colors shrink-0 flex items-center gap-1.5"
+          >
+            <Fuel className="w-3 h-3 text-emerald-500" />
+            <span>Fuel Prices (CPC/LIOC)</span>
+          </Link>
+          <Link
+            href="/markets/usd-to-lkr-rate-today"
+            className="px-3 py-1 rounded-full bg-[var(--bg-card)] hover:bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:text-[var(--text-main)] border border-[var(--border-line)] transition-colors shrink-0 flex items-center gap-1.5"
+          >
+            <DollarSign className="w-3 h-3 text-rose-500" />
+            <span>USD to LKR Rate</span>
+          </Link>
+          <Link
+            href="/markets/gold-price-sri-lanka-today"
+            className="px-3 py-1 rounded-full bg-[var(--bg-card)] hover:bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:text-[var(--text-main)] border border-[var(--border-line)] transition-colors shrink-0 flex items-center gap-1.5"
+          >
+            <Coins className="w-3 h-3 text-amber-500" />
+            <span>Gold Price (24K/22K)</span>
+          </Link>
+        </div>
+
         {isPowercutScheduleExpired() ? (
           <PowerCutExpiredNotice />
         ) : (
