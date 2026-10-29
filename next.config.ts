@@ -14,6 +14,15 @@ const nextConfig: NextConfig = {
       { protocol: 'https', hostname: 'readme.lk' }
     ]
   },
+  async redirects() {
+    return [
+      {
+        source: '/sitemap-news.xml',
+        destination: '/news-sitemap.xml',
+        permanent: true,
+      },
+    ];
+  },
   async rewrites() {
     return [
       // Sinhala (si) localized routes
