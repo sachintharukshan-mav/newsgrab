@@ -77,10 +77,10 @@ export async function generateMetadata(): Promise<Metadata> {
 export default async function FuelAndPowerPage() {
   const { fuelTypes, lastRevisionDate, nextFormulaRevision } = await getFuelSnapshot();
 
-  const pet92 = fuelTypes.find((f) => f.shortName === 'Petrol 92')?.cpcPrice ?? 414;
-  const pet95 = fuelTypes.find((f) => f.shortName === 'Petrol 95')?.cpcPrice ?? 475;
-  const diesel = fuelTypes.find((f) => f.shortName === 'Auto Diesel')?.cpcPrice ?? 392;
-  const superDiesel = fuelTypes.find((f) => f.shortName === 'Super Diesel')?.cpcPrice ?? 528;
+  const pet92 = fuelTypes.find((f) => f.shortName === 'Petrol 92')?.cpcPrice ?? 424;
+  const pet95 = fuelTypes.find((f) => f.shortName === 'Petrol 95')?.cpcPrice ?? 490;
+  const diesel = fuelTypes.find((f) => f.shortName === 'Auto Diesel')?.cpcPrice ?? 397;
+  const superDiesel = fuelTypes.find((f) => f.shortName === 'Super Diesel')?.cpcPrice ?? 543;
   const kerosene = fuelTypes.find((f) => f.shortName === 'Kerosene')?.cpcPrice ?? 285;
 
   const emergencyHotlines = [
@@ -93,11 +93,11 @@ export default async function FuelAndPowerPage() {
   const faqItems = [
     {
       question: 'Are fuel prices different between Ceypetco, Lanka IOC, and Sinopec?',
-      answer: `Yes, for certain products. Petrol 92 (Rs. ${pet92}), Auto Diesel (Rs. ${diesel}), and Super Diesel (Rs. ${superDiesel}) maintain uniform price parity across CEYPETCO, Lanka IOC, and Sinopec. However, Petrol 95 Octane differs: CEYPETCO retails at Rs. ${pet95} per litre, while Lanka IOC and Sinopec retail at Rs. 495 per litre (a Rs. 20/L difference). Domestic Kerosene (Rs. ${kerosene}/L) is subsidized and exclusively retailed by CEYPETCO.`,
+      answer: `Yes, for certain products. Petrol 92 (Rs. ${pet92}), Auto Diesel (Rs. ${diesel}), and Super Diesel (Rs. ${superDiesel}) maintain uniform price parity across CEYPETCO, Lanka IOC, and Sinopec. However, Petrol 95 Octane differs: CEYPETCO retails at Rs. ${pet95} per litre, while Lanka IOC and Sinopec retail at Rs. 495 per litre (a Rs. 5/L difference). Domestic Kerosene (Rs. ${kerosene}/L) is subsidized and exclusively retailed by CEYPETCO.`,
     },
     {
       question: 'What is the price of Petrol 95 in Sri Lanka today?',
-      answer: `Petrol 95 Octane is priced at Rs. ${pet95} per litre at CEYPETCO (CPC) filling stations, and Rs. 495 per litre at Lanka IOC and Sinopec filling stations (reflecting a Rs. 20 per litre difference).`,
+      answer: `Petrol 95 Octane is priced at Rs. ${pet95} per litre at CEYPETCO (CPC) filling stations, and Rs. 495 per litre at Lanka IOC and Sinopec filling stations (reflecting a Rs. 5 per litre difference).`,
     },
     {
       question: 'What is the price of Petrol 92 in Sri Lanka today?',
@@ -464,7 +464,7 @@ export default async function FuelAndPowerPage() {
                 </span>
               </div>
               <p className="text-xs text-[var(--text-muted)] leading-relaxed">
-                Operates ~1,300 sheds nationwide. Benchmarks the monthly national price formula. Provides the <strong>cheapest Petrol 95 at Rs. 475</strong> (Rs. 20 less than private rivals) and is the sole distributor of subsidized Domestic Kerosene (Rs. 285).
+                Operates ~1,300 sheds nationwide. Benchmarks the monthly national price formula. Provides the <strong>cheapest Petrol 95 at Rs. 490</strong> (Rs. 5 less than private rivals) and is the sole distributor of subsidized Domestic Kerosene (Rs. 285).
               </p>
             </div>
 
@@ -477,7 +477,7 @@ export default async function FuelAndPowerPage() {
                 </span>
               </div>
               <p className="text-xs text-[var(--text-muted)] leading-relaxed">
-                Indian Oil Corporation subsidiary. Matches CPC on high-volume staples (Petrol 92: Rs. 414, Diesel: Rs. 392). Adjusts <strong>Petrol 95 at Rs. 495</strong> (+Rs. 20) to reflect independent landed procurement costs. Does not retail subsidized kerosene.
+                Indian Oil Corporation subsidiary. Matches CPC on high-volume staples (Petrol 92: Rs. 424, Diesel: Rs. 397). Retails <strong>Petrol 95 at Rs. 495</strong> (+Rs. 5) to reflect independent landed procurement costs. Does not retail subsidized kerosene.
               </p>
             </div>
 
@@ -490,7 +490,7 @@ export default async function FuelAndPowerPage() {
                 </span>
               </div>
               <p className="text-xs text-[var(--text-muted)] leading-relaxed">
-                Chinese state enterprise operator. Matches CPC benchmark on Petrol 92 (Rs. 414) and Diesel (Rs. 392). Retails <strong>Petrol 95 at Rs. 495</strong> (matching LIOC). Periodically offers corporate fleet credit and digital payment cashback promotions.
+                Chinese state enterprise operator. Matches CPC benchmark on Petrol 92 (Rs. 424) and Diesel (Rs. 397). Retails <strong>Petrol 95 at Rs. 495</strong> (matching LIOC). Periodically offers corporate fleet credit and digital payment cashback promotions.
               </p>
             </div>
           </div>

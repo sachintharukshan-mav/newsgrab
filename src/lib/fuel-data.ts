@@ -35,50 +35,50 @@ function getNextFormulaRevisionDate(now = new Date()): string {
 
 const DEFAULT_FUEL_SNAPSHOT: FuelSnapshot = {
   updatedAt: new Date().toISOString(),
-  lastRevisionDate: 'October 01, 2026',
+  lastRevisionDate: 'November 01, 2026',
   nextFormulaRevision: getNextFormulaRevisionDate(),
   fuelTypes: [
     {
       name: 'Petrol 92 Octane',
       shortName: 'Petrol 92',
-      cpcPrice: 414,
-      liocPrice: 414,
-      sinopecPrice: 414,
-      change: 0,
-      status: 'unchanged',
+      cpcPrice: 424,
+      liocPrice: 424,
+      sinopecPrice: 424,
+      change: 10,
+      status: 'revised-up',
       fuelBadge: 'Automotive Regular',
       popular: true,
     },
     {
       name: 'Petrol 95 Octane',
       shortName: 'Petrol 95',
-      cpcPrice: 475,
+      cpcPrice: 490,
       liocPrice: 495,
       sinopecPrice: 495,
-      change: 0,
-      status: 'unchanged',
-      fuelBadge: 'Premium Automotive (CPC: Rs. 475 · LIOC & Sinopec: Rs. 495)',
+      change: 15,
+      status: 'revised-up',
+      fuelBadge: 'Premium Automotive (CPC: Rs. 490 · LIOC & Sinopec: Rs. 495)',
       popular: false,
     },
     {
       name: 'Auto Diesel (Standard)',
       shortName: 'Auto Diesel',
-      cpcPrice: 392,
-      liocPrice: 392,
-      sinopecPrice: 392,
-      change: 0,
-      status: 'unchanged',
+      cpcPrice: 397,
+      liocPrice: 397,
+      sinopecPrice: 397,
+      change: 5,
+      status: 'revised-up',
       fuelBadge: 'Commercial & Transport',
       popular: true,
     },
     {
       name: 'Super Diesel (Euro 4)',
       shortName: 'Super Diesel',
-      cpcPrice: 528,
-      liocPrice: 528,
-      sinopecPrice: 528,
-      change: 0,
-      status: 'unchanged',
+      cpcPrice: 543,
+      liocPrice: 543,
+      sinopecPrice: 543,
+      change: 15,
+      status: 'revised-up',
       fuelBadge: 'High-Performance Diesel',
       popular: false,
     },
@@ -141,8 +141,11 @@ export async function syncFuelPricesFromCeypetco(): Promise<FuelSnapshot> {
           }
         }
 
-        let formattedDate = DEFAULT_FUEL_SNAPSHOT.lastRevisionDate;
-        if (latestDate) {
+        // Check if Ceypetco live API has published data on or after November 01, 2026
+        const isLiveApiUpdated = Boolean(latestDate && new Date(latestDate) >= new Date('2026-11-01T00:00:00.000Z'));
+
+        let formattedDate = 'November 01, 2026';
+        if (isLiveApiUpdated && latestDate) {
           try {
             const d = new Date(latestDate);
             d.setDate(d.getDate() + 1);
@@ -160,20 +163,29 @@ export async function syncFuelPricesFromCeypetco(): Promise<FuelSnapshot> {
           return fallback;
         };
 
-        const pet92 = findPrice(['92'], 414);
-        const pet95 = findPrice(['95'], 475);
-        const diesel = findPrice(['auto', 'diesel'], 392);
-        const superDiesel = findPrice(['super', 'diesel'], 528);
+        const pet92 = isLiveApiUpdated ? findPrice(['92'], 424) : 424;
+        const pet95 = isLiveApiUpdated ? findPrice(['95'], 490) : 490;
+        const diesel = isLiveApiUpdated ? findPrice(['auto', 'diesel'], 397) : 397;
+        const superDiesel = isLiveApiUpdated ? findPrice(['super', 'diesel'], 543) : 543;
         const kerosene = findPrice(['kerosene'], 285);
         const indKerosene = findPrice(['industrial', 'kerosene'], 434);
 
+        const PREV_REVISION_PRICES: Record<string, number> = {
+          'Petrol 92': 414,
+          'Petrol 95': 475,
+          'Auto Diesel': 392,
+          'Super Diesel': 528,
+          'Kerosene': 285,
+          'Ind. Kerosene': 434,
+        };
+
         const prevTypes = memoryFuelCache?.fuelTypes || [];
         const calcDelta = (newPrice: number, shortName: string) => {
-          const prev = prevTypes.find((f) => f.shortName === shortName);
-          if (!prev || prev.cpcPrice === newPrice) {
+          const prev = prevTypes.find((f) => f.shortName === shortName)?.cpcPrice ?? PREV_REVISION_PRICES[shortName];
+          if (prev === undefined || prev === newPrice) {
             return { change: 0, status: 'unchanged' as const };
           }
-          const diff = newPrice - prev.cpcPrice;
+          const diff = newPrice - prev;
           return {
             change: diff,
             status: diff > 0 ? ('revised-up' as const) : ('revised-down' as const),
@@ -211,7 +223,7 @@ export async function syncFuelPricesFromCeypetco(): Promise<FuelSnapshot> {
               sinopecPrice: 495,
               change: pet95Delta.change,
               status: pet95Delta.status,
-              fuelBadge: 'Premium Automotive (CPC: Rs. 475 · LIOC & Sinopec: Rs. 495)',
+              fuelBadge: 'Premium Automotive (CPC: Rs. 490 · LIOC & Sinopec: Rs. 495)',
               popular: false,
             },
             {
