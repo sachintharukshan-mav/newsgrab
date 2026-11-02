@@ -4,13 +4,14 @@ import Link from 'next/link';
 import { ArrowLeft, Fuel, Zap, ShieldCheck, Clock, PhoneCall, AlertTriangle, ExternalLink, MapPin, DollarSign, Coins } from 'lucide-react';
 import { getSiteUrl } from '@/lib/site-config';
 import { getFuelSnapshot } from '@/lib/fuel-data';
+import { FuelHistoryVisualizer } from '@/components/fuel-history-visualizer';
 
 export const dynamic = 'force-dynamic';
 
 export async function generateMetadata(): Promise<Metadata> {
   const SITE_URL = getSiteUrl();
-  const title = 'Sri Lanka Fuel Prices Today & CEB Power Alerts | LANKA DISPATCH';
-  const description = 'Latest CPC, Lanka IOC, and Sinopec fuel prices in Sri Lanka. Petrol 92, Petrol 95, Auto Diesel, Super Diesel, and CEB rotational power cut schedule status.';
+  const title = 'Sri Lanka Fuel Prices Today & Historical Archive (1990–2026) | LANKA DISPATCH';
+  const description = 'Latest CPC, Lanka IOC, and Sinopec fuel prices in Sri Lanka. Interactive 36-year historical fuel price chart (1990–2026), CSV download, and CEB rotational power cut schedule status.';
   const enUrl = `${SITE_URL}/utility/fuel-and-power-sri-lanka`;
   const siUrl = `${SITE_URL}/si/utility/fuel-and-power-sri-lanka`;
   const taUrl = `${SITE_URL}/ta/utility/fuel-and-power-sri-lanka`;
@@ -26,6 +27,9 @@ export async function generateMetadata(): Promise<Metadata> {
       'auto diesel price sri lanka',
       'lioc fuel prices',
       'sinopec petrol 92 diesel',
+      'ceypetco historical fuel prices',
+      'sri lanka petrol price history',
+      'diesel price chart 1990 to 2026',
       'ceb power cut schedule today',
       'ඉන්ධන මිල අද',
       'ලංකා අයිඕසී ඉන්ධන මිල',
@@ -131,15 +135,38 @@ export default async function FuelAndPowerPage() {
 
   const jsonLd = {
     '@context': 'https://schema.org',
-    '@type': 'FAQPage',
-    mainEntity: faqItems.map((f) => ({
-      '@type': 'Question',
-      name: f.question,
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: f.answer,
+    '@graph': [
+      {
+        '@type': 'FAQPage',
+        mainEntity: faqItems.map((f) => ({
+          '@type': 'Question',
+          name: f.question,
+          acceptedAnswer: {
+            '@type': 'Answer',
+            text: f.answer,
+          },
+        })),
       },
-    })),
+      {
+        '@type': 'Dataset',
+        name: 'Ceylon Petroleum Corporation (CEYPETCO) Historical Fuel Price Archive (1990–2026)',
+        description: 'Complete 36-year official historical fuel price revisions in Sri Lanka covering Petrol 92, Petrol 95, Auto Diesel, Super Diesel, and Kerosene from March 1990 to November 2026.',
+        url: `${getSiteUrl()}/utility/fuel-and-power-sri-lanka`,
+        keywords: [
+          'Sri Lanka fuel prices',
+          'Ceypetco historical fuel prices',
+          'petrol price history sri lanka',
+          'auto diesel price chart',
+          'ceypetco fuel archive 1990 2026'
+        ],
+        creator: {
+          '@type': 'Organization',
+          name: 'Lanka Dispatch',
+          url: getSiteUrl(),
+        },
+        temporalCoverage: '1990-03-01/2026-11-01',
+      },
+    ],
   };
 
   return (
@@ -468,6 +495,9 @@ export default async function FuelAndPowerPage() {
             </table>
           </div>
         </section>
+
+        {/* CEYPETCO 36-Year Interactive Historical Fuel Price Visualizer & Archive */}
+        <FuelHistoryVisualizer />
 
         {/* Multi-Distributor Comparison Guide: CEYPETCO vs Lanka IOC vs Sinopec */}
         <section className="p-6 sm:p-8 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-line)] shadow-sm space-y-6">
