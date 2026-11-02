@@ -271,8 +271,8 @@ export default async function FuelAndPowerPage() {
         {/* Primary Pump Rate Spotlight Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {fuelTypes.slice(0, 4).map((f) => {
-            const hasDifference = f.liocPrice !== null && f.cpcPrice !== f.liocPrice;
-            const diff = f.liocPrice !== null ? f.cpcPrice - f.liocPrice : 0;
+            const hasDifference = f.liocPrice !== null && f.cpcPrice !== null && f.cpcPrice !== f.liocPrice;
+            const diff = f.liocPrice !== null && f.cpcPrice !== null ? f.cpcPrice - f.liocPrice : 0;
             return (
               <div
                 key={f.shortName}
@@ -378,7 +378,7 @@ export default async function FuelAndPowerPage() {
               </thead>
               <tbody className="divide-y divide-[var(--border-line)] text-sm font-mono">
                 {fuelTypes.map((f) => {
-                  const hasDifference = f.liocPrice !== null && f.cpcPrice !== f.liocPrice;
+                  const hasDifference = f.liocPrice !== null && f.cpcPrice !== null && f.cpcPrice !== f.liocPrice;
                   return (
                     <tr
                       key={f.name}
