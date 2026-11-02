@@ -190,9 +190,9 @@ export default async function FuelAndPowerPage() {
 
           <Link href="/" className="flex items-center gap-2 cursor-pointer">
             <span className="font-serif font-black text-lg sm:text-xl tracking-tight text-[var(--text-main)]">
-              LANKA<span className="text-rose-500">DISPATCH</span>
+              LANKA<span className="text-[#2962ff]">DISPATCH</span>
             </span>
-            <span className="hidden sm:inline-block px-1.5 py-0.5 bg-rose-500/10 text-rose-500 text-[10px] font-mono font-bold uppercase rounded border border-rose-500/20">
+            <span className="hidden sm:inline-block px-1.5 py-0.5 bg-[#2962ff]/10 text-[#2962ff] text-[10px] font-mono font-bold uppercase rounded border border-[#2962ff]/20">
               Utility Desk
             </span>
           </Link>
@@ -200,10 +200,10 @@ export default async function FuelAndPowerPage() {
           <div className="flex items-center gap-2 sm:gap-3 text-xs font-mono text-[var(--text-muted)]">
             <Link
               href="/markets/usd-to-lkr-rate-today"
-              className="flex items-center gap-1 hover:text-rose-500 transition-colors py-1 px-1.5 rounded hover:bg-[var(--bg-subtle)]"
+              className="flex items-center gap-1 hover:text-[#2962ff] transition-colors py-1 px-1.5 rounded hover:bg-[var(--bg-subtle)]"
               title="USD to LKR Exchange Rates"
             >
-              <DollarSign className="w-3.5 h-3.5 text-rose-500" />
+              <DollarSign className="w-3.5 h-3.5 text-[#2962ff]" />
               <span className="hidden md:inline">USD/LKR</span>
             </Link>
             <Link
@@ -233,15 +233,15 @@ export default async function FuelAndPowerPage() {
           <span className="text-[var(--text-muted)] uppercase tracking-wider shrink-0 text-[11px] font-bold">
             Island Trackers:
           </span>
-          <span className="px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-500 border border-emerald-500/30 font-bold shrink-0 flex items-center gap-1.5">
-            <Fuel className="w-3 h-3 text-emerald-500" />
+          <span className="px-3 py-1 rounded-full bg-[#2962ff]/10 text-[#2962ff] border border-[#2962ff]/30 font-bold shrink-0 flex items-center gap-1.5">
+            <Fuel className="w-3 h-3 text-[#2962ff]" />
             <span>Fuel Prices (Active)</span>
           </span>
           <Link
             href="/markets/usd-to-lkr-rate-today"
             className="px-3 py-1 rounded-full bg-[var(--bg-card)] hover:bg-[var(--bg-subtle)] text-[var(--text-muted)] hover:text-[var(--text-main)] border border-[var(--border-line)] transition-colors shrink-0 flex items-center gap-1.5"
           >
-            <DollarSign className="w-3 h-3 text-rose-500" />
+            <DollarSign className="w-3 h-3 text-[#2962ff]" />
             <span>USD to LKR Rate</span>
           </Link>
           <Link
@@ -262,8 +262,8 @@ export default async function FuelAndPowerPage() {
 
         {/* Masthead Banner */}
         <div className="space-y-4 border-b border-[var(--border-line)] pb-8">
-          <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-rose-600 dark:text-rose-400 font-semibold">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+          <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-[#089981] font-semibold">
+            <span className="w-2 h-2 rounded-full bg-[#089981] animate-pulse" />
             <span>Ministry of Power and Energy Automated Pricing Formula · Active Cycle</span>
           </div>
 
@@ -281,7 +281,7 @@ export default async function FuelAndPowerPage() {
               <span>Last Monthly Revision: {lastRevisionDate}</span>
             </span>
             <span>•</span>
-            <span className="text-rose-500 font-medium">Next Revision Due: {nextFormulaRevision}</span>
+            <span className="text-amber-400 font-medium">Next Revision Due: {nextFormulaRevision}</span>
             <span>•</span>
             <a
               href="https://ceypetco.gov.lk/marketing-sales"
@@ -307,13 +307,13 @@ export default async function FuelAndPowerPage() {
                   hasDifference
                     ? 'border-amber-500/50 shadow-xl ring-1 ring-amber-500/20'
                     : f.popular
-                    ? 'border-rose-500/30 shadow-xl'
+                    ? 'border-[#2962ff]/40 shadow-xl ring-1 ring-[#2962ff]/20'
                     : 'border-[var(--border-line)] shadow-lg'
                 } space-y-3`}
               >
                 <div className="flex items-center justify-between text-xs font-mono text-[var(--text-muted)]">
                   <span className="font-bold flex items-center gap-1.5 text-[var(--text-main)]">
-                    <Fuel className="w-4 h-4 text-rose-500" /> {f.shortName}
+                    <Fuel className="w-4 h-4 text-[#2962ff]" /> {f.shortName}
                   </span>
                   <span className="text-[10px] px-1.5 py-0.5 rounded bg-[var(--bg-subtle)] text-[var(--text-muted)] font-semibold">
                     Per Litre
@@ -323,7 +323,7 @@ export default async function FuelAndPowerPage() {
                 <div>
                   <div className="text-xs font-mono text-[var(--text-muted)] flex items-center justify-between">
                     <span>CEYPETCO (CPC)</span>
-                    <span className="text-[10px] font-bold text-rose-600 dark:text-rose-400 bg-rose-500/10 px-1.5 py-0.5 rounded border border-rose-500/30">
+                    <span className="text-[10px] font-bold text-[#2962ff] bg-[#2962ff]/10 px-1.5 py-0.5 rounded border border-[#2962ff]/30">
                       Revised
                     </span>
                   </div>
@@ -360,14 +360,14 @@ export default async function FuelAndPowerPage() {
                   ) : (
                     <div className="flex items-center justify-between text-[var(--text-muted)]">
                       <span className="text-[11px]">LIOC &amp; Sinopec:</span>
-                      <span className="text-emerald-600 dark:text-emerald-400 font-semibold text-[11px]">Same (Rs. {f.cpcPrice})</span>
+                      <span className="text-[#089981] font-semibold text-[11px]">Same (Rs. {f.cpcPrice})</span>
                     </div>
                   )}
 
                   <div className="flex items-center justify-between text-[11px] pt-1">
                     <span className="text-[var(--text-muted)]">CPC revision:</span>
                     {f.change !== 0 ? (
-                      <span className={f.change < 0 ? 'text-emerald-500 font-bold' : 'text-rose-500 font-bold'}>
+                      <span className={f.change < 0 ? 'text-[#089981] font-bold' : 'text-amber-400 font-bold'}>
                         {f.change < 0 ? `▼ Rs. ${Math.abs(f.change)}` : `▲ Rs. ${f.change}`}
                       </span>
                     ) : (
@@ -481,7 +481,7 @@ export default async function FuelAndPowerPage() {
                       </td>
                       <td className="py-3.5 px-4">
                         {f.change !== 0 ? (
-                          <span className={`inline-flex items-center text-xs font-semibold ${f.change < 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
+                          <span className={`inline-flex items-center text-xs font-semibold ${f.change < 0 ? 'text-[#089981]' : 'text-amber-400'}`}>
                             {f.change < 0 ? `▼ Reduced by Rs. ${Math.abs(f.change)}` : `▲ Increased by Rs. ${f.change}`}
                           </span>
                         ) : (
@@ -502,8 +502,8 @@ export default async function FuelAndPowerPage() {
         {/* Multi-Distributor Comparison Guide: CEYPETCO vs Lanka IOC vs Sinopec */}
         <section className="p-6 sm:p-8 rounded-2xl bg-[var(--bg-card)] border border-[var(--border-line)] shadow-sm space-y-6">
           <div className="space-y-1">
-            <div className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider text-rose-600 dark:text-rose-400 font-semibold">
-              <Fuel className="w-4 h-4 text-rose-500" />
+            <div className="inline-flex items-center gap-1.5 text-xs font-mono uppercase tracking-wider text-[#2962ff] font-semibold">
+              <Fuel className="w-4 h-4 text-[#2962ff]" />
               <span>Multi-Distributor Pricing Guide</span>
             </div>
             <h3 className="text-xl sm:text-2xl font-bold font-headline text-[var(--text-main)]">
@@ -599,7 +599,7 @@ export default async function FuelAndPowerPage() {
                   <span className="text-xs font-mono font-bold text-[var(--text-main)]">{h.name}</span>
                   <a
                     href={`tel:${h.hotline.replace(/\s+/g, '')}`}
-                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-rose-500/10 text-rose-500 hover:bg-rose-500 hover:text-white font-mono text-xs font-bold transition-colors cursor-pointer"
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded bg-[#2962ff]/10 text-[#2962ff] hover:bg-[#2962ff] hover:text-white font-mono text-xs font-bold transition-colors cursor-pointer border border-[#2962ff]/20"
                   >
                     <PhoneCall className="w-3.5 h-3.5" />
                     <span>{h.hotline}</span>

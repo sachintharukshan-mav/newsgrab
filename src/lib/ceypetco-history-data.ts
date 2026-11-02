@@ -39,8 +39,8 @@ export const FUEL_PRODUCTS_META: Record<FuelSeriesKey, FuelProductMeta> = {
     key: 'petrol92',
     label: 'Petrol 92 Octane',
     shortLabel: 'Petrol 92',
-    color: '#f43f5e', // rose-500
-    fillColor: 'rgba(244, 63, 94, 0.1)',
+    color: '#2962ff', // TradingView Signature Blue
+    fillColor: 'rgba(41, 98, 255, 0.15)',
     badge: 'Automotive Regular',
     description: 'Standard automotive consumer gasoline',
   },
@@ -48,8 +48,8 @@ export const FUEL_PRODUCTS_META: Record<FuelSeriesKey, FuelProductMeta> = {
     key: 'petrol95',
     label: 'Petrol 95 Octane',
     shortLabel: 'Petrol 95',
-    color: '#fbbf24', // amber-400
-    fillColor: 'rgba(251, 191, 36, 0.1)',
+    color: '#8c52ff', // TradingView Purple
+    fillColor: 'rgba(140, 82, 255, 0.15)',
     badge: 'Premium Gasoline',
     description: 'High-octane premium automotive petrol',
   },
@@ -57,8 +57,8 @@ export const FUEL_PRODUCTS_META: Record<FuelSeriesKey, FuelProductMeta> = {
     key: 'autoDiesel',
     label: 'Auto Diesel (Standard)',
     shortLabel: 'Auto Diesel',
-    color: '#10b981', // emerald-500
-    fillColor: 'rgba(16, 185, 129, 0.1)',
+    color: '#089981', // TradingView Green / Teal
+    fillColor: 'rgba(8, 153, 129, 0.15)',
     badge: 'Commercial Transport',
     description: 'Primary commercial bus, truck, and generator fuel',
   },
@@ -66,8 +66,8 @@ export const FUEL_PRODUCTS_META: Record<FuelSeriesKey, FuelProductMeta> = {
     key: 'superDiesel',
     label: 'Super Diesel (Euro 4)',
     shortLabel: 'Super Diesel',
-    color: '#3b82f6', // blue-500
-    fillColor: 'rgba(59, 130, 246, 0.1)',
+    color: '#00bcd4', // TradingView Cyan
+    fillColor: 'rgba(0, 188, 212, 0.15)',
     badge: 'High-Performance Diesel',
     description: 'Low-sulphur Euro 4 diesel for modern common-rail engines',
   },
@@ -75,8 +75,8 @@ export const FUEL_PRODUCTS_META: Record<FuelSeriesKey, FuelProductMeta> = {
     key: 'kerosene',
     label: 'Domestic Kerosene',
     shortLabel: 'Kerosene',
-    color: '#8b5cf6', // purple-500
-    fillColor: 'rgba(139, 92, 246, 0.1)',
+    color: '#f59e0b', // Amber / Gold
+    fillColor: 'rgba(245, 158, 11, 0.15)',
     badge: 'State Subsidized',
     description: 'Subsidized fuel for domestic lighting, cooking, and artisanal fisheries',
   },
@@ -84,8 +84,8 @@ export const FUEL_PRODUCTS_META: Record<FuelSeriesKey, FuelProductMeta> = {
     key: 'indKerosene',
     label: 'Industrial Kerosene',
     shortLabel: 'Ind. Kerosene',
-    color: '#64748b', // slate-500
-    fillColor: 'rgba(100, 116, 139, 0.1)',
+    color: '#787b86', // TradingView Slate
+    fillColor: 'rgba(120, 123, 134, 0.15)',
     badge: 'Manufacturing Commercial',
     description: 'Industrial solvent, machinery cleaning, and factory heating fuel',
   },
