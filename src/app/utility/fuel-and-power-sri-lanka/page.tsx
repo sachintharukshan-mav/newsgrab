@@ -93,19 +93,27 @@ export default async function FuelAndPowerPage() {
   const faqItems = [
     {
       question: 'Are fuel prices different between Ceypetco, Lanka IOC, and Sinopec?',
-      answer: `Yes. Ceylon Petroleum Corporation (CEYPETCO) announced increased prices with effect from midnight November 1: Petrol 92 (Rs. ${pet92}), Petrol 95 (Rs. ${pet95}), Auto Diesel (Rs. ${diesel}), and Super Diesel (Rs. ${superDiesel}). Lanka IOC and Sinopec have not revised their prices, currently maintaining Petrol 92 at Rs. 414, Petrol 95 at Rs. 495, Auto Diesel at Rs. 392, and Super Diesel at Rs. 528. Subsidized Domestic Kerosene (Rs. ${kerosene}) remains exclusively retailed by CEYPETCO.`,
+      answer: `Yes, for premium fuels. High-volume staples maintain parity: Petrol 92 is Rs. ${pet92} and Auto Diesel is Rs. ${diesel} across CEYPETCO, Lanka IOC, and Sinopec. However, for Petrol 95 Octane, CEYPETCO retails at Rs. ${pet95} while Lanka IOC and Sinopec retail at Rs. 495 per litre (a Rs. 5/L difference). For Super Diesel, CEYPETCO and Sinopec retail at Rs. ${superDiesel} per litre while Lanka IOC officially retails at Rs. 570 per litre (a Rs. 27/L difference). Domestic Kerosene (Rs. ${kerosene}) is subsidized and exclusively retailed by CEYPETCO.`,
+    },
+    {
+      question: 'What is the price of Lanka IOC Super Diesel in Sri Lanka today?',
+      answer: `According to Lanka IOC's official price schedule (effective 02-November-2026), Lanka Super Diesel is priced at Rs. 570 per litre, compared to Rs. 543 per litre at CEYPETCO and Sinopec filling stations (a Rs. 27 per litre difference).`,
     },
     {
       question: 'What is the price of Petrol 95 in Sri Lanka today?',
-      answer: `Petrol 95 Octane is priced at Rs. ${pet95} per litre at CEYPETCO (CPC) filling stations following a Rs. 15 increase, while Lanka IOC and Sinopec retail at Rs. 495 per litre.`,
+      answer: `Petrol 95 Octane is priced at Rs. ${pet95} per litre at CEYPETCO (CPC) filling stations, and Rs. 495 per litre at Lanka IOC and Sinopec filling stations (reflecting a Rs. 5 per litre difference).`,
     },
     {
       question: 'What is the price of Petrol 92 in Sri Lanka today?',
-      answer: `Petrol 92 Octane is retail priced at Rs. ${pet92} per litre at CEYPETCO (CPC) filling stations following an increase of Rs. 10. Lanka IOC and Sinopec currently retail Petrol 92 at Rs. 414 per litre.`,
+      answer: `Petrol 92 Octane is officially retail priced at Rs. ${pet92} per litre across Ceylon Petroleum Corporation (CPC), Lanka IOC (LIOC), and Sinopec fuel stations islandwide.`,
     },
     {
       question: 'What is the price of Auto Diesel in Sri Lanka today?',
-      answer: `Auto Diesel is priced at Rs. ${diesel} per litre at CEYPETCO (increased by Rs. 5), while Lanka IOC and Sinopec retail at Rs. 392 per litre. Super Diesel is priced at Rs. ${superDiesel} per litre at CEYPETCO (increased by Rs. 15), while LIOC and Sinopec retail at Rs. 528 per litre.`,
+      answer: `Auto Diesel is priced at Rs. ${diesel} per litre at all CEYPETCO, Lanka IOC, and Sinopec filling stations across Sri Lanka.`,
+    },
+    {
+      question: 'What are Lanka IOC specialty branded fuel prices (XtraPremium & XtraMile)?',
+      answer: 'According to Lanka IOC\'s official retail schedule, XtraPremium Euro 3 Petrol is priced at Rs. 485 per litre, XtraMile Diesel is Rs. 550 per litre, and XtraGreen Diesel is Rs. 620 per litre.',
     },
     {
       question: 'Can I purchase subsidized domestic kerosene at Lanka IOC or Sinopec?',
@@ -301,12 +309,25 @@ export default async function FuelAndPowerPage() {
                   {hasDifference ? (
                     <div className="space-y-1">
                       <div className="flex items-center justify-between text-[11px]">
-                        <span className="text-[var(--text-muted)]">LIOC &amp; Sinopec:</span>
-                        <span className="font-bold text-amber-600 dark:text-amber-400">Rs. {f.liocPrice}</span>
+                        <span className="text-[var(--text-muted)]">
+                          {f.liocPrice === f.sinopecPrice ? 'LIOC & Sinopec:' : 'LIOC (Sinopec):'}
+                        </span>
+                        <span className="font-bold text-amber-600 dark:text-amber-400">
+                          Rs. {f.liocPrice}
+                          {f.liocPrice !== f.sinopecPrice && f.sinopecPrice !== null && (
+                            <span className="text-[var(--text-muted)] font-normal text-[10px] ml-1">
+                              (Rs. {f.sinopecPrice})
+                            </span>
+                          )}
+                        </span>
                       </div>
                       <div className="text-[10px] text-amber-700 dark:text-amber-300 font-semibold bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20 flex items-center justify-between">
                         <span>Price divergence:</span>
-                        <span>{diff > 0 ? `CPC +Rs. ${diff}` : `CPC -Rs. ${Math.abs(diff)}`} / Litre</span>
+                        <span>
+                          {f.cpcPrice !== null && f.cpcPrice < f.liocPrice!
+                            ? `CPC is Rs. ${f.liocPrice! - f.cpcPrice} Cheaper`
+                            : `LIOC is Rs. ${f.cpcPrice! - f.liocPrice!} Cheaper`}
+                        </span>
                       </div>
                     </div>
                   ) : (
@@ -377,16 +398,22 @@ export default async function FuelAndPowerPage() {
                         <div className="text-[11px] font-normal text-[var(--text-muted)]">{f.fuelBadge}</div>
                       </td>
                       <td className="py-3.5 px-4 font-bold text-[var(--text-main)]">
-                        <div>Rs. {f.cpcPrice}.00</div>
-                        <div className="text-[10px] font-normal text-rose-600 dark:text-rose-400">Revised Midnight Nov 1</div>
+                        {f.cpcPrice !== null ? (
+                          <div>
+                            <div>Rs. {f.cpcPrice}.00</div>
+                            <div className="text-[10px] font-normal text-emerald-600 dark:text-emerald-400">State Benchmark</div>
+                          </div>
+                        ) : (
+                          <span className="text-zinc-500 text-xs font-normal">N/A (LIOC Only)</span>
+                        )}
                       </td>
                       <td className="py-3.5 px-4 font-bold text-[var(--text-main)]">
                         {f.liocPrice !== null ? (
                           <div>
                             <span>Rs. {f.liocPrice}.00</span>
-                            {f.liocPrice !== f.cpcPrice && (
+                            {f.cpcPrice !== null && f.liocPrice !== f.cpcPrice && (
                               <span className={`ml-1 text-[10px] font-normal ${f.liocPrice < f.cpcPrice ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}`}>
-                                ({f.liocPrice < f.cpcPrice ? `-Rs. ${f.cpcPrice - f.liocPrice}` : `+Rs. ${f.liocPrice - f.cpcPrice}`})
+                                ({f.liocPrice > f.cpcPrice ? `+Rs. ${f.liocPrice - f.cpcPrice}` : `-Rs. ${f.cpcPrice - f.liocPrice}`})
                               </span>
                             )}
                           </div>
@@ -398,9 +425,9 @@ export default async function FuelAndPowerPage() {
                         {f.sinopecPrice !== null ? (
                           <div>
                             <span>Rs. {f.sinopecPrice}.00</span>
-                            {f.sinopecPrice !== f.cpcPrice && (
+                            {f.cpcPrice !== null && f.sinopecPrice !== f.cpcPrice && (
                               <span className={`ml-1 text-[10px] font-normal ${f.sinopecPrice < f.cpcPrice ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}`}>
-                                ({f.sinopecPrice < f.cpcPrice ? `-Rs. ${f.cpcPrice - f.sinopecPrice}` : `+Rs. ${f.sinopecPrice - f.cpcPrice}`})
+                                ({f.sinopecPrice > f.cpcPrice ? `+Rs. ${f.sinopecPrice - f.cpcPrice}` : `-Rs. ${f.cpcPrice - f.sinopecPrice}`})
                               </span>
                             )}
                           </div>
@@ -409,12 +436,14 @@ export default async function FuelAndPowerPage() {
                         )}
                       </td>
                       <td className="py-3.5 px-4">
-                        {hasDifference ? (
+                        {hasDifference && f.cpcPrice !== null ? (
                           <span className="inline-flex items-center text-[11px] font-semibold text-amber-700 dark:text-amber-300 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
-                            {f.cpcPrice > f.liocPrice!
-                              ? `⚡ LIOC/Sinopec Rs. ${f.cpcPrice - f.liocPrice!} Cheaper`
-                              : `⚡ CPC Rs. ${f.liocPrice! - f.cpcPrice} Cheaper`}
+                            {f.cpcPrice < f.liocPrice!
+                              ? `⚡ CPC is Rs. ${f.liocPrice! - f.cpcPrice} Cheaper`
+                              : `⚡ LIOC is Rs. ${f.cpcPrice - f.liocPrice!} Cheaper`}
                           </span>
+                        ) : f.cpcPrice === null ? (
+                          <span className="text-xs text-[var(--text-muted)]">LIOC Specialty Fuel</span>
                         ) : f.liocPrice === null ? (
                           <span className="text-xs text-[var(--text-muted)]">State Subsidized</span>
                         ) : (
@@ -460,12 +489,12 @@ export default async function FuelAndPowerPage() {
             <div className="p-5 rounded-xl bg-[var(--bg-subtle)] border border-[var(--border-line)] space-y-2.5">
               <div className="flex items-center justify-between">
                 <span className="font-bold text-sm text-[var(--text-main)]">CEYPETCO (CPC)</span>
-                <span className="text-[10px] px-2 py-0.5 rounded bg-rose-500/10 text-rose-600 dark:text-rose-400 font-mono font-semibold border border-rose-500/20">
-                  Revised Nov 1
+                <span className="text-[10px] px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-mono font-semibold border border-emerald-500/20">
+                  State Benchmark
                 </span>
               </div>
               <p className="text-xs text-[var(--text-muted)] leading-relaxed">
-                Operates ~1,300 sheds nationwide. Revised prices effective midnight November 1: Petrol 92 (Rs. 424, +10), Petrol 95 (Rs. 490, +15), Auto Diesel (Rs. 397, +5), and Super Diesel (Rs. 543, +15). Sole distributor of subsidized Domestic Kerosene (Rs. 285).
+                Operates ~1,300 sheds nationwide. Benchmarks the national pricing formula: Petrol 92 (Rs. 424), Auto Diesel (Rs. 397). Provides the lowest price for Petrol 95 at Rs. 490 (Rs. 5 cheaper than LIOC/Sinopec) and Super Diesel at Rs. 543 (Rs. 27 cheaper than Lanka IOC at Rs. 570). Sole distributor of subsidized Domestic Kerosene (Rs. 285).
               </p>
             </div>
 
@@ -474,11 +503,11 @@ export default async function FuelAndPowerPage() {
               <div className="flex items-center justify-between">
                 <span className="font-bold text-sm text-[var(--text-main)]">Lanka IOC (LIOC)</span>
                 <span className="text-[10px] px-2 py-0.5 rounded bg-blue-500/10 text-blue-600 dark:text-blue-400 font-mono font-semibold border border-blue-500/20">
-                  Unrevised / Prior Rates
+                  Official Portal Rates
                 </span>
               </div>
               <p className="text-xs text-[var(--text-muted)] leading-relaxed">
-                Indian Oil Corporation subsidiary. Has not announced revisions corresponding to CEYPETCO's midnight hike; continues retailing Petrol 92 at Rs. 414, Auto Diesel at Rs. 392, Super Diesel at Rs. 528, and Petrol 95 at Rs. 495.
+                Indian Oil Corporation subsidiary with 210+ sheds nationwide. Verified via official portal (<a href="https://www.lankaioc.com/our-product/" target="_blank" rel="noopener noreferrer" className="underline text-blue-500">lankaioc.com</a>): Retails Petrol 92 at Rs. 424, Auto Diesel at Rs. 397, Petrol 95 at Rs. 495 (+Rs. 5), Lanka Super Diesel at Rs. 570 (+Rs. 27), and specialty branded fuels XtraPremium Euro 3 (Rs. 485) and XtraMile Diesel (Rs. 550).
               </p>
             </div>
 
@@ -487,11 +516,11 @@ export default async function FuelAndPowerPage() {
               <div className="flex items-center justify-between">
                 <span className="font-bold text-sm text-[var(--text-main)]">Sinopec Energy</span>
                 <span className="text-[10px] px-2 py-0.5 rounded bg-amber-500/10 text-amber-600 dark:text-amber-400 font-mono font-semibold border border-amber-500/20">
-                  Unrevised / Prior Rates
+                  150+ Stations
                 </span>
               </div>
               <p className="text-xs text-[var(--text-muted)] leading-relaxed">
-                Chinese state enterprise operator. Currently retaining previous price structure: Petrol 92 at Rs. 414, Auto Diesel at Rs. 392, Super Diesel at Rs. 528, and Petrol 95 at Rs. 495 pending any distributor announcements.
+                Chinese state enterprise operator. Matches CPC benchmark on Petrol 92 (Rs. 424), Auto Diesel (Rs. 397), and Super Diesel (Rs. 543). Retails Petrol 95 at Rs. 495 (matching LIOC). Periodically offers corporate fleet credit and digital payment cashback promotions.
               </p>
             </div>
           </div>
