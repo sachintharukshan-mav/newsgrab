@@ -93,15 +93,17 @@ export async function GET() {
 
   // 3.1 Daily Evergreen Utility Hubs (High Organic Search Volume)
   const utilityPages = [
+    { path: '/utility/fuel-and-power-sri-lanka', priority: '0.98', changefreq: 'hourly' },
     { path: '/markets/usd-to-lkr-rate-today', priority: '0.95', changefreq: 'hourly' },
     { path: '/markets/gold-price-sri-lanka-today', priority: '0.95', changefreq: 'hourly' },
-    { path: '/utility/fuel-and-power-sri-lanka', priority: '0.95', changefreq: 'daily' },
     { path: '/powercut', priority: '0.90', changefreq: 'hourly' },
   ];
   for (const util of utilityPages) {
     const utilUrl = `${SITE_URL}${util.path}`;
     const siUtilUrl = `${SITE_URL}/si${util.path}`;
     const taUtilUrl = `${SITE_URL}/ta${util.path}`;
+
+    // English Primary Loc
     xml += `  <url>\n`;
     xml += `    <loc>${escapeXml(utilUrl)}</loc>\n`;
     xml += `    <xhtml:link rel="alternate" hreflang="en-LK" href="${escapeXml(utilUrl)}" />\n`;
@@ -111,6 +113,30 @@ export async function GET() {
     xml += `    <lastmod>${now}</lastmod>\n`;
     xml += `    <changefreq>${util.changefreq}</changefreq>\n`;
     xml += `    <priority>${util.priority}</priority>\n`;
+    xml += `  </url>\n`;
+
+    // Dedicated Sinhala Loc
+    xml += `  <url>\n`;
+    xml += `    <loc>${escapeXml(siUtilUrl)}</loc>\n`;
+    xml += `    <xhtml:link rel="alternate" hreflang="en-LK" href="${escapeXml(utilUrl)}" />\n`;
+    xml += `    <xhtml:link rel="alternate" hreflang="si-LK" href="${escapeXml(siUtilUrl)}" />\n`;
+    xml += `    <xhtml:link rel="alternate" hreflang="ta-LK" href="${escapeXml(taUtilUrl)}" />\n`;
+    xml += `    <xhtml:link rel="alternate" hreflang="x-default" href="${escapeXml(utilUrl)}" />\n`;
+    xml += `    <lastmod>${now}</lastmod>\n`;
+    xml += `    <changefreq>${util.changefreq}</changefreq>\n`;
+    xml += `    <priority>${(parseFloat(util.priority) - 0.02).toFixed(2)}</priority>\n`;
+    xml += `  </url>\n`;
+
+    // Dedicated Tamil Loc
+    xml += `  <url>\n`;
+    xml += `    <loc>${escapeXml(taUtilUrl)}</loc>\n`;
+    xml += `    <xhtml:link rel="alternate" hreflang="en-LK" href="${escapeXml(utilUrl)}" />\n`;
+    xml += `    <xhtml:link rel="alternate" hreflang="si-LK" href="${escapeXml(siUtilUrl)}" />\n`;
+    xml += `    <xhtml:link rel="alternate" hreflang="ta-LK" href="${escapeXml(taUtilUrl)}" />\n`;
+    xml += `    <xhtml:link rel="alternate" hreflang="x-default" href="${escapeXml(utilUrl)}" />\n`;
+    xml += `    <lastmod>${now}</lastmod>\n`;
+    xml += `    <changefreq>${util.changefreq}</changefreq>\n`;
+    xml += `    <priority>${(parseFloat(util.priority) - 0.02).toFixed(2)}</priority>\n`;
     xml += `  </url>\n`;
   }
 

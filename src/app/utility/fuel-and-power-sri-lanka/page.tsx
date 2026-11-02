@@ -137,7 +137,36 @@ export default async function FuelAndPowerPage() {
     '@context': 'https://schema.org',
     '@graph': [
       {
+        '@type': 'WebPage',
+        '@id': `${getSiteUrl()}/utility/fuel-and-power-sri-lanka#webpage`,
+        url: `${getSiteUrl()}/utility/fuel-and-power-sri-lanka`,
+        name: 'Sri Lanka Fuel Prices Today & Historical Archive (1990–2026)',
+        description: 'Latest CPC, Lanka IOC, and Sinopec fuel prices in Sri Lanka. Interactive 36-year historical fuel price chart (1990–2026), CSV download, and CEB rotational power cut schedule status.',
+        inLanguage: 'en-LK',
+        datePublished: '2026-10-15T00:00:00Z',
+        dateModified: new Date().toISOString(),
+      },
+      {
+        '@type': 'BreadcrumbList',
+        '@id': `${getSiteUrl()}/utility/fuel-and-power-sri-lanka#breadcrumb`,
+        itemListElement: [
+          {
+            '@type': 'ListItem',
+            position: 1,
+            name: 'Home',
+            item: getSiteUrl(),
+          },
+          {
+            '@type': 'ListItem',
+            position: 2,
+            name: 'Utility Desk',
+            item: `${getSiteUrl()}/utility/fuel-and-power-sri-lanka`,
+          },
+        ],
+      },
+      {
         '@type': 'FAQPage',
+        '@id': `${getSiteUrl()}/utility/fuel-and-power-sri-lanka#faq`,
         mainEntity: faqItems.map((f) => ({
           '@type': 'Question',
           name: f.question,
@@ -149,6 +178,7 @@ export default async function FuelAndPowerPage() {
       },
       {
         '@type': 'Dataset',
+        '@id': `${getSiteUrl()}/utility/fuel-and-power-sri-lanka#dataset`,
         name: 'Ceylon Petroleum Corporation (CEYPETCO) Historical Fuel Price Archive (1990–2026)',
         description: 'Complete 36-year official historical fuel price revisions in Sri Lanka covering Petrol 92, Petrol 95, Auto Diesel, Super Diesel, and Kerosene from March 1990 to November 2026.',
         url: `${getSiteUrl()}/utility/fuel-and-power-sri-lanka`,
