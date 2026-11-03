@@ -91,8 +91,9 @@ export async function GET() {
     xml += `  </url>\n`;
   }
 
-  // 3.1 Daily Evergreen Utility Hubs (High Organic Search Volume)
+  // 3.1 Daily Evergreen Utility Hubs & Calculators (High Organic Search Volume)
   const utilityPages = [
+    { path: '/calculators/sri-lanka-salary-tax-calculator', priority: '0.98', changefreq: 'hourly' },
     { path: '/utility/fuel-and-power-sri-lanka', priority: '0.98', changefreq: 'hourly' },
     { path: '/markets/usd-to-lkr-rate-today', priority: '0.95', changefreq: 'hourly' },
     { path: '/markets/gold-price-sri-lanka-today', priority: '0.95', changefreq: 'hourly' },

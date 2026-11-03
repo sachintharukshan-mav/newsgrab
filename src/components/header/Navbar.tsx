@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Language, DateRange } from '@/lib/types';
-import { Search, RefreshCw, X, Clock, Bookmark, Sun, Moon, Zap, Fuel, DollarSign, Coins } from 'lucide-react';
+import { Search, RefreshCw, X, Clock, Bookmark, Sun, Moon, Zap, Fuel, DollarSign, Coins, Calculator } from 'lucide-react';
 import { isPowercutScheduleExpired } from '@/data/powercut-schedule';
 
 interface NavbarProps {
@@ -78,7 +78,9 @@ const navbarTranslations = {
   goldTag: { en: 'Gold (24K/22K)', si: 'රන් මිල (24K/22K)', ta: 'தங்கம் (24K/22K)' },
   goldDetail: { en: 'Sea Street Rates', si: 'හෙට්ටිවීදිය මිල ගණන්', ta: 'செட்டியார் தெரு விலை' },
   powercutTag: { en: 'CEB Power', si: 'විදුලි කප්පාදුව', ta: 'மின்வெட்டு' },
-  powercutDetail: { en: 'Interactive Area Map', si: 'දිස්ත්‍රික් සිතියම', ta: 'மாவட்ட வரைபடம்' }
+  powercutDetail: { en: 'Interactive Area Map', si: 'දිස්ත්‍රික් සිතියම', ta: 'மாவட்ட வரைபடம்' },
+  salaryTaxTag: { en: 'Salary / APIT Tax', si: 'වැටුප් / APIT බදු', ta: 'சம்பளம் / APIT வரி' },
+  salaryTaxDetail: { en: '2025/2026 IRD Slabs', si: 'නව බදු සීමා', ta: '2025/2026 வரி விகிதம்' }
 };
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -423,6 +425,21 @@ export const Navbar: React.FC<NavbarProps> = ({
               <span className="w-1.5 h-1.5 rounded-full bg-rose-500 animate-pulse" />
               <span>{navbarTranslations.dailyTrackers[currentLang]}</span>
             </span>
+
+            {/* Salary & APIT Tax Calculator Pill */}
+            <Link
+              href={`${langPrefix}/calculators/sri-lanka-salary-tax-calculator`}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-[var(--bg-card)] hover:bg-[var(--bg-card-hover)] border border-[var(--border-line)] hover:border-[#2962ff]/50 text-[var(--text-main)] transition-all shrink-0 shadow-2xs group cursor-pointer"
+              title="Sri Lanka Salary & APIT Tax Calculator (2025/2026 IRD Slabs)"
+            >
+              <Calculator className="w-3.5 h-3.5 text-[#2962ff] group-hover:scale-110 transition-transform" />
+              <span className="font-semibold text-blue-600 dark:text-blue-400">
+                {navbarTranslations.salaryTaxTag[currentLang]}:
+              </span>
+              <span className="text-[var(--text-body)] text-[11px]">
+                {navbarTranslations.salaryTaxDetail[currentLang]}
+              </span>
+            </Link>
 
             {/* Fuel Prices Pill */}
             <Link
