@@ -24,7 +24,7 @@ export const dynamic = 'force-dynamic';
 
 export async function generateMetadata(): Promise<Metadata> {
   const SITE_URL = getSiteUrl();
-  const title = 'Sri Lanka Salary & APIT Tax Calculator (2025/2026 IRD Slabs) | LANKA DISPATCH';
+  const title = 'Sri Lanka Salary & APIT Tax Calculator (2025/2026 IRD Slabs)';
   const description =
     '100% accurate Sri Lanka Salary, APIT & Income Tax Calculator verified against Inland Revenue (Amendment) Act No. 2 of 2025. Calculate your net take-home salary, Employee EPF (8%), Employer ETF (3%), 2025 tax relief (Rs. 150k), tax savings, and employer Cost to Company (CTC).';
   const enUrl = `${SITE_URL}/calculators/sri-lanka-salary-tax-calculator`;
