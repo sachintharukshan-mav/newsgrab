@@ -74,7 +74,7 @@ export default function FuelPricingPillarGuidePage() {
     },
     {
       q: 'Why do Petrol 95 and Super Diesel prices differ between Ceypetco, Lanka IOC, and Sinopec?',
-      a: 'While the Ministry of Power and Energy mandates uniform retail pricing for staple mass fuels (Petrol 92 and Auto Diesel), premium fuels (Petrol 95 Octane and Super Diesel) are subject to commercial brand differentiation. Lanka IOC and Sinopec incur private commercial financing and specialized additive formulation costs that result in modest price margins (Rs. 5 to Rs. 27 per litre) compared to state-subsidized Ceypetco benchmarks.',
+      a: 'While the Ministry of Power and Energy mandates uniform retail pricing for staple mass fuels (Petrol 92 and Auto Diesel), premium fuels (Petrol 95 Octane and Super Diesel) are subject to commercial brand differentiation. Lanka IOC and Sinopec incur private commercial financing and specialized additive formulation costs that result in price margins (Rs. 25 to Rs. 27 per litre) compared to state-subsidized Ceypetco benchmarks.',
     },
     {
       q: 'How does currency depreciation (USD/LKR) affect local fuel pump prices?',
@@ -294,7 +294,7 @@ export default function FuelPricingPillarGuidePage() {
           </p>
           <ul className="list-disc list-inside space-y-2 text-sm sm:text-base text-[var(--text-body)] pl-2">
             <li>
-              <strong>Petrol 95 Octane:</strong> Ceypetco retails at Rs. 490 per litre, whereas Lanka IOC and Sinopec retail at Rs. 495 per litre (reflecting a Rs. 5 per litre commercial formulation spread).
+              <strong>Petrol 95 Octane:</strong> Ceypetco retails at Rs. 490 per litre, whereas Lanka IOC and Sinopec retail at Rs. 515 per litre (reflecting a Rs. 25 per litre commercial formulation spread following a Rs. 20 revision from Rs. 495).
             </li>
             <li>
               <strong>Super Diesel:</strong> Ceypetco and Sinopec retail at Rs. 543 per litre, while Lanka IOC officially prices its Euro 4/5 Super Diesel at Rs. 570 per litre (a Rs. 27 per litre differential due to imported proprietary combustion additives).

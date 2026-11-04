@@ -97,7 +97,7 @@ export default async function FuelAndPowerPage() {
   const faqItems = [
     {
       question: 'Are fuel prices different between Ceypetco, Lanka IOC, and Sinopec?',
-      answer: `Yes, for premium fuels. High-volume staples maintain parity: Petrol 92 is Rs. ${pet92} and Auto Diesel is Rs. ${diesel} across CEYPETCO, Lanka IOC, and Sinopec. However, for Petrol 95 Octane, CEYPETCO retails at Rs. ${pet95} while Lanka IOC and Sinopec retail at Rs. 495 per litre (a Rs. 5/L difference). For Super Diesel, CEYPETCO and Sinopec retail at Rs. ${superDiesel} per litre while Lanka IOC officially retails at Rs. 570 per litre (a Rs. 27/L difference). Domestic Kerosene (Rs. ${kerosene}) is subsidized and exclusively retailed by CEYPETCO.`,
+      answer: `Yes, for premium fuels. High-volume staples maintain parity: Petrol 92 is Rs. ${pet92} and Auto Diesel is Rs. ${diesel} across CEYPETCO, Lanka IOC, and Sinopec. However, for Petrol 95 Octane, CEYPETCO retails at Rs. ${pet95} while Lanka IOC and Sinopec retail at Rs. 515 per litre (a Rs. 25/L difference following their Rs. 20 revision). For Super Diesel, CEYPETCO and Sinopec retail at Rs. ${superDiesel} per litre while Lanka IOC officially retails at Rs. 570 per litre (a Rs. 27/L difference). Domestic Kerosene (Rs. ${kerosene}) is subsidized and exclusively retailed by CEYPETCO.`,
     },
     {
       question: 'What is the price of Lanka IOC Super Diesel in Sri Lanka today?',
@@ -105,7 +105,7 @@ export default async function FuelAndPowerPage() {
     },
     {
       question: 'What is the price of Petrol 95 in Sri Lanka today?',
-      answer: `Petrol 95 Octane is priced at Rs. ${pet95} per litre at CEYPETCO (CPC) filling stations, and Rs. 495 per litre at Lanka IOC and Sinopec filling stations (reflecting a Rs. 5 per litre difference).`,
+      answer: `Petrol 95 Octane is priced at Rs. ${pet95} per litre at CEYPETCO (CPC) filling stations, and Rs. 515 per litre at Lanka IOC and Sinopec filling stations (reflecting a Rs. 25 per litre difference after both companies increased prices by Rs. 20 per litre from Rs. 495 to Rs. 515).`,
     },
     {
       question: 'What is the price of Petrol 92 in Sri Lanka today?',
@@ -554,7 +554,7 @@ export default async function FuelAndPowerPage() {
                 </span>
               </div>
               <p className="text-xs text-[var(--text-muted)] leading-relaxed">
-                Operates ~1,300 sheds nationwide. Benchmarks the national pricing formula: Petrol 92 (Rs. 424), Auto Diesel (Rs. 397). Provides the lowest price for Petrol 95 at Rs. 490 (Rs. 5 cheaper than LIOC/Sinopec) and Super Diesel at Rs. 543 (Rs. 27 cheaper than Lanka IOC at Rs. 570). Sole distributor of subsidized Domestic Kerosene (Rs. 285).
+                Operates ~1,300 sheds nationwide. Benchmarks the national pricing formula: Petrol 92 (Rs. 424), Auto Diesel (Rs. 397). Provides the lowest price for Petrol 95 at Rs. 490 (Rs. 25 cheaper than LIOC/Sinopec at Rs. 515) and Super Diesel at Rs. 543 (Rs. 27 cheaper than Lanka IOC at Rs. 570). Sole distributor of subsidized Domestic Kerosene (Rs. 285).
               </p>
             </div>
 
@@ -567,7 +567,7 @@ export default async function FuelAndPowerPage() {
                 </span>
               </div>
               <p className="text-xs text-[var(--text-muted)] leading-relaxed">
-                Indian Oil Corporation subsidiary with 210+ sheds nationwide. Verified via official portal (<a href="https://www.lankaioc.com/our-product/" target="_blank" rel="noopener noreferrer" className="underline text-blue-500">lankaioc.com</a>): Retails Petrol 92 at Rs. 424, Auto Diesel at Rs. 397, Petrol 95 at Rs. 495 (+Rs. 5), Lanka Super Diesel at Rs. 570 (+Rs. 27), and specialty branded fuels XtraPremium Euro 3 (Rs. 485) and XtraMile Diesel (Rs. 550).
+                Indian Oil Corporation subsidiary with 210+ sheds nationwide. Verified via official portal (<a href="https://www.lankaioc.com/our-product/" target="_blank" rel="noopener noreferrer" className="underline text-blue-500">lankaioc.com</a>): Retails Petrol 92 at Rs. 424, Auto Diesel at Rs. 397, Petrol 95 at Rs. 515 (+Rs. 25 over CPC following a Rs. 20 revision), Lanka Super Diesel at Rs. 570 (+Rs. 27), and specialty branded fuels XtraPremium Euro 3 (Rs. 485) and XtraMile Diesel (Rs. 550).
               </p>
             </div>
 
@@ -580,7 +580,7 @@ export default async function FuelAndPowerPage() {
                 </span>
               </div>
               <p className="text-xs text-[var(--text-muted)] leading-relaxed">
-                Chinese state enterprise operator. Matches CPC benchmark on Petrol 92 (Rs. 424), Auto Diesel (Rs. 397), and Super Diesel (Rs. 543). Retails Petrol 95 at Rs. 495 (matching LIOC). Periodically offers corporate fleet credit and digital payment cashback promotions.
+                Chinese state enterprise operator. Matches CPC benchmark on Petrol 92 (Rs. 424), Auto Diesel (Rs. 397), and Super Diesel (Rs. 543). Retails Petrol 95 at Rs. 515 (matching LIOC after a Rs. 20 increase). Periodically offers corporate fleet credit and digital payment cashback promotions.
               </p>
             </div>
           </div>
