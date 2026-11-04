@@ -106,7 +106,10 @@ export async function generateMetadata({
       images: [ogImageUrl],
       site: '@lankadispatch',
     },
-    robots: !article.brief?.[currentLang] && (summary.length < 80 || summary.trim().toLowerCase() === title.trim().toLowerCase())
+    // Google AdSense & Search Quality Guard:
+    // Only index dispatches with substantive editorial substance (verified brief or deep narrative >= 250 chars).
+    // Automatically set thin stubs to noindex so Google reviewers and crawlers only evaluate high-value pages.
+    robots: (!article.brief?.[currentLang] && summary.length < 250) || summary.trim().toLowerCase() === title.trim().toLowerCase()
       ? {
           index: false,
           follow: true,

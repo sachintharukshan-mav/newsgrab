@@ -91,12 +91,16 @@ export async function GET() {
     xml += `  </url>\n`;
   }
 
-  // 3.1 Daily Evergreen Utility Hubs & Calculators (High Organic Search Volume)
+  // 3.1 Daily Evergreen Utility Hubs, Calculators & In-Depth Pillar Guides (High Organic Search Volume)
   const utilityPages = [
     { path: '/calculators/sri-lanka-salary-tax-calculator', priority: '0.98', changefreq: 'hourly' },
     { path: '/utility/fuel-and-power-sri-lanka', priority: '0.98', changefreq: 'hourly' },
     { path: '/markets/usd-to-lkr-rate-today', priority: '0.95', changefreq: 'hourly' },
     { path: '/markets/gold-price-sri-lanka-today', priority: '0.95', changefreq: 'hourly' },
+    { path: '/guides', priority: '0.95', changefreq: 'daily' },
+    { path: '/guides/sri-lanka-personal-income-tax-guide-2025', priority: '0.95', changefreq: 'weekly' },
+    { path: '/guides/sri-lanka-fuel-pricing-formula-explained', priority: '0.95', changefreq: 'weekly' },
+    { path: '/guides/sri-lanka-epf-etf-contribution-guide', priority: '0.95', changefreq: 'weekly' },
     { path: '/powercut', priority: '0.90', changefreq: 'hourly' },
   ];
   for (const util of utilityPages) {
@@ -170,6 +174,7 @@ export async function GET() {
   // 5. Institutional & Compliance Pages
   const institutional = [
     { path: '/about', priority: '0.7' },
+    { path: '/contact', priority: '0.7' },
     { path: '/privacy', priority: '0.6' },
     { path: '/terms', priority: '0.6' },
   ];

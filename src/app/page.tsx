@@ -800,8 +800,43 @@ export default function HomePage() {
             </div>
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-1 border-t border-[var(--border-line)]/50">
               <span className="font-bold text-[var(--text-main)] uppercase tracking-wider font-sans text-xs">
+                In-Depth Special Reports:
+              </span>
+              <Link
+                href="/guides/sri-lanka-personal-income-tax-guide-2025"
+                className="text-[var(--text-muted)] hover:text-blue-500 underline-offset-2 hover:underline transition-colors"
+              >
+                Sri Lanka Personal Income Tax &amp; APIT Slabs 2025/2026 Guide
+              </Link>
+              <Link
+                href="/guides/sri-lanka-fuel-pricing-formula-explained"
+                className="text-[var(--text-muted)] hover:text-emerald-500 underline-offset-2 hover:underline transition-colors"
+              >
+                Sri Lanka Fuel Pricing Formula Explained (Platts to Pump)
+              </Link>
+              <Link
+                href="/guides/sri-lanka-epf-etf-contribution-guide"
+                className="text-[var(--text-muted)] hover:text-amber-500 underline-offset-2 hover:underline transition-colors"
+              >
+                EPF &amp; ETF Sri Lanka 23% Contribution Guide
+              </Link>
+              <Link
+                href="/guides"
+                className="text-rose-500 font-semibold underline-offset-2 hover:underline transition-colors"
+              >
+                All Special Reports &rarr;
+              </Link>
+            </div>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-1 border-t border-[var(--border-line)]/50">
+              <span className="font-bold text-[var(--text-main)] uppercase tracking-wider font-sans text-xs">
                 Daily Market Utilities:
               </span>
+              <Link
+                href="/calculators/sri-lanka-salary-tax-calculator"
+                className="text-[var(--text-muted)] hover:text-blue-500 underline-offset-2 hover:underline transition-colors font-semibold"
+              >
+                Sri Lanka Salary &amp; APIT Tax Calculator (2025/2026)
+              </Link>
               <Link
                 href="/markets/usd-to-lkr-rate-today"
                 className="text-[var(--text-muted)] hover:text-rose-500 underline-offset-2 hover:underline transition-colors"
@@ -835,6 +870,8 @@ export default function HomePage() {
             </div>
             <div className="flex items-center gap-4">
               <Link href="/about" className="hover:text-[var(--text-main)] transition-colors">About</Link>
+              <span>•</span>
+              <Link href="/contact" className="hover:text-[var(--text-main)] transition-colors font-semibold text-rose-500">Contact</Link>
               <span>•</span>
               <Link href="/privacy" className="hover:text-[var(--text-main)] transition-colors">Privacy</Link>
               <span>•</span>

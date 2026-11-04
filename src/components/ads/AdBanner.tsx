@@ -70,10 +70,13 @@ export const AdBanner: React.FC<AdBannerProps> = ({
     }
   }, [adClient, effectiveAdSlot]);
 
-  // Collapse empty ad placeholder completely when no live ad or slot is assigned.
-  // This cleans mobile screen space, keeps primary news above the fold for Google Discover,
-  // and prevents "Under Construction / Blank Ad" flags during Google AdSense site review.
-  if (!hasLiveAd && !showPlaceholder) {
+  // During AdSense review and normal operation without active creatives,
+  // collapse ad containers completely. Never show "Ad Space Reserved" placeholders,
+  // empty borders, or blank frames, which trigger Google's "Under Construction / Low Value Content" policy.
+  const isApproved = process.env.NEXT_PUBLIC_ADSENSE_APPROVED === 'true';
+  const shouldRenderAd = Boolean(customHtml || (isApproved && adClient && effectiveAdSlot));
+
+  if (!shouldRenderAd) {
     return null;
   }
 
@@ -138,24 +141,7 @@ export const AdBanner: React.FC<AdBannerProps> = ({
             }
             data-full-width-responsive="true"
           />
-        ) : (
-          /* Legitimate House Inventory Placeholder */
-          <div className="p-4 w-full h-full flex flex-col items-center justify-center text-center space-y-1 text-zinc-500">
-            <div className="text-[10px] font-mono uppercase tracking-wider text-zinc-400">
-              LANKA DISPATCH Digital Network
-            </div>
-            <p className="text-[11px] font-mono text-zinc-500 max-w-md">
-              Ad Space Reserved ({format.toUpperCase()})
-            </p>
-            <a
-              href="mailto:advertising@lankadispatch.com"
-              className="inline-flex items-center gap-1 text-[10px] font-mono text-zinc-400 hover:text-zinc-200 transition-colors pt-1"
-            >
-              <Mail className="w-3 h-3" />
-              <span>Partner Inquiries: advertising@lankadispatch.com</span>
-            </a>
-          </div>
-        )}
+        ) : null}
       </div>
     </div>
   );

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Language, DateRange } from '@/lib/types';
-import { Search, RefreshCw, X, Clock, Bookmark, Sun, Moon, Zap, Fuel, DollarSign, Coins, Calculator } from 'lucide-react';
+import { Search, RefreshCw, X, Clock, Bookmark, Sun, Moon, Zap, Fuel, DollarSign, Coins, Calculator, BookOpen } from 'lucide-react';
 import { isPowercutScheduleExpired } from '@/data/powercut-schedule';
 
 interface NavbarProps {
@@ -80,7 +80,9 @@ const navbarTranslations = {
   powercutTag: { en: 'CEB Power', si: 'විදුලි කප්පාදුව', ta: 'மின்வெட்டு' },
   powercutDetail: { en: 'Interactive Area Map', si: 'දිස්ත්‍රික් සිතියම', ta: 'மாவட்ட வரைபடம்' },
   salaryTaxTag: { en: 'Salary / APIT Tax', si: 'වැටුප් / APIT බදු', ta: 'சம்பளம் / APIT வரி' },
-  salaryTaxDetail: { en: '2025/2026 IRD Slabs', si: 'නව බදු සීමා', ta: '2025/2026 வரி விகிதம்' }
+  salaryTaxDetail: { en: '2025/2026 IRD Slabs', si: 'නව බදු සීමා', ta: '2025/2026 வரி விகிதம்' },
+  guidesTag: { en: 'Special Guides', si: 'විශේෂ විමර්ශන', ta: 'விசேட வழிகாட்டிகள்' },
+  guidesDetail: { en: 'In-Depth Reports', si: 'සම්පූර්ණ වාර්තා', ta: 'முழுமையான ஆய்வுகள்' }
 };
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -438,6 +440,21 @@ export const Navbar: React.FC<NavbarProps> = ({
               </span>
               <span className="text-[var(--text-body)] text-[11px]">
                 {navbarTranslations.salaryTaxDetail[currentLang]}
+              </span>
+            </Link>
+
+            {/* In-Depth Special Guides Pill */}
+            <Link
+              href={`${langPrefix}/guides`}
+              className="flex items-center gap-1.5 px-2.5 py-1 rounded bg-[var(--bg-card)] hover:bg-[var(--bg-card-hover)] border border-[var(--border-line)] hover:border-purple-500/50 text-[var(--text-main)] transition-all shrink-0 shadow-2xs group cursor-pointer"
+              title="Lanka Dispatch Special Reports & In-Depth Economic Guides"
+            >
+              <BookOpen className="w-3.5 h-3.5 text-purple-500 group-hover:scale-110 transition-transform" />
+              <span className="font-semibold text-purple-600 dark:text-purple-400">
+                {navbarTranslations.guidesTag[currentLang]}:
+              </span>
+              <span className="text-[var(--text-body)] text-[11px]">
+                {navbarTranslations.guidesDetail[currentLang]}
               </span>
             </Link>
 

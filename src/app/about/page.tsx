@@ -86,7 +86,7 @@ export default function AboutPage() {
             <span>•</span>
             <a href="#ethics-policy" className="hover:underline">6. Independence &amp; Funding</a>
             <span>•</span>
-            <a href="#contact" className="hover:underline">7. Bureau Contacts</a>
+            <Link href="/contact" className="hover:underline text-rose-400 font-bold">7. Bureau Contacts (/contact)</Link>
           </div>
         </nav>
 
