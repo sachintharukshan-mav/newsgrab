@@ -58,7 +58,17 @@ export async function getAggregatedArticles(
     }
   }
 
-  // 3. Aggregate live feeds
+  // 3. Guard against synchronous RSS scraping on user request path
+  // If forceRefresh is FALSE, we MUST NOT scrape 15 feeds in the user request path.
+  // Full scraping is strictly reserved for forceRefresh === true (triggered by cron via /api/cron/scrape).
+  if (!forceRefresh) {
+    if (cache.articles.length > 0) {
+      return cache.articles;
+    }
+    return mockArticles;
+  }
+
+  // 4. Aggregate live feeds (ONLY when forceRefresh is true)
   try {
     const liveItems: Article[] = [];
 

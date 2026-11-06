@@ -12,9 +12,26 @@ export async function GET(request: NextRequest) {
   const search = searchParams.get('q')?.toLowerCase() || '';
   const publisher = searchParams.get('publisher')?.toLowerCase() || '';
   const timeRange = (searchParams.get('timeRange') || 'all') as DateRange;
-  const refresh = searchParams.get('refresh') === 'true';
 
-  const allArticles = await getAggregatedArticles(lang, refresh);
+  // Pagination support: default to 80 articles (approx 150-180KB payload vs 3.8MB for all 1,500)
+  // Drastically cuts JSON serialization CPU time below Cloudflare Worker Free plan 10ms limit.
+  const rawPage = parseInt(searchParams.get('page') || '1', 10);
+  const page = Number.isFinite(rawPage) && rawPage > 0 ? rawPage : 1;
+
+  const rawLimit = searchParams.get('limit');
+  let limit = 80;
+  if (rawLimit === 'all') {
+    limit = 200; // Hard clamp to protect worker CPU
+  } else if (rawLimit) {
+    const parsed = parseInt(rawLimit, 10);
+    if (Number.isFinite(parsed) && parsed > 0) {
+      limit = Math.min(Math.max(1, parsed), 200);
+    }
+  }
+
+  // Never allow unauthenticated external callers to trigger full RSS scraping on user requests.
+  // Feed scraping is strictly managed by cron via /api/cron/scrape.
+  const allArticles = await getAggregatedArticles(lang, false);
   let articles = [...allArticles];
 
   // Filter by Category or Region
@@ -58,16 +75,34 @@ export async function GET(request: NextRequest) {
     });
   }
 
+  const total = articles.length;
+  const startIndex = (page - 1) * limit;
+  const endIndex = startIndex + limit;
+  const pagedArticles = articles.slice(startIndex, endIndex);
+  const hasMore = endIndex < total;
+  const totalPages = Math.ceil(total / limit);
+
   const cache = getMemoryCacheStatus(lang);
   const lastUpdated = new Date(cache?.timestamp || Date.now()).toISOString();
   const nextUpdateInSeconds = Math.max(0, Math.round((CACHE_TTL_MS - (Date.now() - (cache?.timestamp || 0))) / 1000));
 
-  return NextResponse.json({
-    success: true,
-    language: lang,
-    total: articles.length,
-    lastUpdated,
-    nextUpdateInSeconds,
-    articles
-  });
+  return NextResponse.json(
+    {
+      success: true,
+      language: lang,
+      total,
+      page,
+      limit,
+      totalPages,
+      hasMore,
+      lastUpdated,
+      nextUpdateInSeconds,
+      articles: pagedArticles
+    },
+    {
+      headers: {
+        'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=120'
+      }
+    }
+  );
 }
