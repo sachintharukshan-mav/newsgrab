@@ -32,9 +32,9 @@ export async function GET() {
   ]);
 
   const combinedArticles: Array<{ article: Article; lang: 'en' | 'si' | 'ta' }> = [
-    ...enArticles.map((a) => ({ article: a, lang: 'en' as const })),
-    ...siArticles.map((a) => ({ article: a, lang: 'si' as const })),
-    ...taArticles.map((a) => ({ article: a, lang: 'ta' as const })),
+    ...enArticles.slice(0, 120).map((a) => ({ article: a, lang: 'en' as const })),
+    ...siArticles.slice(0, 90).map((a) => ({ article: a, lang: 'si' as const })),
+    ...taArticles.slice(0, 90).map((a) => ({ article: a, lang: 'ta' as const })),
   ];
 
   const pool = combinedArticles.length > 0

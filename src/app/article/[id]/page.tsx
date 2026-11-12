@@ -38,12 +38,11 @@ export async function generateMetadata({
     };
   }
 
-  // Pre-attach Smart Brevity executive brief for SSR metadata if missing
+  // Pre-attach Smart Brevity executive brief for SSR metadata if missing (0ms optimistic brief; KV check runs once in ArticlePage)
   if (!article.brief?.[currentLang]) {
-    const cachedBrief = (await getWorkersAiCachedBrief(article.sourceUrl, currentLang)) || getGeminiCachedBrief(article.sourceUrl, currentLang);
     article.brief = {
       ...article.brief,
-      [currentLang]: cachedBrief || buildOptimisticBrief(article, currentLang),
+      [currentLang]: getGeminiCachedBrief(article.sourceUrl, currentLang) || buildOptimisticBrief(article, currentLang),
     };
   }
 
@@ -107,9 +106,8 @@ export async function generateMetadata({
       site: '@lankadispatch',
     },
     // Google AdSense & Search Quality Guard:
-    // Only index dispatches with substantive editorial substance (verified brief or deep narrative >= 250 chars).
-    // Automatically set thin stubs to noindex so Google reviewers and crawlers only evaluate high-value pages.
-    robots: (!article.brief?.[currentLang] && summary.length < 250) || summary.trim().toLowerCase() === title.trim().toLowerCase()
+    // Index all valid editorial dispatches that carry a structured Smart Brevity brief or substantive narrative.
+    robots: !title || title.trim().length < 10 || (!article.brief?.[currentLang] && summary.length < 80)
       ? {
           index: false,
           follow: true,

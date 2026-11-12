@@ -40,10 +40,18 @@ function notifyListeners() {
   listeners.forEach((listener) => listener());
 }
 
+function isAutomatedCrawler(): boolean {
+  if (typeof navigator === 'undefined' || !navigator.userAgent) return false;
+  return /bot|crawl|spider|slurp|googleother|inspectiontool|mediapartners|adsbot|bingpreview|facebookexternalhit|bytespider|gptbot|claudebot|headless/i.test(
+    navigator.userAgent
+  );
+}
+
 /**
  * Enqueue an article ID to be fetched in a consolidated batch request
  */
 function queueMetricFetch(articleId: string) {
+  if (isAutomatedCrawler()) return;
   if (metricsCache[articleId] !== undefined) return;
   pendingBatchIds.add(articleId);
 
@@ -75,7 +83,7 @@ function queueMetricFetch(articleId: string) {
  * Records a unique read for the given article if not already opened within 24 hours
  */
 export async function recordArticleRead(articleId: string, publishedAt?: string): Promise<number | null> {
-  if (typeof window === 'undefined' || !articleId) return null;
+  if (typeof window === 'undefined' || !articleId || isAutomatedCrawler()) return null;
 
   const storageKey = `ld_read_${articleId}`;
   const lastRead = localStorage.getItem(storageKey);

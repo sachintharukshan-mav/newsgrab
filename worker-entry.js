@@ -11,12 +11,11 @@ export default {
     const url = new URL(request.url);
     const pathname = url.pathname;
 
-    // 2. Bypass cache for mutations, analytics, AI generation, internal cron, and authenticated requests
+    // 2. Bypass cache for AI generation, internal cron, and authenticated requests
+    // (Note: POST/PATCH/DELETE mutations to /api/metrics, /api/comments, /api/reactions are already bypassed in step 1,
+    // allowing GET reads to be safely edge-cached for 60s to protect D1 and Worker CPU from crawler bursts)
     if (
       request.headers.get('authorization') ||
-      pathname.startsWith('/api/metrics') ||
-      pathname.startsWith('/api/comments') ||
-      pathname.startsWith('/api/reactions') ||
       pathname.startsWith('/api/synthesize') ||
       pathname.startsWith('/api/cron/')
     ) {
@@ -75,7 +74,13 @@ export default {
       let edgeTtl = 60; // 60s default edge cache for pages and articles
       let swr = 120;
 
-      if (pathname.startsWith('/api/rates')) {
+      if (
+        pathname.startsWith('/api/rates') ||
+        pathname === '/sitemap.xml' ||
+        pathname === '/news-sitemap.xml' ||
+        pathname === '/feed.xml' ||
+        pathname === '/robots.txt'
+      ) {
         edgeTtl = 900;
         swr = 1800;
       } else if (pathname.startsWith('/_next/static/') || pathname.startsWith('/images/')) {

@@ -124,8 +124,15 @@ export const DiscussionSection: React.FC<DiscussionSectionProps> = ({
     } catch {}
   }, []);
 
-  // Fetch comments for active article
+  // Fetch comments for active article (skip D1 roundtrip for search engine crawlers)
   useEffect(() => {
+    if (
+      typeof navigator !== 'undefined' &&
+      /bot|crawl|spider|slurp|googleother|inspectiontool|mediapartners|adsbot|bingpreview|headless/i.test(navigator.userAgent)
+    ) {
+      setLoading(false);
+      return;
+    }
     let isMounted = true;
     React.startTransition(() => {
       setLoading(true);
