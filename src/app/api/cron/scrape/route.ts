@@ -34,29 +34,47 @@ export async function GET(request: NextRequest) {
 
   try {
     const startedAt = Date.now();
-    const counts = await refreshAllNewsFeeds();
+    const currentMinute = new Date().getUTCMinutes();
+    // Stagger heavy feed scraping vs AI/market sync across 15m cron ticks to stay well under Free Worker 10ms CPU & 50 subrequest limits
+    const isEvenSlot = currentMinute < 10 || (currentMinute >= 25 && currentMinute < 40);
 
-    // Synthesize top newly ingested lead stories into Axios Smart Brevity briefs with Workers AI
-    let synthesisSummary = null;
-    try {
-      synthesisSummary = await synthesizeTopLeadStories(2);
-    } catch (synthErr) {
-      console.warn('Background AI synthesis notice:', synthErr);
+    let counts: Record<string, number> = {};
+    if (isEvenSlot) {
+      const enArticles = await getAggregatedArticles('en', true);
+      counts = { en: enArticles.length };
+    } else {
+      const [siArticles, taArticles] = await Promise.all([
+        getAggregatedArticles('si', true),
+        getAggregatedArticles('ta', true),
+      ]);
+      counts = { si: siArticles.length, ta: taArticles.length };
     }
 
-    // Sync live market utilities (Forex, Gold, and Ceypetco Fuel Prices)
+    // Synthesize 1 newly ingested lead story on even slots
+    let synthesisSummary = null;
+    if (isEvenSlot) {
+      try {
+        synthesisSummary = await synthesizeTopLeadStories(1);
+      } catch (synthErr) {
+        console.warn('Background AI synthesis notice:', synthErr);
+      }
+    }
+
+    // Sync live market utilities on odd slots
     let marketSyncSummary = null;
-    try {
-      const [forexSnap, fuelSnap] = await Promise.allSettled([
-        syncLiveMarketSnapshot(),
-        syncFuelPricesFromCeypetco(),
-      ]);
-      marketSyncSummary = {
-        forex: forexSnap.status === 'fulfilled' ? { usdLkr: forexSnap.value.usdLkr, gold24k: forexSnap.value.gold24kSovereign } : null,
-        fuel: fuelSnap.status === 'fulfilled' ? { revisionDate: fuelSnap.value.lastRevisionDate, petrol92: fuelSnap.value.fuelTypes[0]?.cpcPrice } : null,
-      };
-    } catch (mktErr) {
-      console.warn('Market sync background notice:', mktErr);
+    if (!isEvenSlot) {
+      try {
+        const [forexSnap, fuelSnap] = await Promise.allSettled([
+          syncLiveMarketSnapshot(),
+          syncFuelPricesFromCeypetco(),
+        ]);
+        marketSyncSummary = {
+          forex: forexSnap.status === 'fulfilled' ? { usdLkr: forexSnap.value.usdLkr, gold24k: forexSnap.value.gold24kSovereign } : null,
+          fuel: fuelSnap.status === 'fulfilled' ? { revisionDate: fuelSnap.value.lastRevisionDate, petrol92: fuelSnap.value.fuelTypes[0]?.cpcPrice } : null,
+        };
+      } catch (mktErr) {
+        console.warn('Market sync background notice:', mktErr);
+      }
     }
 
     // Push newly ingested lead stories to IndexNow (Bing, Copilot, Yandex, Yahoo)

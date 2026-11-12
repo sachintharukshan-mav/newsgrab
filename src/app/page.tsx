@@ -16,7 +16,7 @@ export default async function HomePage({ searchParams }: HomePageProps) {
 
   const liveArticles = await getAggregatedArticles(currentLang, false).catch(() => []);
   const initialArticles =
-    liveArticles && liveArticles.length > 0 ? liveArticles.slice(0, 80) : mockArticles;
+    liveArticles && liveArticles.length > 0 ? liveArticles.slice(0, 24) : mockArticles;
 
   return <HomeClient initialArticles={initialArticles} serverLang={currentLang} />;
 }

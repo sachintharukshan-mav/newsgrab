@@ -103,7 +103,7 @@ export default async function CategoryPage({
   const liveArticles = await getAggregatedArticles(currentLang).catch(() => []);
   const pool = liveArticles.length > 0 ? liveArticles : mockArticles;
   const filtered = filterArticlesForSection(pool, section.slug);
-  const initialArticles = filtered.length > 0 ? filtered : pool.slice(0, 12);
+  const initialArticles = filtered.length > 0 ? filtered.slice(0, 24) : pool.slice(0, 12);
 
   return (
     <>
