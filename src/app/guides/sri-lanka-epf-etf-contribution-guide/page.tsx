@@ -19,12 +19,33 @@ import { getSiteUrl } from '@/lib/site-config';
 
 export const dynamic = 'force-dynamic';
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ lang?: string }>;
+}): Promise<Metadata> {
+  const sp = await searchParams;
+  const lang = sp?.lang === 'si' ? 'si' : sp?.lang === 'ta' ? 'ta' : 'en';
   const SITE_URL = getSiteUrl();
-  const title = 'EPF & ETF in Sri Lanka: The Complete Employee and Employer Contribution Guide';
-  const description =
-    'Comprehensive legal and financial guide to Sri Lanka Employees Provident Fund (EPF) and Employees Trust Fund (ETF). 23% monthly contribution formula, Central Bank interest rates, withdrawal rules, and legal compliance.';
-  const enUrl = `${SITE_URL}/guides/sri-lanka-epf-etf-contribution-guide`;
+  const basePath = '/guides/sri-lanka-epf-etf-contribution-guide';
+  const enUrl = `${SITE_URL}${basePath}`;
+  const siUrl = `${SITE_URL}/si${basePath}`;
+  const taUrl = `${SITE_URL}/ta${basePath}`;
+  const canonicalUrl = lang === 'si' ? siUrl : lang === 'ta' ? taUrl : enUrl;
+
+  const titles = {
+    en: 'EPF & ETF in Sri Lanka: The Complete Employee and Employer Contribution Guide',
+    si: 'ශ්‍රී ලංකාවේ EPF සහ ETF දායක මුදල්: සේවක සහ සේවායෝජක සම්පූර්ණ මාර්ගෝපදේශය',
+    ta: 'இலங்கையில் EPF மற்றும் ETF பங்களிப்புகள்: ஊழியர் மற்றும் முதலாளிக்கான முழுமையான வழிகாட்டி',
+  };
+  const descriptions = {
+    en: 'Comprehensive legal and financial guide to Sri Lanka Employees Provident Fund (EPF) and Employees Trust Fund (ETF). 23% monthly contribution formula, Central Bank interest rates, withdrawal rules, and legal compliance.',
+    si: 'ශ්‍රී ලංකාවේ සේවක අර්ථසාධක අරමුදල (EPF) සහ සේවක භාරකාර අරමුදල (ETF) පිළිබඳ නීතිමය හා මූල්‍ය මාර්ගෝපදේශය — 23% මාසික දායකත්ව සූත්‍රය, මහ බැංකු පොලී අනුපාත සහ ආපසු ගැනීමේ නීති.',
+    ta: 'இலங்கை ஊழியர் சேமலாப நிதியம் (EPF) மற்றும் ஊழியர் நம்பிக்கை நிதியம் (ETF) பற்றிய முழுமையான சட்ட மற்றும் நிதி வழிகாட்டி — 23% மாதாந்திர பங்களிப்பு, மத்திய வங்கி வட்டி மற்றும் திரும்பப் பெறும் விதிகள்.',
+  };
+
+  const title = titles[lang];
+  const description = descriptions[lang];
 
   return {
     title,
@@ -40,13 +61,20 @@ export async function generateMetadata(): Promise<Metadata> {
       'etf act no 46 of 1980 rules',
     ],
     alternates: {
-      canonical: enUrl,
+      canonical: canonicalUrl,
+      languages: {
+        'en-LK': enUrl,
+        'si-LK': siUrl,
+        'ta-LK': taUrl,
+        'x-default': enUrl,
+      },
     },
     openGraph: {
-      title,
+      title: `${title} | LANKA DISPATCH`,
       description,
-      url: enUrl,
+      url: canonicalUrl,
       siteName: 'LANKA DISPATCH',
+      locale: lang === 'si' ? 'si_LK' : lang === 'ta' ? 'ta_LK' : 'en_LK',
       type: 'article',
       publishedTime: '2026-11-01T00:00:00Z',
       modifiedTime: new Date().toISOString(),

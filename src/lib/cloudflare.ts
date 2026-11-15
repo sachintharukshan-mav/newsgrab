@@ -14,6 +14,7 @@ export interface CloudflareBindings {
         run: () => Promise<{ success: boolean; meta: any }>;
       };
     };
+    batch?: <T = any>(statements: any[]) => Promise<Array<{ results: T[]; success: boolean }>>;
   };
   AI?: {
     run: (model: string, inputs: any) => Promise<any>;

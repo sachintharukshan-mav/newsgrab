@@ -19,12 +19,33 @@ import { getSiteUrl } from '@/lib/site-config';
 
 export const dynamic = 'force-dynamic';
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ lang?: string }>;
+}): Promise<Metadata> {
+  const sp = await searchParams;
+  const lang = sp?.lang === 'si' ? 'si' : sp?.lang === 'ta' ? 'ta' : 'en';
   const SITE_URL = getSiteUrl();
-  const title = "How Sri Lanka's Fuel Pricing Formula Works: Platts Singapore to Pump Parity";
-  const description =
-    'Comprehensive economic and regulatory guide explaining how Sri Lanka calculates retail fuel prices. Analysis of Platts Singapore benchmarks, freight, customs duties, distributor margins, and CPC vs. LIOC price differentials.';
-  const enUrl = `${SITE_URL}/guides/sri-lanka-fuel-pricing-formula-explained`;
+  const basePath = '/guides/sri-lanka-fuel-pricing-formula-explained';
+  const enUrl = `${SITE_URL}${basePath}`;
+  const siUrl = `${SITE_URL}/si${basePath}`;
+  const taUrl = `${SITE_URL}/ta${basePath}`;
+  const canonicalUrl = lang === 'si' ? siUrl : lang === 'ta' ? taUrl : enUrl;
+
+  const titles = {
+    en: "How Sri Lanka's Fuel Pricing Formula Works: Platts Singapore to Pump Parity",
+    si: 'ශ්‍රී ලංකාවේ ඉන්ධන මිල සූත්‍රය ක්‍රියාත්මක වන ආකාරය: ප්ලැට්ස් සිංගප්පූරු මිල සිට පොම්ප මිල දක්වා',
+    ta: 'இலங்கையின் எரிபொருள் விலை சூத்திரம்: பிளாட்ஸ் சிங்கப்பூர் விலை முதல் சில்லறை விலை வரை',
+  };
+  const descriptions = {
+    en: 'Comprehensive economic and regulatory guide explaining how Sri Lanka calculates retail fuel prices. Analysis of Platts Singapore benchmarks, freight, customs duties, distributor margins, and CPC vs. LIOC price differentials.',
+    si: 'ශ්‍රී ලංකාවේ සිල්ලර ඉන්ධන මිල ගණනය කරන ආකාරය, ප්ලැට්ස් සිංගප්පූරු මිල දර්ශක, නැව් ගාස්තු, බදු සහ CPC හා LIOC මිල වෙනස්කම් පිළිබඳ සම්පූර්ණ විශ්ලේෂණය.',
+    ta: 'இலங்கையில் சில்லறை எரிபொருள் விலைகள் எவ்வாறு கணக்கிடப்படுகின்றன, பிளாட்ஸ் சிங்கப்பூர் குறியீடு, சுங்க வரிகள் மற்றும் CPC vs LIOC விலை வேறுபாடுகள் பற்றிய முழுமையான வழிகாட்டி.',
+  };
+
+  const title = titles[lang];
+  const description = descriptions[lang];
 
   return {
     title,
@@ -39,13 +60,20 @@ export async function generateMetadata(): Promise<Metadata> {
       'fuel price revision formula ministry of power and energy',
     ],
     alternates: {
-      canonical: enUrl,
+      canonical: canonicalUrl,
+      languages: {
+        'en-LK': enUrl,
+        'si-LK': siUrl,
+        'ta-LK': taUrl,
+        'x-default': enUrl,
+      },
     },
     openGraph: {
-      title,
+      title: `${title} | LANKA DISPATCH`,
       description,
-      url: enUrl,
+      url: canonicalUrl,
       siteName: 'LANKA DISPATCH',
+      locale: lang === 'si' ? 'si_LK' : lang === 'ta' ? 'ta_LK' : 'en_LK',
       type: 'article',
       publishedTime: '2026-11-01T00:00:00Z',
       modifiedTime: new Date().toISOString(),

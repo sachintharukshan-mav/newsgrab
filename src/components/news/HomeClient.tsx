@@ -522,6 +522,7 @@ export default function HomeClient({
             category={selectedArticle.category}
             currentLang={currentLang}
             articleTitle={selectedArticle.title[currentLang] || selectedArticle.title.en}
+            articleId={selectedArticle.id}
           />
         </>
       ) : (
@@ -548,6 +549,7 @@ export default function HomeClient({
         onLogoClick={handleLogoClick}
         savedCount={savedArticleIds.length}
         onOpenSavedDrawer={() => setIsSavedDrawerOpen(true)}
+        isHomePage={!selectedArticle}
       />
 
       {/* Grid Alert: Sri Lanka Rotational Power Cut Live Utility Bar */}

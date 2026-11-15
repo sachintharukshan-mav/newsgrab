@@ -8,14 +8,32 @@ import { getSiteUrl } from '@/lib/site-config';
 
 export const dynamic = 'force-dynamic';
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ lang?: string }>;
+}): Promise<Metadata> {
+  const { lang = 'en' } = await searchParams;
+  const currentLang = (lang === 'si' || lang === 'ta' ? lang : 'en') as 'en' | 'si' | 'ta';
   const SITE_URL = getSiteUrl();
-  const title = 'Gold Price in Sri Lanka Today | 24K & 22K Sovereign Rates | LANKA DISPATCH';
-  const description = 'Live gold price in Sri Lanka today. Real-time 24 Karat and 22 Karat Sea Street Colombo gold rates per sovereign (pawan / 8g) and 1 gram. Interactive gold calculator and jeweler comparison.';
+
+  const titles = {
+    en: 'Gold Price in Sri Lanka Today | 24K & 22K Sovereign Rates',
+    si: 'ශ්‍රී ලංකාවේ අද රන් මිල | කැරට් 24 සහ 22 පවුමක මිල ගණන්',
+    ta: 'இலங்கையில் இன்றைய தங்க விலை | 24K & 22K பவுன் விலை விபரம்',
+  };
+  const descriptions = {
+    en: 'Live gold price in Sri Lanka today. Real-time 24 Karat and 22 Karat Sea Street Colombo gold rates per sovereign (pawan / 8g) and 1 gram. Interactive gold calculator and jeweler comparison.',
+    si: 'කොළඹ හෙට්ටිවීදියේ අද රන් මිල ගණන්. කැරට් 24 සහ කැරට් 22 රන් පවුමක (8g) සහ ග්‍රෑම් 1ක සජීවී මිල ගණන් හා රන් මිල කැල්කියුලේටරය.',
+    ta: 'கொழும்பு செட்டியார் தெருவில் இன்றைய நேரடி தங்க விலை. 24 காரட் மற்றும் 22 காரட் 1 பவுன் (8 கிராம்) மற்றும் 1 கிராம் தங்க விலை விபரங்கள் மற்றும் தங்கக் கணிப்பான்.',
+  };
+
+  const title = titles[currentLang];
+  const description = descriptions[currentLang];
   const enUrl = `${SITE_URL}/markets/gold-price-sri-lanka-today`;
   const siUrl = `${SITE_URL}/si/markets/gold-price-sri-lanka-today`;
   const taUrl = `${SITE_URL}/ta/markets/gold-price-sri-lanka-today`;
-  const canonicalUrl = enUrl;
+  const canonicalUrl = currentLang === 'si' ? siUrl : currentLang === 'ta' ? taUrl : enUrl;
 
   return {
     title,
@@ -34,7 +52,7 @@ export async function generateMetadata(): Promise<Metadata> {
       'swarna mahal gold price'
     ],
     alternates: {
-      canonical: enUrl,
+      canonical: canonicalUrl,
       languages: {
         'en-LK': enUrl,
         'si-LK': siUrl,

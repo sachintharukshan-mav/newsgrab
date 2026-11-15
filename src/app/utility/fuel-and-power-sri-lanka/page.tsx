@@ -8,14 +8,32 @@ import { FuelHistoryVisualizer } from '@/components/fuel-history-visualizer';
 
 export const dynamic = 'force-dynamic';
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ lang?: string }>;
+}): Promise<Metadata> {
+  const { lang = 'en' } = await searchParams;
+  const currentLang = (lang === 'si' || lang === 'ta' ? lang : 'en') as 'en' | 'si' | 'ta';
   const SITE_URL = getSiteUrl();
-  const title = 'Sri Lanka Fuel Prices Today & Historical Archive (1990–2026) | LANKA DISPATCH';
-  const description = 'Latest CPC, Lanka IOC, and Sinopec fuel prices in Sri Lanka. Interactive 36-year historical fuel price chart (1990–2026), CSV download, and CEB rotational power cut schedule status.';
+
+  const titles = {
+    en: 'Sri Lanka Fuel Prices Today & Historical Archive (1990–2026)',
+    si: 'ශ්‍රී ලංකාවේ අද ඉන්ධන මිල සහ ඓතිහාසික මිල දත්ත (1990–2026) — CPC, LIOC, Sinopec',
+    ta: 'இலங்கை இன்றைய எரிபொருள் விலை மற்றும் வரலாற்றுத் தரவுகள் (1990–2026) — CPC, LIOC',
+  };
+  const descriptions = {
+    en: 'Latest CPC, Lanka IOC, and Sinopec fuel prices in Sri Lanka. Interactive 36-year historical fuel price chart (1990–2026), CSV download, and CEB rotational power cut schedule status.',
+    si: 'CEYPETCO, Lanka IOC සහ Sinopec අද ඉන්ධන මිල ගණන්, පෙට්‍රල් 92/95 සහ ඩීසල් මිල සංසන්දනය, වසර 36ක ඓතිහාසික ඉන්ධන මිල ප්‍රස්තාරය සහ විදුලි කප්පාදු තත්ත්වය.',
+    ta: 'இலங்கை பெட்ரோலியக் கூட்டுத்தாபனம் (CPC), லங்கா IOC மற்றும் Sinopec இன்றைய எரிபொருள் விலைகள், 36 ஆண்டு கால வரலாற்று விலை வரைபடம் மற்றும் CEB மின்வெட்டு விபரங்கள்.',
+  };
+
+  const title = titles[currentLang];
+  const description = descriptions[currentLang];
   const enUrl = `${SITE_URL}/utility/fuel-and-power-sri-lanka`;
   const siUrl = `${SITE_URL}/si/utility/fuel-and-power-sri-lanka`;
   const taUrl = `${SITE_URL}/ta/utility/fuel-and-power-sri-lanka`;
-  const canonicalUrl = enUrl;
+  const canonicalUrl = currentLang === 'si' ? siUrl : currentLang === 'ta' ? taUrl : enUrl;
 
   return {
     title,
@@ -37,7 +55,7 @@ export async function generateMetadata(): Promise<Metadata> {
       'இன்றைய பெட்ரோல் டீசல் விலை'
     ],
     alternates: {
-      canonical: enUrl,
+      canonical: canonicalUrl,
       languages: {
         'en-LK': enUrl,
         'si-LK': siUrl,

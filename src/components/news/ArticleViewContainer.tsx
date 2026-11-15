@@ -128,7 +128,8 @@ export const ArticleViewContainer: React.FC<ArticleViewContainerProps> = ({
 
   const handleSelectRelatedArticle = useCallback(
     (related: Article) => {
-      router.push(`/article/${encodeURIComponent(related.id)}?lang=${currentLang}`);
+      const prefix = currentLang === 'si' ? '/si' : currentLang === 'ta' ? '/ta' : '';
+      router.push(`${prefix}/article/${encodeURIComponent(related.id)}`);
     },
     [router, currentLang]
   );

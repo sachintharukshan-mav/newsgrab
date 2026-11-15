@@ -22,14 +22,32 @@ import { SalaryTaxCalculatorStageshow } from '@/components/salary-tax-calculator
 
 export const dynamic = 'force-dynamic';
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ lang?: string }>;
+}): Promise<Metadata> {
+  const { lang = 'en' } = await searchParams;
+  const currentLang = (lang === 'si' || lang === 'ta' ? lang : 'en') as 'en' | 'si' | 'ta';
   const SITE_URL = getSiteUrl();
-  const title = 'Sri Lanka Salary & APIT Tax Calculator (2025/2026 IRD Slabs)';
-  const description =
-    '100% accurate Sri Lanka Salary, APIT & Income Tax Calculator verified against Inland Revenue (Amendment) Act No. 2 of 2025. Calculate your net take-home salary, Employee EPF (8%), Employer ETF (3%), 2025 tax relief (Rs. 150k), tax savings, and employer Cost to Company (CTC).';
+
+  const titles = {
+    en: 'Sri Lanka Salary & APIT Tax Calculator (2025/2026 IRD Slabs)',
+    si: 'ශ්‍රී ලංකා වැටුප් සහ APIT ආදායම් බදු කැල්කියුලේටරය (2025/2026 IRD බදු සීමා)',
+    ta: 'இலங்கை சம்பளம் மற்றும் APIT வருமான வரி கால்குலேட்டர் (2025/2026 IRD)',
+  };
+  const descriptions = {
+    en: '100% accurate Sri Lanka Salary, APIT & Income Tax Calculator verified against Inland Revenue (Amendment) Act No. 2 of 2025. Calculate your net take-home salary, Employee EPF (8%), Employer ETF (3%), 2025 tax relief (Rs. 150k), tax savings, and employer Cost to Company (CTC).',
+    si: '2025 අංක 2 දරණ දේශීය ආදායම් සංශෝධන පනතට අනුකූලව ඔබගේ ශුද්ධ වැටුප, APIT ආදායම් බද්ද, EPF (8%/12%), ETF (3%) සහ රු. 150,000 බදු සහනය නිවැරදිව ගණනය කරන්න.',
+    ta: '2025 இல. 2 உள்நாட்டு இறைவரித் திருத்தச் சட்டத்தின் கீழ் உங்கள் நிகர சம்பளம், APIT வருமான வரி, EPF (8%/12%), ETF (3%) மற்றும் ரூ. 150,000 வரி விலக்கு விபரங்களை துல்லியமாகக் கணக்கிடுங்கள்.',
+  };
+
+  const title = titles[currentLang];
+  const description = descriptions[currentLang];
   const enUrl = `${SITE_URL}/calculators/sri-lanka-salary-tax-calculator`;
   const siUrl = `${SITE_URL}/si/calculators/sri-lanka-salary-tax-calculator`;
   const taUrl = `${SITE_URL}/ta/calculators/sri-lanka-salary-tax-calculator`;
+  const canonicalUrl = currentLang === 'si' ? siUrl : currentLang === 'ta' ? taUrl : enUrl;
 
   return {
     title,
@@ -51,7 +69,7 @@ export async function generateMetadata(): Promise<Metadata> {
       'வருமான வரி விகிதங்கள் 2025',
     ],
     alternates: {
-      canonical: enUrl,
+      canonical: canonicalUrl,
       languages: {
         'en-LK': enUrl,
         'si-LK': siUrl,
@@ -62,7 +80,7 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       title,
       description,
-      url: enUrl,
+      url: canonicalUrl,
       siteName: 'LANKA DISPATCH',
       type: 'website',
       images: [

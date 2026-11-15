@@ -2,12 +2,63 @@ import React from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowLeft, FileText, CheckCircle2, Scale } from 'lucide-react';
+import { getSiteUrl } from '@/lib/site-config';
 
-export const metadata: Metadata = {
-  title: 'Terms of Service & Wire Syndication Guidelines',
-  description:
-    'Lanka Dispatch Terms of Service, wire syndication guidelines, publisher copyright notices, and financial indicator disclaimers.',
-};
+export const dynamic = 'force-dynamic';
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ lang?: string }>;
+}): Promise<Metadata> {
+  const sp = await searchParams;
+  const lang = sp?.lang === 'si' ? 'si' : sp?.lang === 'ta' ? 'ta' : 'en';
+  const SITE_URL = getSiteUrl();
+  const enUrl = `${SITE_URL}/terms`;
+  const siUrl = `${SITE_URL}/si/terms`;
+  const taUrl = `${SITE_URL}/ta/terms`;
+  const canonicalUrl = lang === 'si' ? siUrl : lang === 'ta' ? taUrl : enUrl;
+
+  const titles = {
+    en: 'Terms of Service & Wire Syndication Guidelines',
+    si: 'සේවා කොන්දේසි සහ ප්‍රවෘත්ති සින්ඩිකේෂන් මාර්ගෝපදේශ',
+    ta: 'சேவை விதிமுறைகள் மற்றும் செய்தி விநியோக வழிகாட்டுதல்கள்',
+  };
+  const descriptions = {
+    en: 'Lanka Dispatch Terms of Service, wire syndication guidelines, publisher copyright notices, and financial indicator disclaimers.',
+    si: 'ලංකා ඩිස්පැච් සේවා කොන්දේසි, ප්‍රවෘත්ති සින්ඩිකේෂන් මාර්ගෝපදේශ, ප්‍රකාශක ප්‍රකාශන හිමිකම් දැනුම්දීම් සහ මූල්‍ය දත්ත වියාචන.',
+    ta: 'லங்கா டிஸ்பாட்ச் சேவை விதிமுறைகள், செய்தி விநியோக வழிகாட்டுதல்கள், பதிப்பாளர் பதிப்புரிமை அறிவிப்புகள் மற்றும் நிதி தரவு பொறுப்புத் துறப்புகள்.',
+  };
+
+  const title = titles[lang];
+  const description = descriptions[lang];
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: canonicalUrl,
+      languages: {
+        'en-LK': enUrl,
+        'si-LK': siUrl,
+        'ta-LK': taUrl,
+        'x-default': enUrl,
+      },
+    },
+    openGraph: {
+      title: `${title} | LANKA DISPATCH`,
+      description,
+      url: canonicalUrl,
+      siteName: 'LANKA DISPATCH',
+      locale: lang === 'si' ? 'si_LK' : lang === 'ta' ? 'ta_LK' : 'en_LK',
+      type: 'website',
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
+  };
+}
 
 export default function TermsOfServicePage() {
   return (

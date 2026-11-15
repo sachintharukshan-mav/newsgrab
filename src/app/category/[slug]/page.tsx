@@ -35,7 +35,7 @@ export async function generateMetadata({
   const section = getSectionHub(slug);
   if (!section) {
     return {
-      title: 'Section Not Found | LANKA DISPATCH',
+      title: 'Section Not Found',
     };
   }
 

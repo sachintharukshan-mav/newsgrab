@@ -5,36 +5,69 @@ import { ArrowLeft, Zap, ShieldCheck, Fuel, DollarSign, Coins } from 'lucide-rea
 import { PowerCutTracker } from '@/components/powercut/PowerCutTracker';
 import { PowerCutExpiredNotice } from '@/components/powercut/PowerCutExpiredNotice';
 import { isPowercutScheduleExpired } from '@/data/powercut-schedule';
+import { getSiteUrl } from '@/lib/site-config';
 
-export const metadata: Metadata = {
-  title: 'Sri Lanka Power Cut Schedule & Interactive Area Map | Lanka Dispatch',
-  description: 'Official 1-hour rotational CEB power cut schedule approved by PUCSL for October 19, 20, 21, 2026. Interactive 25-district map, group times (Groups 1–4), sub-stations, and area finder.',
-  keywords: [
-    'Sri Lanka power cut schedule',
-    'CEB power cut times today',
-    'PUCSL power cut schedule',
-    'Sri Lanka power cut map',
-    'CEB group 1 2 3 4 times',
-    'power cut areas Colombo Kandy Galle',
-    'Lakvijaya power plant Norochcholai'
-  ],
-  openGraph: {
-    title: 'Sri Lanka Power Cut Schedule & Interactive Area Map | Lanka Dispatch',
-    description: 'Find your area and exact 1-hour power interruption time slot on an interactive Sri Lanka map. Covering all 25 districts and 4 CEB groups.',
-    url: 'https://lankadispatch.com/powercut',
-    siteName: 'Lanka Dispatch',
-    type: 'website'
-  },
-  alternates: {
-    canonical: 'https://lankadispatch.com/powercut',
-    languages: {
-      'en-LK': 'https://lankadispatch.com/powercut',
-      'si-LK': 'https://lankadispatch.com/si/powercut',
-      'ta-LK': 'https://lankadispatch.com/ta/powercut',
-      'x-default': 'https://lankadispatch.com/powercut',
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ lang?: string }>;
+}): Promise<Metadata> {
+  const { lang = 'en' } = await searchParams;
+  const currentLang = (lang === 'si' || lang === 'ta' ? lang : 'en') as 'en' | 'si' | 'ta';
+  const SITE_URL = getSiteUrl();
+
+  const titles = {
+    en: 'Sri Lanka Power Cut Schedule & Interactive Area Map',
+    si: 'ශ්‍රී ලංකා විදුලි කප්පාදු කාලසටහන සහ දිස්ත්‍රික් සිතියම (CEB / PUCSL)',
+    ta: 'இலங்கை மின்வெட்டு நேர அட்டவணை மற்றும் மாவட்ட வரைபடம் (CEB / PUCSL)',
+  };
+  const descriptions = {
+    en: 'Official 1-hour rotational CEB power cut schedule approved by PUCSL for Sri Lanka. Interactive 25-district map, group times (Groups 1–4), sub-stations, and area finder.',
+    si: 'මහජන උපයෝගිතා කොමිසම (PUCSL) අනුමත කළ ලංවිම (CEB) විදුලි කප්පාදු කාලසටහන, කලාප 1–4 වේලාවන් සහ දිස්ත්‍රික් 25 සඳහා සජීවී සිතියම.',
+    ta: 'இலங்கை மின்சார சபை (CEB) மற்றும் PUCSL அங்கீகரித்த மின்வெட்டு நேர அட்டவணை, 25 மாவட்டங்களுக்கான ஊடாடும் வரைபடம் மற்றும் வலய நேரங்கள்.',
+  };
+
+  const title = titles[currentLang];
+  const description = descriptions[currentLang];
+  const enUrl = `${SITE_URL}/powercut`;
+  const siUrl = `${SITE_URL}/si/powercut`;
+  const taUrl = `${SITE_URL}/ta/powercut`;
+  const canonicalUrl = currentLang === 'si' ? siUrl : currentLang === 'ta' ? taUrl : enUrl;
+
+  return {
+    title,
+    description,
+    keywords: [
+      'Sri Lanka power cut schedule',
+      'CEB power cut times today',
+      'PUCSL power cut schedule',
+      'Sri Lanka power cut map',
+      'CEB group 1 2 3 4 times',
+      'power cut areas Colombo Kandy Galle',
+      'Lakvijaya power plant Norochcholai'
+    ],
+    openGraph: {
+      title,
+      description,
+      url: canonicalUrl,
+      siteName: 'LANKA DISPATCH',
+      type: 'website'
     },
-  }
-};
+    alternates: {
+      canonical: canonicalUrl,
+      languages: {
+        'en-LK': enUrl,
+        'si-LK': siUrl,
+        'ta-LK': taUrl,
+        'x-default': enUrl,
+      },
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
+  };
+}
 
 export default function PowerCutPage() {
   const jsonLd = {

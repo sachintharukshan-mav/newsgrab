@@ -36,7 +36,7 @@ export async function generateMetadata({
   const topic = getTopicHub(slug);
   if (!topic) {
     return {
-      title: 'Topic Hub Not Found | LANKA DISPATCH',
+      title: 'Topic Hub Not Found',
     };
   }
 

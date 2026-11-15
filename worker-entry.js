@@ -10,6 +10,18 @@ export default {
 
     const url = new URL(request.url);
     const pathname = url.pathname;
+    const ua = request.headers.get('user-agent') || '';
+
+    // 1.5 Block aggressive non-search AI scrapers that exhaust Free-tier Worker CPU (always keep robots.txt readable)
+    if (pathname !== '/robots.txt' && /ClaudeBot|KeenableBot|Reflectionbot|Bytespider|CCBot/i.test(ua)) {
+      return new Response('Forbidden by robots.txt policy', {
+        status: 403,
+        headers: {
+          'Content-Type': 'text/plain; charset=utf-8',
+          'Cache-Control': 'public, max-age=86400',
+        },
+      });
+    }
 
     // 2. Bypass cache for AI generation, internal cron, and authenticated requests
     // (Note: POST/PATCH/DELETE mutations to /api/metrics, /api/comments, /api/reactions are already bypassed in step 1,
@@ -71,8 +83,9 @@ export default {
       !response.headers.get('set-cookie') &&
       request.method === 'GET'
     ) {
-      let edgeTtl = 60; // 60s default edge cache for pages and articles
-      let swr = 120;
+      let edgeTtl = 180; // 180s default edge cache for pages and articles
+      let swr = 600;
+      const normalizedPath = pathname.replace(/^\/(si|ta)(?=\/|$)/, '') || '/';
 
       if (
         pathname.startsWith('/api/rates') ||
@@ -87,15 +100,18 @@ export default {
         edgeTtl = 86400 * 7;
         swr = 86400;
       } else if (
-        pathname.startsWith('/utility/') ||
-        pathname.startsWith('/guides/') ||
-        pathname.startsWith('/calculators/') ||
-        pathname.startsWith('/about') ||
-        pathname.startsWith('/privacy') ||
-        pathname.startsWith('/terms')
+        normalizedPath.startsWith('/utility/') ||
+        normalizedPath.startsWith('/markets/') ||
+        normalizedPath.startsWith('/guides') ||
+        normalizedPath.startsWith('/calculators/') ||
+        normalizedPath.startsWith('/powercut') ||
+        normalizedPath.startsWith('/about') ||
+        normalizedPath.startsWith('/contact') ||
+        normalizedPath.startsWith('/privacy') ||
+        normalizedPath.startsWith('/terms')
       ) {
         edgeTtl = 300;
-        swr = 600;
+        swr = 900;
       } else if (pathname.startsWith('/api/news')) {
         edgeTtl = 60;
         swr = 120;

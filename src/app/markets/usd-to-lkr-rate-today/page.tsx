@@ -8,14 +8,32 @@ import { getSiteUrl } from '@/lib/site-config';
 
 export const dynamic = 'force-dynamic';
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ lang?: string }>;
+}): Promise<Metadata> {
+  const { lang = 'en' } = await searchParams;
+  const currentLang = (lang === 'si' || lang === 'ta' ? lang : 'en') as 'en' | 'si' | 'ta';
   const SITE_URL = getSiteUrl();
-  const title = 'USD to LKR Rate Today Sri Lanka | CBSL & Bank Exchange Rates';
-  const description = 'Live USD to LKR exchange rate today in Sri Lanka. Compare daily Central Bank (CBSL) indicative rates, BOC, Commercial Bank, HNB, and Sampath bank buying & selling rates with currency converter.';
+
+  const titles = {
+    en: 'USD to LKR Rate Today Sri Lanka | CBSL & Bank Exchange Rates',
+    si: 'අද ඩොලර් විනිමය අනුපාතිකය (USD to LKR) | මහ බැංකු සහ බැංකු මිල ගණන්',
+    ta: 'இன்றைய டொலர் மாற்று விகிதம் (USD to LKR) | மத்திய வங்கி & வங்கி விகிதங்கள்',
+  };
+  const descriptions = {
+    en: 'Live USD to LKR exchange rate today in Sri Lanka. Compare daily Central Bank (CBSL) indicative rates, BOC, Commercial Bank, HNB, and Sampath bank buying & selling rates with currency converter.',
+    si: 'ශ්‍රී ලංකාවේ අද ඇමරිකානු ඩොලර් විනිමය අනුපාතිකය. ශ්‍රී ලංකා මහ බැංකු (CBSL) නිල අනුපාත සහ BOC, කොමර්ෂල්, HNB, සම්පත් බැංකු ගැනුම් හා විකුණුම් මිල ගණන්.',
+    ta: 'இலங்கையில் இன்றைய அமெரிக்க டொலர் (USD to LKR) மாற்று விகிதம். இலங்கை மத்திய வங்கி (CBSL), BOC, Commercial, HNB மற்றும் Sampath வங்கி கொள்வனவு/விற்பனை விகிதங்கள்.',
+  };
+
+  const title = titles[currentLang];
+  const description = descriptions[currentLang];
   const enUrl = `${SITE_URL}/markets/usd-to-lkr-rate-today`;
   const siUrl = `${SITE_URL}/si/markets/usd-to-lkr-rate-today`;
   const taUrl = `${SITE_URL}/ta/markets/usd-to-lkr-rate-today`;
-  const canonicalUrl = enUrl;
+  const canonicalUrl = currentLang === 'si' ? siUrl : currentLang === 'ta' ? taUrl : enUrl;
 
   return {
     title,
@@ -33,7 +51,7 @@ export async function generateMetadata(): Promise<Metadata> {
       'sri lanka currency converter'
     ],
     alternates: {
-      canonical: enUrl,
+      canonical: canonicalUrl,
       languages: {
         'en-LK': enUrl,
         'si-LK': siUrl,

@@ -33,6 +33,10 @@ export default function robots(): MetadataRoute.Robots {
         userAgent: 'AdsBot-Google',
         allow: '/',
       },
+      {
+        userAgent: ['ClaudeBot', 'anthropic-ai', 'KeenableBot', 'GPTBot', 'Reflectionbot', 'Bytespider', 'CCBot'],
+        disallow: '/',
+      },
     ],
     sitemap: [`${SITE_URL}/sitemap.xml`, `${SITE_URL}/news-sitemap.xml`],
     host: SITE_URL,

@@ -19,14 +19,59 @@ import {
 } from 'lucide-react';
 import { getSiteUrl } from '@/lib/site-config';
 
-export const metadata: Metadata = {
-  title: 'Editorial Standards, Newsroom Masthead & Trust Policies | LANKA DISPATCH',
-  description:
-    'Official editorial masthead, multi-source corroboration methodology, corrections policy, and Colombo bureau information for Lanka Dispatch.',
-  alternates: {
-    canonical: `${getSiteUrl()}/about`,
-  },
-};
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ lang?: string }>;
+}): Promise<Metadata> {
+  const sp = await searchParams;
+  const lang = sp?.lang === 'si' ? 'si' : sp?.lang === 'ta' ? 'ta' : 'en';
+  const SITE_URL = getSiteUrl();
+  const enUrl = `${SITE_URL}/about`;
+  const siUrl = `${SITE_URL}/si/about`;
+  const taUrl = `${SITE_URL}/ta/about`;
+  const canonicalUrl = lang === 'si' ? siUrl : lang === 'ta' ? taUrl : enUrl;
+
+  const titles = {
+    en: 'Editorial Standards, Newsroom Masthead & Trust Policies',
+    si: 'කර්තෘ මණ්ඩල ප්‍රමිතීන්, ප්‍රවෘත්ති කාර්යාලය සහ විශ්වාසනීයත්ව ප්‍රතිපත්ති',
+    ta: 'ஆசிரியர் குழு தரநிலைகள், செய்தி அலுவலகம் மற்றும் நம்பகத்தன்மை கொள்கைகள்',
+  };
+  const descriptions = {
+    en: 'Official editorial masthead, multi-source corroboration methodology, corrections policy, and Colombo bureau information for Lanka Dispatch.',
+    si: 'ලංකා ඩිස්පැච් හි නිල කර්තෘ මණ්ඩලය, බහු-මූලාශ්‍ර සත්‍යාපන ක්‍රමවේදය, නිවැරදි කිරීම් ප්‍රතිපත්තිය සහ කොළඹ කාර්යාල තොරතුරු.',
+    ta: 'லங்கா டிஸ்பாட்சின் அதிகாரப்பூர்வ ஆசிரியர் குழு, பல-மூல சரிபார்ப்பு முறை, திருத்தக் கொள்கை மற்றும் கொழும்பு அலுவலக விவரங்கள்.',
+  };
+
+  const title = titles[lang];
+  const description = descriptions[lang];
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: canonicalUrl,
+      languages: {
+        'en-LK': enUrl,
+        'si-LK': siUrl,
+        'ta-LK': taUrl,
+        'x-default': enUrl,
+      },
+    },
+    openGraph: {
+      title: `${title} | LANKA DISPATCH`,
+      description,
+      url: canonicalUrl,
+      siteName: 'LANKA DISPATCH',
+      locale: lang === 'si' ? 'si_LK' : lang === 'ta' ? 'ta_LK' : 'en_LK',
+      type: 'website',
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
+  };
+}
 
 export default function AboutPage() {
   return (

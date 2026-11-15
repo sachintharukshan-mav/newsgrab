@@ -22,12 +22,32 @@ import { getSiteUrl } from '@/lib/site-config';
 
 export const dynamic = 'force-dynamic';
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ lang?: string }>;
+}): Promise<Metadata> {
+  const { lang = 'en' } = await searchParams;
+  const currentLang = (lang === 'si' || lang === 'ta' ? lang : 'en') as 'en' | 'si' | 'ta';
   const SITE_URL = getSiteUrl();
-  const title = 'Sri Lanka Personal Income Tax & APIT Slabs 2025/2026: The Complete Taxpayer Guide';
-  const description =
-    'Comprehensive 2025/2026 Sri Lanka Personal Income Tax and APIT guide. Detailed legal analysis of Inland Revenue (Amendment) Act No. 2 of 2025, Rs. 150,000 monthly tax-free relief, progressive tax slabs, EPF/ETF interaction, and practical salary case studies.';
+
+  const titles = {
+    en: 'Sri Lanka Personal Income Tax & APIT Slabs 2025/2026: The Complete Taxpayer Guide',
+    si: 'ශ්‍රී ලංකා පුද්ගලික ආදායම් බදු සහ APIT බදු සීමා (2025/2026): සම්පූර්ණ මාර්ගෝපදේශය',
+    ta: 'இலங்கை தனிநபர் வருமான வரி மற்றும் APIT விகிதங்கள் (2025/2026): முழுமையான வழிகாட்டி',
+  };
+  const descriptions = {
+    en: 'Comprehensive 2025/2026 Sri Lanka Personal Income Tax and APIT guide. Detailed legal analysis of Inland Revenue (Amendment) Act No. 2 of 2025, Rs. 150,000 monthly tax-free relief, progressive tax slabs, EPF/ETF interaction, and practical salary case studies.',
+    si: '2025/2026 ශ්‍රී ලංකා පුද්ගලික ආදායම් බදු සහ APIT නීතිමය විශ්ලේෂණය. රු. 150,000 මාසික බදු සහනය, බදු ස්ථර සහ EPF/ETF බදු බලපෑම පිළිබඳ සම්පූර්ණ මාර්ගෝපදේශය.',
+    ta: '2025/2026 இலங்கை தனிநபர் வருமான வரி மற்றும் APIT சட்ட வழிகாட்டி. மாதத்திற்கு ரூ. 150,000 வரி விலக்கு, வரி விகிதங்கள் மற்றும் EPF/ETF கணக்கீடுகள்.',
+  };
+
+  const title = titles[currentLang];
+  const description = descriptions[currentLang];
   const enUrl = `${SITE_URL}/guides/sri-lanka-personal-income-tax-guide-2025`;
+  const siUrl = `${SITE_URL}/si/guides/sri-lanka-personal-income-tax-guide-2025`;
+  const taUrl = `${SITE_URL}/ta/guides/sri-lanka-personal-income-tax-guide-2025`;
+  const canonicalUrl = currentLang === 'si' ? siUrl : currentLang === 'ta' ? taUrl : enUrl;
 
   return {
     title,
@@ -43,12 +63,18 @@ export async function generateMetadata(): Promise<Metadata> {
       'ird table 01 schedule explanation',
     ],
     alternates: {
-      canonical: enUrl,
+      canonical: canonicalUrl,
+      languages: {
+        'en-LK': enUrl,
+        'si-LK': siUrl,
+        'ta-LK': taUrl,
+        'x-default': enUrl,
+      },
     },
     openGraph: {
       title,
       description,
-      url: enUrl,
+      url: canonicalUrl,
       siteName: 'LANKA DISPATCH',
       type: 'article',
       publishedTime: '2026-11-01T00:00:00Z',

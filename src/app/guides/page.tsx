@@ -16,12 +16,32 @@ import { getSiteUrl } from '@/lib/site-config';
 
 export const dynamic = 'force-dynamic';
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ lang?: string }>;
+}): Promise<Metadata> {
+  const { lang = 'en' } = await searchParams;
+  const currentLang = (lang === 'si' || lang === 'ta' ? lang : 'en') as 'en' | 'si' | 'ta';
   const SITE_URL = getSiteUrl();
-  const title = 'In-Depth Economic & Legal Guides | LANKA DISPATCH';
-  const description =
-    'Exhaustive investigative guides, statutory tax breakdowns, energy pricing analyses, and macroeconomic research for Sri Lanka by the Lanka Dispatch Intelligence Desk.';
+
+  const titles = {
+    en: 'In-Depth Economic & Legal Guides',
+    si: 'විශේෂ ආර්ථික සහ නීතිමය විමර්ශන මාර්ගෝපදේශ',
+    ta: 'சிறப்பு பொருளாதார மற்றும் சட்ட வழிகாட்டிகள்',
+  };
+  const descriptions = {
+    en: 'Exhaustive investigative guides, statutory tax breakdowns, energy pricing analyses, and macroeconomic research for Sri Lanka by the Lanka Dispatch Intelligence Desk.',
+    si: 'ශ්‍රී ලංකාවේ ආදායම් බදු, ඉන්ධන මිල සූත්‍රය සහ EPF/ETF නීතිමය තත්ත්වයන් පිළිබඳ විශේෂ විමර්ශන සහ ආර්ථික මාර්ගෝපදේශ.',
+    ta: 'இலங்கையின் வருமான வரி, எரிபொருள் விலைச் சூத்திரம் மற்றும் EPF/ETF சட்ட விதிகள் குறித்த விரிவான ஆய்வு மற்றும் பொருளாதார வழிகாட்டிகள்.',
+  };
+
+  const title = titles[currentLang];
+  const description = descriptions[currentLang];
   const enUrl = `${SITE_URL}/guides`;
+  const siUrl = `${SITE_URL}/si/guides`;
+  const taUrl = `${SITE_URL}/ta/guides`;
+  const canonicalUrl = currentLang === 'si' ? siUrl : currentLang === 'ta' ? taUrl : enUrl;
 
   return {
     title,
@@ -34,12 +54,18 @@ export async function generateMetadata(): Promise<Metadata> {
       'epf etf sri lanka guide',
     ],
     alternates: {
-      canonical: enUrl,
+      canonical: canonicalUrl,
+      languages: {
+        'en-LK': enUrl,
+        'si-LK': siUrl,
+        'ta-LK': taUrl,
+        'x-default': enUrl,
+      },
     },
     openGraph: {
       title,
       description,
-      url: enUrl,
+      url: canonicalUrl,
       siteName: 'LANKA DISPATCH',
       type: 'website',
     },

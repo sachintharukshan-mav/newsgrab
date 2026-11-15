@@ -1,9 +1,9 @@
 import React from 'react';
 import type { Metadata } from 'next';
-import { notFound, redirect, RedirectType } from 'next/navigation';
+import { notFound } from 'next/navigation';
 import { getArticleById } from '@/lib/news-service';
 import { Language } from '@/lib/types';
-import { NewsArticleJsonLd } from '@/components/seo/JsonLd';
+import { NewsArticleJsonLd, BreadcrumbJsonLd } from '@/components/seo/JsonLd';
 import { ArticleViewContainer } from '@/components/news/ArticleViewContainer';
 import { getSiteUrl } from '@/lib/site-config';
 import { getCachedBrief as getGeminiCachedBrief } from '@/lib/gemini-synthesizer';
@@ -29,12 +29,8 @@ export async function generateMetadata({
   const article = await getArticleById(id, currentLang);
   if (!article) {
     return {
-      title: 'Dispatch Not Found | LANKA DISPATCH',
+      title: 'Dispatch Not Found',
       description: 'The requested news wire dispatch could not be found or has expired from the live index.',
-      robots: {
-        index: false,
-        follow: false,
-      },
     };
   }
 
@@ -137,13 +133,6 @@ export default async function ArticlePage({ params, searchParams }: PageProps) {
     notFound();
   }
 
-  // Canonical redirect if requested id was an alias or sister-slug that resolved to an active article
-  const decodedId = decodeURIComponent(id).trim();
-  if (article.id !== id && article.id !== decodedId) {
-    const prefix = currentLang === 'si' ? '/si' : currentLang === 'ta' ? '/ta' : '';
-    redirect(`${prefix}/article/${encodeURIComponent(article.id)}`, RedirectType.replace);
-  }
-
   // Pre-attach Smart Brevity executive brief so Googlebot and search crawlers
   // receive the full, rich, structured editorial dispatch in initial SSR HTML.
   if (!article.brief?.[currentLang]) {
@@ -154,9 +143,17 @@ export default async function ArticlePage({ params, searchParams }: PageProps) {
     };
   }
 
+  const articleTitle = article.title[currentLang] || article.title.en || 'Sri Lanka News Dispatch';
+
   return (
     <>
       <NewsArticleJsonLd article={article} currentLang={currentLang} />
+      <BreadcrumbJsonLd
+        category={article.category}
+        currentLang={currentLang}
+        articleTitle={articleTitle}
+        articleId={article.id}
+      />
       <ArticleViewContainer initialArticle={article} initialLang={currentLang} />
     </>
   );

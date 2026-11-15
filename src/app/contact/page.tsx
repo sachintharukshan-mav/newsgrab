@@ -19,14 +19,32 @@ import { getSiteUrl } from '@/lib/site-config';
 
 export const dynamic = 'force-dynamic';
 
-export async function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ lang?: string }>;
+}): Promise<Metadata> {
+  const sp = await searchParams;
+  const lang = sp?.lang === 'si' ? 'si' : sp?.lang === 'ta' ? 'ta' : 'en';
   const SITE_URL = getSiteUrl();
-  const title = 'Contact the Newsroom & Editorial Bureau | LANKA DISPATCH';
-  const description =
-    'Direct contact channels, Colombo World Trade Center bureau address, editorial desk phone numbers, and corrections submission portal for Lanka Dispatch.';
   const enUrl = `${SITE_URL}/contact`;
   const siUrl = `${SITE_URL}/si/contact`;
   const taUrl = `${SITE_URL}/ta/contact`;
+  const canonicalUrl = lang === 'si' ? siUrl : lang === 'ta' ? taUrl : enUrl;
+
+  const titles = {
+    en: 'Contact the Newsroom & Editorial Bureau',
+    si: 'ප්‍රවෘත්ති කාර්යාලය සහ කර්තෘ මණ්ඩලය අමතන්න',
+    ta: 'செய்தி அலுவலகம் மற்றும் ஆசிரியர் குழுவைத் தொடர்பு கொள்ளவும்',
+  };
+  const descriptions = {
+    en: 'Direct contact channels, Colombo World Trade Center bureau address, editorial desk phone numbers, and corrections submission portal for Lanka Dispatch.',
+    si: 'ලංකා ඩිස්පැච් කොළඹ ලෝක වෙළඳ මධ්‍යස්ථාන කාර්යාල ලිපිනය, කර්තෘ මණ්ඩල දුරකථන අංක සහ සෘජු සම්බන්ධතා නාලිකා.',
+    ta: 'லங்கா டிஸ்பாட்ச் கொழும்பு உலக வர்த்தக மைய அலுவலக முகவரி, ஆசிரியர் குழு தொலைபேசி எண்கள் மற்றும் நேரடி தொடர்பு விவரங்கள்.',
+  };
+
+  const title = titles[lang];
+  const description = descriptions[lang];
 
   return {
     title,
@@ -40,7 +58,7 @@ export async function generateMetadata(): Promise<Metadata> {
       'corrections and retractions lanka dispatch',
     ],
     alternates: {
-      canonical: enUrl,
+      canonical: canonicalUrl,
       languages: {
         'en-LK': enUrl,
         'si-LK': siUrl,
@@ -49,10 +67,11 @@ export async function generateMetadata(): Promise<Metadata> {
       },
     },
     openGraph: {
-      title,
+      title: `${title} | LANKA DISPATCH`,
       description,
-      url: enUrl,
+      url: canonicalUrl,
       siteName: 'LANKA DISPATCH',
+      locale: lang === 'si' ? 'si_LK' : lang === 'ta' ? 'ta_LK' : 'en_LK',
       type: 'website',
     },
     robots: {

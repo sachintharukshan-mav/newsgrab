@@ -2,12 +2,63 @@ import React from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowLeft, Shield, Lock, Eye, CheckCircle2 } from 'lucide-react';
+import { getSiteUrl } from '@/lib/site-config';
 
-export const metadata: Metadata = {
-  title: 'Privacy Policy & Cookie Disclosures',
-  description:
-    'Lanka Dispatch Privacy Policy, Google AdSense & third-party advertising cookie disclosures, GDPR/CCPA rights, and user data protection commitments.',
-};
+export const dynamic = 'force-dynamic';
+
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ lang?: string }>;
+}): Promise<Metadata> {
+  const sp = await searchParams;
+  const lang = sp?.lang === 'si' ? 'si' : sp?.lang === 'ta' ? 'ta' : 'en';
+  const SITE_URL = getSiteUrl();
+  const enUrl = `${SITE_URL}/privacy`;
+  const siUrl = `${SITE_URL}/si/privacy`;
+  const taUrl = `${SITE_URL}/ta/privacy`;
+  const canonicalUrl = lang === 'si' ? siUrl : lang === 'ta' ? taUrl : enUrl;
+
+  const titles = {
+    en: 'Privacy Policy & Cookie Disclosures',
+    si: 'පෞද්ගලිකත්ව ප්‍රතිපත්තිය සහ කුකී හෙළිදරව් කිරීම්',
+    ta: 'தனியுரிமைக் கொள்கை மற்றும் குக்கீ வெளிப்பாடுகள்',
+  };
+  const descriptions = {
+    en: 'Lanka Dispatch Privacy Policy, Google AdSense & third-party advertising cookie disclosures, GDPR/CCPA rights, and user data protection commitments.',
+    si: 'ලංකා ඩිස්පැච් පෞද්ගලිකත්ව ප්‍රතිපත්තිය, Google AdSense සහ තෙවන පාර්ශවීය කුකී හෙළිදරව් කිරීම්, GDPR/CCPA අයිතිවාසිකම් සහ දත්ත ආරක්ෂණ කැපවීම්.',
+    ta: 'லங்கா டிஸ்பாட்ச் தனியுரிமைக் கொள்கை, Google AdSense மற்றும் மூன்றாம் தரப்பு குக்கீ வெளிப்பாடுகள், GDPR/CCPA உரிமைகள் மற்றும் தரவு பாதுகாப்பு.',
+  };
+
+  const title = titles[lang];
+  const description = descriptions[lang];
+
+  return {
+    title,
+    description,
+    alternates: {
+      canonical: canonicalUrl,
+      languages: {
+        'en-LK': enUrl,
+        'si-LK': siUrl,
+        'ta-LK': taUrl,
+        'x-default': enUrl,
+      },
+    },
+    openGraph: {
+      title: `${title} | LANKA DISPATCH`,
+      description,
+      url: canonicalUrl,
+      siteName: 'LANKA DISPATCH',
+      locale: lang === 'si' ? 'si_LK' : lang === 'ta' ? 'ta_LK' : 'en_LK',
+      type: 'website',
+    },
+    robots: {
+      index: true,
+      follow: true,
+    },
+  };
+}
 
 export default function PrivacyPolicyPage() {
   return (

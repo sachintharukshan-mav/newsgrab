@@ -27,6 +27,62 @@ const langCaches: Record<Language, { articles: Article[]; timestamp: number }> =
 
 const resolvedArticleCache = new Map<string, { article: Article; timestamp: number }>();
 
+async function getArticleFromD1(id: string): Promise<Article | null> {
+  const env = await getCloudflareEnv();
+  if (!env?.DB) return null;
+  try {
+    const row = await env.DB
+      .prepare('SELECT data FROM articles WHERE id = ? LIMIT 1')
+      .bind(id)
+      .first<{ data: string }>();
+    if (row?.data) {
+      return JSON.parse(row.data) as Article;
+    }
+  } catch (err) {
+    console.warn('D1 article read fallback:', err);
+  }
+  return null;
+}
+
+async function upsertArticlesToD1(articles: Article[], lang: Language): Promise<void> {
+  const env = await getCloudflareEnv();
+  if (!env?.DB || articles.length === 0) return;
+  try {
+    const sql = `
+      INSERT INTO articles (id, lang, published_at, publisher_name, category, data, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+      ON CONFLICT(id) DO UPDATE SET
+        data = CASE
+          WHEN json_type(articles.data, '$.brief') = 'object' AND json_type(excluded.data, '$.brief') IS NULL
+          THEN json_set(excluded.data, '$.brief', json(json_extract(articles.data, '$.brief')))
+          ELSE excluded.data
+        END,
+        updated_at = CURRENT_TIMESTAMP
+    `;
+    const chunkSize = 40;
+    for (let i = 0; i < articles.length; i += chunkSize) {
+      const chunk = articles.slice(i, i + chunkSize);
+      const stmts = chunk.map((a) =>
+        env.DB!.prepare(sql).bind(
+          a.id,
+          lang,
+          a.publishedAt || new Date().toISOString(),
+          a.publisherName || 'Lanka Dispatch',
+          a.category || 'local',
+          JSON.stringify(a)
+        )
+      );
+      if (env.DB.batch) {
+        await env.DB.batch(stmts);
+      } else {
+        for (const s of stmts) await s.run();
+      }
+    }
+  } catch (err) {
+    console.warn('D1 articles batch upsert warning:', err);
+  }
+}
+
 function ensureDistinctSummary(headline: string, rawSummary: string | undefined, pub: string, lang: Language): string {
   const cleaned = stripRssBoilerplate(rawSummary || '');
   const isDuplicate = cleaned.trim().toLowerCase() === headline.trim().toLowerCase();
@@ -318,6 +374,14 @@ export async function getAggregatedArticles(
       try {
         const existingKv = (await env.NEWS_CACHE.get(`articles:${lang}`, 'json')) as Article[] | null;
         if (Array.isArray(existingKv) && existingKv.length > 0) {
+          const existingById = new Map(existingKv.map((a: Article) => [a.id, a]));
+          for (const item of deduplicatedLiveItems) {
+            const prev = existingById.get(item.id);
+            if (prev?.brief && !item.brief) {
+              item.brief = prev.brief;
+            }
+          }
+
           const liveIds = new Set(deduplicatedLiveItems.map((a) => a.id));
           const thirtyDaysAgo = now - 30 * 24 * 60 * 60 * 1000;
 
@@ -363,6 +427,10 @@ export async function getAggregatedArticles(
       } catch (kvWriteErr) {
         console.warn('KV news cache write fallback:', kvWriteErr);
       }
+    }
+
+    if (deduplicatedLiveItems.length > 0 && hasNewArticles) {
+      await upsertArticlesToD1(deduplicatedLiveItems, lang);
     }
 
     return resultArticles;
@@ -442,9 +510,8 @@ function cacheResolvedArticle(key: string, article: Article): Article {
 }
 
 /**
- * Resolves a single article by ID across active language caches, persistent KV storage,
- * or intelligent event matching fallback to guarantee zero 404s for Googlebot
- * while staying well within Cloudflare Free Worker 10ms CPU limits.
+ * Resolves a single article by ID across in-memory caches, Cloudflare D1 persistent storage,
+ * individual KV keys, active language feeds, and fallback mock articles.
  */
 export async function getArticleById(id: string, lang: Language = 'en'): Promise<Article | null> {
   const decodedId = decodeURIComponent(id).trim();
@@ -469,7 +536,22 @@ export async function getArticleById(id: string, lang: Language = 'en'): Promise
     if (found) return cacheResolvedArticle(cacheKey, sanitizeArticle(found));
   }
 
-  // 3. Check active aggregated feed list for requested language (populates from KV if cold)
+  // 3. Direct Cloudflare D1 single-row lookup (<1ms CPU, persistent 30-90+ day archive)
+  const d1Found = (await getArticleFromD1(decodedId)) || (id !== decodedId ? await getArticleFromD1(id) : null);
+  if (d1Found) return cacheResolvedArticle(cacheKey, sanitizeArticle(d1Found));
+
+  // 4. Direct KV single-article key lookup (e.g. Workers AI synthesized articles)
+  const env = await getCloudflareEnv();
+  if (env?.NEWS_CACHE) {
+    try {
+      const kvSingle = (await env.NEWS_CACHE.get(`article:${decodedId}`, 'json')) as Article | null;
+      if (kvSingle) return cacheResolvedArticle(cacheKey, sanitizeArticle(kvSingle));
+    } catch (kvSingleErr) {
+      console.warn('KV single article read fallback:', kvSingleErr);
+    }
+  }
+
+  // 5. Check active aggregated feed list for requested language (populates from KV if cold)
   const articles = await getAggregatedArticles(lang);
   found = articles.find((a) => a.id === decodedId || a.id === id);
   if (found) return cacheResolvedArticle(cacheKey, sanitizeArticle(found));
@@ -481,38 +563,11 @@ export async function getArticleById(id: string, lang: Language = 'en'): Promise
     if (found) return cacheResolvedArticle(cacheKey, sanitizeArticle(found));
   }
 
-  // 4. Intelligent Entity & Topic Matcher (Zero-404 Googlebot rescue)
-  // If an exact upstream wire expired from feeds, extract distinctive entity tokens from the requested slug
-  // and resolve to an active sister wire covering the same event.
-  const slugTokens = decodedId
-    .toLowerCase()
-    .replace(/^[a-z0-9-]+-dispatch-|^[a-z0-9-]+-news-/, '')
-    .split(/[^a-z0-9]+/)
-    .filter((w) => w.length >= 4 && !['news', 'lanka', 'report', 'breaking', 'wire', 'colombo'].includes(w));
-
-  if (slugTokens.length >= 2) {
-    const candidateMatch = articles.find((a) => {
-      const aId = a.id.toLowerCase();
-      const titleStr = (a.title.en || a.title[lang] || '').toLowerCase();
-      const matchCount = slugTokens.filter((token) => aId.includes(token) || titleStr.includes(token)).length;
-      return matchCount >= Math.min(2, slugTokens.length);
-    });
-
-    if (candidateMatch) {
-      return cacheResolvedArticle(cacheKey, sanitizeArticle(candidateMatch));
-    }
-  }
-
-  // 5. Fallback to mock pool
+  // 6. Fallback to mock pool
   const mockMatch = mockArticles.find((a) => a.id === decodedId || a.id === id);
   if (mockMatch) return cacheResolvedArticle(cacheKey, sanitizeArticle(mockMatch));
 
-  // 6. Deterministic Archive Dispatch Constructor
-  // If an article was previously indexed by Google or bookmarked by a user but has
-  // rolled off the active cache window, reconstruct the authentic dispatch from its slug.
-  // Returns null for made-up/bogus URLs to emit a true HTTP 404 (eliminating soft-404 penalty).
-  const archived = reconstructArchivedArticle(decodedId, lang);
-  return archived ? cacheResolvedArticle(cacheKey, sanitizeArticle(archived)) : null;
+  return null;
 }
 
 /**
@@ -781,7 +836,7 @@ export async function synthesizeTopLeadStories(limit = 2): Promise<{
         };
         synthesizedCount++;
 
-        // Persist updated individual article to KV for instant fast lookup
+        // Persist updated individual article to KV and D1 for instant fast lookup
         if (env?.NEWS_CACHE) {
           try {
             await env.NEWS_CACHE.put(`article:${article.id}`, JSON.stringify(article), {
@@ -791,6 +846,7 @@ export async function synthesizeTopLeadStories(limit = 2): Promise<{
             console.warn('Persist synthesized article to KV warning:', kvErr);
           }
         }
+        await upsertArticlesToD1([article], 'en');
       } else {
         skippedCount++;
       }

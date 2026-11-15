@@ -19,6 +19,7 @@ interface NavbarProps {
   onLogoClick?: () => void;
   savedCount?: number;
   onOpenSavedDrawer?: () => void;
+  isHomePage?: boolean;
 }
 
 const navbarTranslations = {
@@ -97,7 +98,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   onManualRefresh,
   onLogoClick,
   savedCount = 0,
-  onOpenSavedDrawer
+  onOpenSavedDrawer,
+  isHomePage = false
 }) => {
   const [timeAgoStr, setTimeAgoStr] = useState<string>('Just now');
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
@@ -338,9 +340,15 @@ export const Navbar: React.FC<NavbarProps> = ({
             title="LANKA DISPATCH Front Page"
             aria-label="LANKA DISPATCH Front Page"
           >
-            <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-[var(--text-main)] font-headline uppercase">
-              LANKA<span className="text-[var(--accent-crimson)]">DISPATCH</span>
-            </h1>
+            {isHomePage ? (
+              <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-[var(--text-main)] font-headline uppercase">
+                LANKA<span className="text-[var(--accent-crimson)]">DISPATCH</span>
+              </h1>
+            ) : (
+              <div className="text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-[var(--text-main)] font-headline uppercase">
+                LANKA<span className="text-[var(--accent-crimson)]">DISPATCH</span>
+              </div>
+            )}
           </Link>
           <p className="text-[11px] text-[var(--text-muted)] tracking-widest uppercase mt-0.5 font-mono">
             {navbarTranslations.tagline[currentLang]}
